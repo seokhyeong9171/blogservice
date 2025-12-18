@@ -1,5 +1,6 @@
 package com.blogservice.api.controller;
 
+import com.blogservice.api.domain.Post;
 import com.blogservice.api.request.PostCreate;
 import com.blogservice.api.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,11 @@ public class PostController {
     public Map<String, String> post(@RequestBody @Validated PostCreate request) {
         postService.write(request);
         return Map.of();
+    }
+
+    @GetMapping("/posts/{postId}")
+    public Post get(@PathVariable(name = "postId") Long id) {
+        return postService.get(id);
     }
 
 }
