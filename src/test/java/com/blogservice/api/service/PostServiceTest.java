@@ -10,11 +10,18 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.util.Assert;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.data.domain.Sort.Direction.*;
 
 @SpringBootTest
 class PostServiceTest {
@@ -69,23 +76,27 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("글 여러개 조회")
+    @DisplayName("글 첫 페이지 조회")
     void test3() {
         // given
-        Post requestPost1 = Post.builder()
-                .title("foo1").content("bar1")
-                .build();
-        postRepository.save(requestPost1);
+         List<Post> requestPosts = IntStream.range(1, 31)
+                         .mapToObj(i -> {
+                             return Post.builder()
+                                     .title("제목 " + i)
+                                     .content("내용 " + i)
+                                     .build();
+                         })
+                 .toList();
+        postRepository.saveAll(requestPosts);
 
-        Post requestPost2 = Post.builder()
-                .title("foo2").content("bar2")
-                .build();
-        postRepository.save(requestPost2);
+        Pageable pageable = PageRequest.of(0, 5, Sort.by(DESC, "id"));
 
         // when
-        List<PostResponse> posts = postService.getList();
+        List<PostResponse> posts = postService.getList(pageable);
 
         // then
-        assertEquals(2L, posts.size());
+        assertEquals(5L, posts.size());
+        assertEquals("제목 30", posts.get(0).getTitle());
+        assertEquals("제목 26", posts.get(4).getTitle());
     }
 }
