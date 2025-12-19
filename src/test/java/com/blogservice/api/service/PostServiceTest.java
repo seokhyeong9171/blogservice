@@ -3,6 +3,7 @@ package com.blogservice.api.service;
 import com.blogservice.api.domain.Post;
 import com.blogservice.api.repository.PostRepository;
 import com.blogservice.api.request.PostCreate;
+import com.blogservice.api.request.PostSearch;
 import com.blogservice.api.response.PostResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -89,10 +90,13 @@ class PostServiceTest {
                  .toList();
         postRepository.saveAll(requestPosts);
 
-        Pageable pageable = PageRequest.of(0, 5, Sort.by(DESC, "id"));
+//        Pageable pageable = PageRequest.of(0, 5, Sort.by(DESC, "id"));
+        PostSearch postSearch = PostSearch.builder()
+                .page(1).size(10)
+                .build();
 
         // when
-        List<PostResponse> posts = postService.getList(pageable);
+        List<PostResponse> posts = postService.getList(postSearch);
 
         // then
         assertEquals(10L, posts.size());
