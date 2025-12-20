@@ -120,7 +120,6 @@ class PostServiceTest {
 
         PostEdit postEdit = PostEdit.builder()
                 .title("수정후제목")
-                .content("수정전내용")
                 .build();
 
         // when
@@ -144,7 +143,6 @@ class PostServiceTest {
         Post savedPost = postRepository.save(requestPost);
 
         PostEdit postEdit = PostEdit.builder()
-                .title("수정전제목")
                 .content("수정후내용")
                 .build();
 
