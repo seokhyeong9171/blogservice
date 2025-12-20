@@ -6,13 +6,14 @@ import com.blogservice.api.request.PostCreate;
 import com.blogservice.api.service.PostService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -37,10 +38,13 @@ class PostControllerTest {
     @Autowired
     private PostRepository postRepository;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void clean() {
-        postRepository.deleteAll();
+        jdbcTemplate.execute("TRUNCATE TABLE post");
+        jdbcTemplate.execute("ALTER TABLE post ALTER COLUMN id RESTART WITH 1");
     }
 
     @Test
@@ -147,6 +151,7 @@ class PostControllerTest {
                 .toList();
         postRepository.saveAll(requestPosts);
 
+
         // expected
         mockMvc.perform(get("/posts?page=1&size=10")
                         .contentType(APPLICATION_JSON))
@@ -170,8 +175,9 @@ class PostControllerTest {
                             .build();
                 })
                 .toList();
-        List<Post> posts = postRepository.saveAll(requestPosts);
+        postRepository.saveAll(requestPosts);
 
+;
         // expected
         mockMvc.perform(get("/posts?page=1&size=10")
                         .contentType(APPLICATION_JSON))

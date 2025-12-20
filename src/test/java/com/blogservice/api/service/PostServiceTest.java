@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.Assert;
 
 import java.util.List;
@@ -33,9 +34,13 @@ class PostServiceTest {
     @Autowired
     private PostRepository postRepository;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     @BeforeEach
     void clean() {
-        postRepository.deleteAll();
+        jdbcTemplate.execute("TRUNCATE TABLE post");
+        jdbcTemplate.execute("ALTER TABLE post ALTER COLUMN id RESTART WITH 1");
     }
 
     @Test
