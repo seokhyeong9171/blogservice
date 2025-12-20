@@ -56,4 +56,11 @@ public class PostService {
 
         post.edit(postEdit);
     }
+
+    public void delete(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+
+        postRepository.delete(post);
+    }
 }
