@@ -1,5 +1,6 @@
 package com.blogservice.api.domain;
 
+import com.blogservice.api.request.PostEdit;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -29,5 +30,14 @@ public class Post {
     public Post(String title, String content) {
         this.title = title;
         this.content = content;
+    }
+
+    public void edit(PostEdit postEdit) {
+        if (postEdit.getTitle() != null) {
+            title = postEdit.getTitle();
+        }
+        if (postEdit.getContent() != null) {
+            content = postEdit.getContent();
+        }
     }
 }

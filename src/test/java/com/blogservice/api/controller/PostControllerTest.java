@@ -3,6 +3,7 @@ package com.blogservice.api.controller;
 import com.blogservice.api.domain.Post;
 import com.blogservice.api.repository.PostRepository;
 import com.blogservice.api.request.PostCreate;
+import com.blogservice.api.request.PostEdit;
 import com.blogservice.api.service.PostService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
@@ -186,6 +187,29 @@ class PostControllerTest {
                 .andExpect(jsonPath("$[0].id").value(30))
                 .andExpect(jsonPath("$[0].title").value("제목 30"))
                 .andExpect(jsonPath("$[0].content").value("내용 30"))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("글 제목 수정.")
+    void test7() throws Exception {
+        // given
+        Post requestPost = Post.builder()
+                .title("수정전제목").content("수정전내용")
+                .build();
+        Post savedPost = postRepository.save(requestPost);
+
+        PostEdit postEdit = PostEdit.builder()
+                .title("수정후내용")
+                .content("수정전내용")
+                .build();
+
+        ;
+        // expected
+        mockMvc.perform(patch("/posts/{postId}", savedPost.getId())
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(postEdit)))
+                .andExpect(status().isOk())
                 .andDo(print());
     }
 

@@ -1,20 +1,15 @@
 package com.blogservice.api.controller;
 
-import com.blogservice.api.domain.Post;
 import com.blogservice.api.request.PostCreate;
+import com.blogservice.api.request.PostEdit;
 import com.blogservice.api.request.PostSearch;
 import com.blogservice.api.response.PostResponse;
 import com.blogservice.api.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,5 +35,11 @@ public class PostController {
     public List<PostResponse> getList(@ModelAttribute PostSearch postSearch) {
         return postService.getList(postSearch);
     }
+
+    @PatchMapping("/posts/{postId}")
+    public void edit(@PathVariable Long postId, @RequestBody @Validated PostEdit request) {
+        postService.edit(postId, request);
+    }
+
 
 }
