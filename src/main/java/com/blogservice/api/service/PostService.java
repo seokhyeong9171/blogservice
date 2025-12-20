@@ -1,7 +1,6 @@
 package com.blogservice.api.service;
 
 import com.blogservice.api.domain.Post;
-import com.blogservice.api.domain.PostEditor;
 import com.blogservice.api.repository.PostRepository;
 import com.blogservice.api.request.PostCreate;
 import com.blogservice.api.request.PostEdit;
@@ -9,9 +8,6 @@ import com.blogservice.api.request.PostSearch;
 import com.blogservice.api.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,15 +54,6 @@ public class PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
 
-        PostEditor.PostEditorBuilder editorBuilder = post.toEditor();
-
-        if (postEdit.getContent() != null) {
-            editorBuilder.title(postEdit.getTitle());
-        }
-        if (postEdit.getContent() != null) {
-            editorBuilder.content(postEdit.getContent());
-        }
-
-        post.edit(editorBuilder.build());
+        post.edit(postEdit);
     }
 }

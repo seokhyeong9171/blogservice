@@ -32,19 +32,12 @@ public class Post {
         this.content = content;
     }
 
-    public void change(PostEdit postEdit) {
-        this.title = postEdit.getTitle();
-        this.content = postEdit.getContent();
-    }
-
-    public PostEditor.PostEditorBuilder toEditor() {
-        return PostEditor.builder()
-                .title(title)
-                .content(content);
-    }
-
-    public void edit(PostEditor postEditor) {
-        title = postEditor.getTitle();
-        content = postEditor.getContent();
+    public void edit(PostEdit postEdit) {
+        if (postEdit.getTitle() != null) {
+            title = postEdit.getTitle();
+        }
+        if (postEdit.getContent() != null) {
+            content = postEdit.getContent();
+        }
     }
 }
