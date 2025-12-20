@@ -1,6 +1,7 @@
 package com.blogservice.api.service;
 
 import com.blogservice.api.domain.Post;
+import com.blogservice.api.exception.PostNotFound;
 import com.blogservice.api.repository.PostRepository;
 import com.blogservice.api.request.PostCreate;
 import com.blogservice.api.request.PostEdit;
@@ -171,7 +172,19 @@ class PostServiceTest {
 
         // then
         assertEquals(0, postRepository.count());
+    }
 
+    @Test
+    @DisplayName("글 1개 조회 - 실패")
+    void test7() {
+        // given
+        Post post = Post.builder()
+                .title("foo").content("bar")
+                .build();
+        postRepository.save(post);
+
+        // expected
+        assertThrows(PostNotFound.class, () -> postService.get(post.getId() + 1));
     }
 
 
