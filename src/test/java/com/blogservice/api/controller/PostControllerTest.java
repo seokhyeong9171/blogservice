@@ -204,7 +204,6 @@ class PostControllerTest {
                 .content("수정전내용")
                 .build();
 
-        ;
         // expected
         mockMvc.perform(patch("/posts/{postId}", savedPost.getId())
                         .contentType(APPLICATION_JSON)
