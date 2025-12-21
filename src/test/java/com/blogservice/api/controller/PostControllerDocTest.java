@@ -69,7 +69,7 @@ public class PostControllerDocTest {
         this.mockMvc.perform(get("/posts/{postId}", 1L).accept(APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andDo(document("index", pathParameters(
+                .andDo(document("post-inquiry", pathParameters(
                         parameterWithName("postId").description("게시글 ID")
                         ),
                         responseFields(
@@ -95,7 +95,7 @@ public class PostControllerDocTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andDo(document("index",
+                .andDo(document("post-create",
                         PayloadDocumentation.requestFields(
                                 fieldWithPath("title").description("제목"),
                                 fieldWithPath("content").description("내용")
