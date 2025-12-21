@@ -24,6 +24,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.List;
+import java.util.stream.IntStream;
+
 import static org.springframework.http.MediaType.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
@@ -31,7 +34,9 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.snippet.Attributes.key;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -100,6 +105,38 @@ public class PostControllerDocTest {
                         PayloadDocumentation.requestFields(
                                 fieldWithPath("title").description("제목"),
                                 fieldWithPath("content").description("내용").optional()
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("글 여러개 조회")
+    void test3() throws Exception {
+        // given
+        List<Post> requestPosts = IntStream.range(1, 31)
+                .mapToObj(i -> {
+                    return Post.builder()
+                            .title("제목 " + i)
+                            .content("내용 " + i)
+                            .build();
+                })
+                .toList();
+        postRepository.saveAll(requestPosts);
+
+
+        // expected
+        this.mockMvc.perform(get("/posts?page=1&size=10")
+                        .accept(APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("post-list-inquiry", queryParameters(
+                                parameterWithName("page").description("페이지 번호"),
+                                parameterWithName("size").description("사이즈")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].id").description("게시글 ID"),
+                                fieldWithPath("[].title").description("제목"),
+                                fieldWithPath("[].content").description("내용")
                         )
                 ));
     }
