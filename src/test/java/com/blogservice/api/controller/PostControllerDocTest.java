@@ -3,6 +3,7 @@ package com.blogservice.api.controller;
 import com.blogservice.api.domain.Post;
 import com.blogservice.api.repository.PostRepository;
 import com.blogservice.api.request.PostCreate;
+import com.blogservice.api.request.PostEdit;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -102,7 +103,7 @@ public class PostControllerDocTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("post-create",
-                        PayloadDocumentation.requestFields(
+                        requestFields(
                                 fieldWithPath("title").description("제목"),
                                 fieldWithPath("content").description("내용").optional()
                         )
@@ -137,6 +138,57 @@ public class PostControllerDocTest {
                                 fieldWithPath("[].id").description("게시글 ID"),
                                 fieldWithPath("[].title").description("제목"),
                                 fieldWithPath("[].content").description("내용")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("글 수정")
+    void test4() throws Exception {
+        // given
+        Post requestPost = Post.builder()
+                .title("수정전제목").content("수정전내용")
+                .build();
+        Post savedPost = postRepository.save(requestPost);
+
+        PostEdit postEdit = PostEdit.builder()
+                .title("수정후내용")
+                .content("수정전내용")
+                .build();
+
+        // expected
+        this.mockMvc.perform(patch("/posts/{postId}", savedPost.getId())
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(postEdit)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("post-edit",
+                        pathParameters(
+                                parameterWithName("postId").description("게시글 id")
+                        ),
+                        requestFields(
+                                fieldWithPath("title").description("제목"),
+                                fieldWithPath("content").description("내용")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("글 삭제")
+    void test5() throws Exception {
+        // given
+        Post post = Post.builder()
+                .title("제목")
+                .content("내용")
+                .build();
+        postRepository.save(post);
+
+        // expected
+        this.mockMvc.perform(delete("/posts/{postId}", 1L).accept(APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("post-delete", pathParameters(
+                                parameterWithName("postId").description("게시글 ID")
                         )
                 ));
     }
