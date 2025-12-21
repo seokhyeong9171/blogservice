@@ -1,17 +1,15 @@
 package com.blogservice.api.controller;
 
+import com.blogservice.api.exception.CustomException;
 import com.blogservice.api.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -32,5 +30,18 @@ public class ExceptionController {
         }
 
         return response;
+    }
+
+    @ExceptionHandler(CustomException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorResponse> customException(CustomException e) {
+        int statusCode = e.getStatusCode();
+
+        ErrorResponse response = ErrorResponse.builder()
+                .code(String.valueOf(statusCode))
+                .message(e.getMessage())
+                .build();
+
+        return ResponseEntity.status(statusCode).body(response);
     }
 }

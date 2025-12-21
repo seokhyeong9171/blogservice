@@ -1,6 +1,7 @@
 package com.blogservice.api.service;
 
 import com.blogservice.api.domain.Post;
+import com.blogservice.api.exception.PostNotFound;
 import com.blogservice.api.repository.PostRepository;
 import com.blogservice.api.request.PostCreate;
 import com.blogservice.api.request.PostEdit;
@@ -171,10 +172,49 @@ class PostServiceTest {
 
         // then
         assertEquals(0, postRepository.count());
-
     }
 
+    @Test
+    @DisplayName("글 1개 조회 - 존재하지 않는 글")
+    void test7() {
+        // given
+        Post post = Post.builder()
+                .title("foo").content("bar")
+                .build();
+        postRepository.save(post);
 
+        // expected
+        assertThrows(PostNotFound.class, () -> postService.get(post.getId() + 1));
+    }
 
+    @Test
+    @DisplayName("게시글 삭제 - 존재하지 않는 글")
+    void test8() {
+        // given
+        Post requestPost = Post.builder()
+                .title("글제목").content("글내용")
+                .build();
+        Post savedPost = postRepository.save(requestPost);
+
+        // expected
+        assertThrows(PostNotFound.class, () -> postService.delete(savedPost.getId() + 1));
+    }
+
+    @Test
+    @DisplayName("글 내용 수정 - 존재하지 않는 글")
+    void test9() {
+        // given
+        Post requestPost = Post.builder()
+                .title("수정전제목").content("수정전내용")
+                .build();
+        Post savedPost = postRepository.save(requestPost);
+
+        PostEdit postEdit = PostEdit.builder()
+                .content("수정후내용")
+                .build();
+
+        // expected
+        assertThrows(PostNotFound.class, () -> postService.edit(savedPost.getId() + 1, postEdit));
+    }
 
 }
