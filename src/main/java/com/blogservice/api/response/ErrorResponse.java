@@ -18,6 +18,7 @@ import java.util.Map;
  * }
  */
 @Getter
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ErrorResponse {
 
     private final String code;
