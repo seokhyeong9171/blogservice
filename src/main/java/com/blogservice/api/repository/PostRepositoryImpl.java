@@ -1,14 +1,13 @@
 package com.blogservice.api.repository;
 
 import com.blogservice.api.domain.Post;
-import com.blogservice.api.domain.QPost;
 import com.blogservice.api.request.PostSearch;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static com.blogservice.api.domain.QPost.*;
+import static com.blogservice.api.domain.QPost.post;
 
 @RequiredArgsConstructor
 public class PostRepositoryImpl implements PostRepositoryCustom{

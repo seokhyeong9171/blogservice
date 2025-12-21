@@ -1,8 +1,11 @@
 package com.blogservice.api.request;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
-import static java.lang.Math.*;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 @Builder
 @Getter
