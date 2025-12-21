@@ -6,8 +6,12 @@
 === 요청
 include::{snippets}/index/http-request.adoc[]
 
+include::{snippets}/index/path-parameters.adoc[]
+
 === 응답
 include::{snippets}/index/http-response.adoc[]
+
+include::{snippets}/index/response-fields.adoc[]
 
 === CURL
 include::{snippets}/index/curl-request.adoc[]
