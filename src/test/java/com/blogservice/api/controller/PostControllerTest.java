@@ -235,7 +235,7 @@ class PostControllerTest {
         // expected
         mockMvc.perform(delete("/posts/{postId}", 100L)
                         .contentType(APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isNotFound())
                 .andDo(print());
     }
 
