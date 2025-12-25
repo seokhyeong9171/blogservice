@@ -65,10 +65,21 @@ asciidoctor {
     dependsOn test
 }
 
+//bootJar {
+//    dependsOn asciidoctor
+//    copy {
+//        from asciidoctor.outputDir
+//        into "src/main/resources/static/docs"
+//    }
+//}
+
 bootJar {
     dependsOn asciidoctor
-    copy {
-        from asciidoctor.outputDir
-        into "src/main/resources/static/docs"
+    from (asciidoctor.outputDir) {
+        into("/static/docs")
     }
+}
+
+jar {
+    enabled = false
 }
