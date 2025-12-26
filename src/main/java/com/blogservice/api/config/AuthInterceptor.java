@@ -15,7 +15,8 @@ public class AuthInterceptor implements HandlerInterceptor {
         log.info(">> preHandle");
 
         String accessToken = request.getParameter("accessToken");
-        if (accessToken != null && accessToken.equals("admin")) {
+        if (accessToken != null && !accessToken.equals("")) {
+            request.setAttribute("userName", accessToken);
             return true;
         }
         throw new Unauthorized();
@@ -23,13 +24,13 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        log.info(">> postHandle");
+//        log.info(">> postHandle");
         HandlerInterceptor.super.postHandle(request, response, handler, modelAndView);
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        log.info(">> afterCompletion");
+//        log.info(">> afterCompletion");
         HandlerInterceptor.super.afterCompletion(request, response, handler, ex);
     }
 }

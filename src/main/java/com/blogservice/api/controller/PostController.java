@@ -1,10 +1,12 @@
 package com.blogservice.api.controller;
 
+import com.blogservice.api.config.data.UserSession;
 import com.blogservice.api.request.PostCreate;
 import com.blogservice.api.request.PostEdit;
 import com.blogservice.api.request.PostSearch;
 import com.blogservice.api.response.PostResponse;
 import com.blogservice.api.service.PostService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -21,8 +23,14 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping("/test")
-    public String test(@RequestParam String accessToken) {
-        return "hello";
+    public String test(UserSession userSession) {
+        log.info(">>>{}", userSession.name);
+        return userSession.name;
+    }
+
+    @GetMapping("/test2")
+    public String test2() {
+        return "인증이 필요 없는 페이지";
     }
 
     @PostMapping("/posts")

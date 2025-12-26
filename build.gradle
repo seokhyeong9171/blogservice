@@ -37,6 +37,7 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     //QueryDsl
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
