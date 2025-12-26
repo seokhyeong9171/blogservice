@@ -20,6 +20,11 @@ public class PostController {
 
     private final PostService postService;
 
+    @GetMapping("/test")
+    public String test(@RequestParam String accessToken) {
+        return "hello";
+    }
+
     @PostMapping("/posts")
     public Map<String, String> post(@RequestBody @Validated PostCreate request) {
         postService.write(request);
