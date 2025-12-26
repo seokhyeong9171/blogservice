@@ -16,12 +16,11 @@ public class AuthResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
-        String accessToken = webRequest.getParameter("accessToken");
+        String accessToken = webRequest.getHeader("Authorization");
         if (accessToken == null || accessToken.isEmpty()) {
             throw new Unauthorized();
         }
-        UserSession userSession = new UserSession();
-        userSession.name = accessToken;
-        return userSession;
+
+        return new UserSession(1L);
     }
 }
