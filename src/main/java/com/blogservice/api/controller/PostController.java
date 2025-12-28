@@ -25,6 +25,7 @@ public class PostController {
     public Long test(UserSession userSession) {
         log.info(">>>{}", userSession.id);
         return userSession.id;
+//        return 1L;
     }
 
     @GetMapping("/test2")

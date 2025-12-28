@@ -6,6 +6,9 @@ import com.blogservice.api.repository.UserRepository;
 import com.blogservice.api.request.Login;
 import com.blogservice.api.response.SessionResponse;
 import com.blogservice.api.service.AuthService;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,33 +19,27 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.crypto.SecretKey;
+import java.security.Key;
 import java.time.Duration;
+import java.util.Base64;
 
-import static org.springframework.http.HttpHeaders.*;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
 
+    private final SecretKey secretKey;
+
     private final AuthService authService;
 
     @PostMapping("/auth/login")
-    public ResponseEntity<Void> login(@RequestBody Login login) {
-        String accessToken = authService.signin(login);
-        ResponseCookie cookie = ResponseCookie.from("SESSION", accessToken)
-                .domain("localhost") // todo 서버 환경에 따른 분리 필요
-                .path("/")
-                .httpOnly(true)
-                .secure(false)
-                .maxAge(Duration.ofDays(60))
-                .sameSite("Strict")
-                .build();
+    public SessionResponse login(@RequestBody Login login) {
+        Long userId = authService.signin(login);
 
-        log.info(">>>>>> cookie={}", cookie);
+        String jws = Jwts.builder().subject(String.valueOf(userId)).signWith(secretKey).compact();
 
-        return ResponseEntity.ok()
-                .header(SET_COOKIE, cookie.toString())
-                .build();
+        return new SessionResponse(jws);
     }
 }
