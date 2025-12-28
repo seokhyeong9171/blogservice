@@ -1,5 +1,6 @@
 package com.blogservice.api.controller;
 
+import com.blogservice.api.auth.JwtProvider;
 import com.blogservice.api.domain.User;
 import com.blogservice.api.exception.InvalidSigninInformation;
 import com.blogservice.api.repository.UserRepository;
@@ -23,6 +24,7 @@ import javax.crypto.SecretKey;
 import java.security.Key;
 import java.time.Duration;
 import java.util.Base64;
+import java.util.Date;
 
 
 @Slf4j
@@ -30,17 +32,14 @@ import java.util.Base64;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final SecretKey secretKey;
+    private final JwtProvider jwtProvider;
 
     private final AuthService authService;
 
     @PostMapping("/auth/login")
     public SessionResponse login(@RequestBody Login login) {
         Long userId = authService.signin(login);
-        // todo
-        //  1. jwt 생성 클래스 분리
-        //  2. jwt 만료 시간 등 설정
-        String jws = Jwts.builder().subject(String.valueOf(userId)).signWith(secretKey).compact();
+        String jws = jwtProvider.generateJwtToken(userId);
 
         return new SessionResponse(jws);
     }

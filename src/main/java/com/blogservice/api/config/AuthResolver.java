@@ -1,5 +1,6 @@
 package com.blogservice.api.config;
 
+import com.blogservice.api.auth.JwtProvider;
 import com.blogservice.api.config.data.UserSession;
 import com.blogservice.api.domain.Session;
 import com.blogservice.api.exception.Unauthorized;
@@ -28,8 +29,7 @@ import javax.crypto.SecretKey;
 public class AuthResolver implements HandlerMethodArgumentResolver {
 
     private final SessionRepository sessionRepository;
-    private final SecretKey secretKey;
-    private final ServletWebServerFactoryCustomizer servletWebServerFactoryCustomizer;
+    private final JwtProvider jwtProvider;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -45,13 +45,9 @@ public class AuthResolver implements HandlerMethodArgumentResolver {
         }
 
         try {
-            Jws<Claims> claims = Jwts.parser()
-                    .verifyWith(secretKey)
-                    .build().
-                    parseSignedClaims(jws);
-
-            String userId = claims.getPayload().getSubject();
-            return new UserSession(Long.parseLong(userId));
+            Jws<Claims> claims = jwtProvider.parseJwt(jws);
+            Long userId = claims.getPayload().get("userId", Long.class);
+            return new UserSession(userId);
 
         } catch (JwtException e) {
             throw new Unauthorized();
