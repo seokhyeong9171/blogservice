@@ -1,15 +1,11 @@
 ### 로그인
 
 POST http://localhost:8080/auth/login
-Content-Type: application/json
+Content-Type: application/x-www-form-urlencoded
 
-{
-  "email": "admin@admin.com",
-  "password": "12345"
-}
+username=admin@admin.com&password=1234
 
-### 인증 페이지 요청
-
-GET http://localhost:8080/test
-Content-Type: application/json
-Authorization: eyJhbGciOiJIUzM4NCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc2Njg5MzMyM30.Izey00do3bzJ_A1_mowUWQnBtdgI0hywSnOOPbIc59gk2VVBkP_T2tGoXkPrlcoD
+#{
+#  "email": "admin@admin.com",
+#  "password": "12345"
+#}
