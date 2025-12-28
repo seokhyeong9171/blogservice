@@ -8,6 +8,9 @@ import com.blogservice.api.repository.UserRepository;
 import com.blogservice.api.request.Login;
 import com.blogservice.api.request.Signup;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final UserRepository userRepository;
+
+    private final PasswordEncoder passwordEncoder;
 
     public Long signin(Login login) {
 
@@ -29,12 +34,15 @@ public class AuthService {
     public void signup(Signup signup) {
         if(userRepository.existsByEmail(signup.getEmail())) {
             throw new AlreadyExistEmailException();
-        };
+        }
+
+        String encryptedPassword = passwordEncoder.encode(signup.getPassword());
+
 
         User user = User.builder()
                 .email(signup.getEmail())
                 .name(signup.getName())
-                .password(signup.getPassword())
+                .password(encryptedPassword)
                 .build();
         userRepository.save(user);
     }

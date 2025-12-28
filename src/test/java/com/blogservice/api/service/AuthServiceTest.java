@@ -3,12 +3,11 @@ package com.blogservice.api.service;
 import com.blogservice.api.domain.User;
 import com.blogservice.api.exception.AlreadyExistEmailException;
 import com.blogservice.api.repository.UserRepository;
-import com.blogservice.api.request.Login;
 import com.blogservice.api.request.Signup;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class AuthServiceTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private UserRepository userRepository;
@@ -47,7 +46,7 @@ class AuthServiceTest {
         User findUser = userRepository.findAll().getFirst();
         assertEquals(signup.getEmail(), findUser.getEmail());
         assertEquals(signup.getName(), findUser.getName());
-        assertEquals(signup.getPassword(), findUser.getPassword());
+        assertTrue(passwordEncoder.matches(signup.getPassword(), findUser.getPassword()));
     }
 
     @Test

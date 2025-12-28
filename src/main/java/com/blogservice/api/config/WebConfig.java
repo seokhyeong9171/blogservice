@@ -5,6 +5,8 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -16,6 +18,11 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public SecretKey secretKey(@Value("${jwt.secret}") String secret) {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new SCryptPasswordEncoder(16, 8, 1, 32, 64);
     }
 
     @Override
