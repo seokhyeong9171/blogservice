@@ -6,6 +6,7 @@ import com.blogservice.api.repository.SessionRepository;
 import com.blogservice.api.repository.UserRepository;
 import com.blogservice.api.request.Login;
 import com.blogservice.api.request.PostCreate;
+import com.blogservice.api.request.Signup;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
@@ -201,6 +202,25 @@ class AuthControllerTest {
                         .contentType(APPLICATION_JSON)
                 )
                 .andExpect(status().isUnauthorized())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("회원가입")
+    void test6() throws Exception {
+        // given
+        Signup signup = Signup.builder()
+                .name("testname")
+                .email("testemail")
+                .password("testpassword")
+                .build();
+
+        // expected
+        mockMvc.perform(post("/auth/signup")
+                        .content(objectMapper.writeValueAsString(signup))
+                        .contentType(APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
                 .andDo(print());
     }
 

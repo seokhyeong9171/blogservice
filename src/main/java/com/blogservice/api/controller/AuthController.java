@@ -5,6 +5,7 @@ import com.blogservice.api.domain.User;
 import com.blogservice.api.exception.InvalidSigninInformation;
 import com.blogservice.api.repository.UserRepository;
 import com.blogservice.api.request.Login;
+import com.blogservice.api.request.Signup;
 import com.blogservice.api.response.SessionResponse;
 import com.blogservice.api.service.AuthService;
 import io.jsonwebtoken.Jwts;
@@ -42,5 +43,10 @@ public class AuthController {
         String jws = jwtProvider.generateJwtToken(userId);
 
         return new SessionResponse(jws);
+    }
+
+    @PostMapping("/auth/signup")
+    public void signup(@RequestBody Signup signup) {
+        authService.signup(signup);
     }
 }

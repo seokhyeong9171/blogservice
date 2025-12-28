@@ -26,7 +26,8 @@ spring:
         use_sql_comments: true
   sql:
     init:
-      mode: always
+#      mode: always
+      mode: never
 
 jwt:
   secret: dskjfsd32r5fj023jfdsjd3fopsfjd09fsdvsdfv23r3fnomnkn2fosk23p9fjpo23
