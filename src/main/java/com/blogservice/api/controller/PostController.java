@@ -1,5 +1,6 @@
 package com.blogservice.api.controller;
 
+import com.blogservice.api.config.data.UserSession;
 import com.blogservice.api.request.PostCreate;
 import com.blogservice.api.request.PostEdit;
 import com.blogservice.api.request.PostSearch;
@@ -19,6 +20,18 @@ import java.util.Map;
 public class PostController {
 
     private final PostService postService;
+
+    @GetMapping("/test")
+    public Long test(UserSession userSession) {
+        log.info(">>>{}", userSession.id);
+        return userSession.id;
+//        return 1L;
+    }
+
+    @GetMapping("/test2")
+    public String test2() {
+        return "인증이 필요 없는 페이지";
+    }
 
     @PostMapping("/posts")
     public Map<String, String> post(@RequestBody @Validated PostCreate request) {
