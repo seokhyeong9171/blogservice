@@ -37,7 +37,9 @@ public class AuthController {
     @PostMapping("/auth/login")
     public SessionResponse login(@RequestBody Login login) {
         Long userId = authService.signin(login);
-
+        // todo
+        //  1. jwt 생성 클래스 분리
+        //  2. jwt 만료 시간 등 설정
         String jws = Jwts.builder().subject(String.valueOf(userId)).signWith(secretKey).compact();
 
         return new SessionResponse(jws);
