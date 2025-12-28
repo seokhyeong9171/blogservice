@@ -24,11 +24,15 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
     public Long signin(Login login) {
-
-        User user = userRepository.findByEmailAndPassword(login.getEmail(), login.getPassword())
+        User findUser = userRepository.findByEmail(login.getEmail())
                 .orElseThrow(InvalidSigninInformation::new);
 
-        return user.getId();
+        boolean isMatch = passwordEncoder.matches(login.getPassword(), findUser.getPassword());
+        if (!isMatch) {
+            throw new InvalidSigninInformation();
+        }
+
+        return findUser.getId();
     }
 
     public void signup(Signup signup) {
@@ -38,12 +42,12 @@ public class AuthService {
 
         String encryptedPassword = passwordEncoder.encode(signup.getPassword());
 
-
         User user = User.builder()
                 .email(signup.getEmail())
                 .name(signup.getName())
                 .password(encryptedPassword)
                 .build();
+
         userRepository.save(user);
     }
 }
