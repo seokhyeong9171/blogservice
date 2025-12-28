@@ -75,6 +75,10 @@ public class SecurityConfig {
                         .loginPage("/auth/login")
                         .loginProcessingUrl("/auth/login")
                         .defaultSuccessUrl("/"))
+                .rememberMe(rememberMe -> rememberMe
+                        .rememberMeParameter("remember")
+                        .alwaysRemember(false)
+                        .tokenValiditySeconds(2592000))
                 .userDetailsService(userDetailService())
                 .build();
     }

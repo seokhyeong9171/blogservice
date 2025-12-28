@@ -9,3 +9,7 @@ username=admin@admin.com&password=1234
 #  "email": "admin@admin.com",
 #  "password": "12345"
 #}
+
+### 메인 페이지
+GET http://localhost:8080
+Cookie: SESSION=ZWQyMmFhNzYtNmZhMi00ZmYxLTlkNjgtY2NhODFhM2IwMzc2
