@@ -1,4 +1,4 @@
-package com.blogservice.api.repository;
+package com.blogservice.api.repository.post;
 
 import com.blogservice.api.domain.Post;
 import org.springframework.data.jpa.repository.JpaRepository;

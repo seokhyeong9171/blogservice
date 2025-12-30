@@ -2,7 +2,7 @@ package com.blogservice.api.config;
 
 import com.blogservice.api.domain.Post;
 import com.blogservice.api.exception.PostNotFound;
-import com.blogservice.api.repository.PostRepository;
+import com.blogservice.api.repository.post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.PermissionEvaluator;
