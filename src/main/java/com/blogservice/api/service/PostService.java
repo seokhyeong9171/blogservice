@@ -1,8 +1,11 @@
 package com.blogservice.api.service;
 
 import com.blogservice.api.domain.Post;
+import com.blogservice.api.domain.User;
 import com.blogservice.api.exception.PostNotFound;
+import com.blogservice.api.exception.UserNotFound;
 import com.blogservice.api.repository.PostRepository;
+import com.blogservice.api.repository.UserRepository;
 import com.blogservice.api.request.PostCreate;
 import com.blogservice.api.request.PostEdit;
 import com.blogservice.api.request.PostSearch;
@@ -22,11 +25,15 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
-    public void write(PostCreate postCreate) {
+    public void write(Long userId, PostCreate postCreate) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
+
         Post post = Post.builder()
                 .title(postCreate.getTitle())
                 .content(postCreate.getContent())
+                .user(user)
                 .build();
 
         postRepository.save(post);

@@ -1,15 +1,33 @@
+### 회원가입
+
+POST  http://localhost:8080/auth/signup
+Content-Type: application/json
+
+{
+  "name": "testname",
+  "email": "admin@admin.com",
+  "password": "1234"
+}
+
 ### 로그인
 
 POST http://localhost:8080/auth/login
 Content-Type: application/json
 
+//username=admin@admin.com&password=1234
 {
   "email": "admin@admin.com",
-  "password": "12345"
+  "password": "1234"
 }
 
-### 인증 페이지 요청
+### 메인 페이지
+GET http://localhost:8080
+Cookie: SESSION=Mjk1MjRhOTktNWY1Zi00MTRlLTkxODQtMmYxOTBlNTNhOGZh
 
-GET http://localhost:8080/test
-Content-Type: application/json
-Authorization: eyJhbGciOiJIUzM4NCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc2Njg5MzMyM30.Izey00do3bzJ_A1_mowUWQnBtdgI0hywSnOOPbIc59gk2VVBkP_T2tGoXkPrlcoD
+### 사용자 페이지
+GET http://localhost:8080/user
+Cookie: SESSION=NjQxMmZiMDYtZTY0Ni00YmQ5LWI0YjEtMjMwODc4Nzk5NzYy
+
+### 관리자 페이지
+GET http://localhost:8080/admin
+Cookie: SESSION=NjQxMmZiMDYtZTY0Ni00YmQ5LWI0YjEtMjMwODc4Nzk5NzYy

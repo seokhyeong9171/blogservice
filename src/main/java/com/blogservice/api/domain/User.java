@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -31,8 +31,8 @@ public class User {
 
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "user", cascade = ALL)
-    private List<Session> sessions = new ArrayList<>();
+    @OneToMany(cascade = ALL, mappedBy = "user")
+    private List<Post> posts = new ArrayList<>();
 
     @Builder
     public User(String name, String email, String password) {
@@ -42,11 +42,4 @@ public class User {
         this.createdAt = LocalDateTime.now();
     }
 
-    public Session addSession() {
-        Session session = Session.builder()
-                .user(this)
-                .build();
-        sessions.add(session);
-        return session;
-    }
 }

@@ -1,10 +1,15 @@
 package com.blogservice.api.controller;
 
+import com.blogservice.api.config.BlogserviceMockSecurityContext;
+import com.blogservice.api.config.BlogserviceMockUser;
+import com.blogservice.api.config.UserPrincipal;
 import com.blogservice.api.domain.Post;
 import com.blogservice.api.repository.PostRepository;
+import com.blogservice.api.repository.UserRepository;
 import com.blogservice.api.request.PostCreate;
 import com.blogservice.api.request.PostEdit;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,7 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -40,7 +47,16 @@ public class PostControllerDocTest {
     private PostRepository postRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private BlogserviceMockSecurityContext securityContext;
+
+    @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
 //    @BeforeEach
 //    void setUp(WebApplicationContext webApplicationContext, RestDocumentationContextProvider restDocumentation) {
@@ -48,6 +64,14 @@ public class PostControllerDocTest {
 //                .apply(documentationConfiguration(restDocumentation))
 //                .build();
 //    }
+
+    @AfterEach
+    void clean() {
+        postRepository.deleteAll();
+        userRepository.deleteAll();
+        jdbcTemplate.execute("ALTER TABLE post ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("ALTER TABLE users ALTER COLUMN id RESTART WITH 1");
+    }
 
     @Test
     @DisplayName("글 단건 조회")
@@ -75,6 +99,7 @@ public class PostControllerDocTest {
     }
 
     @Test
+    @BlogserviceMockUser
     @DisplayName("글 등록")
     void test2() throws Exception {
         // given
@@ -130,11 +155,35 @@ public class PostControllerDocTest {
     }
 
     @Test
+    @BlogserviceMockUser
+    @DisplayName("글 삭제")
+    void test5() throws Exception {
+        // given
+        Post post = Post.builder()
+                .title("제목")
+                .content("내용")
+                .user(securityContext.getCurrentUser())
+                .build();
+        Post savedPost = postRepository.save(post);
+
+        // expected
+        this.mockMvc.perform(delete("/posts/{postId}", savedPost.getId()).accept(APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("post-delete", pathParameters(
+                                parameterWithName("postId").description("게시글 ID")
+                        )
+                ));
+    }
+
+    @Test
+    @BlogserviceMockUser
     @DisplayName("글 수정")
     void test4() throws Exception {
         // given
         Post requestPost = Post.builder()
                 .title("수정전제목").content("수정전내용")
+                .user(securityContext.getCurrentUser())
                 .build();
         Post savedPost = postRepository.save(requestPost);
 
@@ -156,26 +205,6 @@ public class PostControllerDocTest {
                         requestFields(
                                 fieldWithPath("title").description("제목"),
                                 fieldWithPath("content").description("내용")
-                        )
-                ));
-    }
-
-    @Test
-    @DisplayName("글 삭제")
-    void test5() throws Exception {
-        // given
-        Post post = Post.builder()
-                .title("제목")
-                .content("내용")
-                .build();
-        postRepository.save(post);
-
-        // expected
-        this.mockMvc.perform(delete("/posts/{postId}", 1L).accept(APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andDo(document("post-delete", pathParameters(
-                                parameterWithName("postId").description("게시글 ID")
                         )
                 ));
     }

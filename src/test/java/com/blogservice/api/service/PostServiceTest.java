@@ -1,8 +1,11 @@
 package com.blogservice.api.service;
 
+import com.blogservice.api.config.UserPrincipal;
 import com.blogservice.api.domain.Post;
+import com.blogservice.api.domain.User;
 import com.blogservice.api.exception.PostNotFound;
 import com.blogservice.api.repository.PostRepository;
+import com.blogservice.api.repository.UserRepository;
 import com.blogservice.api.request.PostCreate;
 import com.blogservice.api.request.PostEdit;
 import com.blogservice.api.request.PostSearch;
@@ -29,12 +32,15 @@ class PostServiceTest {
     private PostRepository postRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void clean() {
-        jdbcTemplate.execute("TRUNCATE TABLE post");
-        jdbcTemplate.execute("ALTER TABLE post ALTER COLUMN id RESTART WITH 1");
+        postRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
@@ -46,8 +52,15 @@ class PostServiceTest {
                 .content("내용입니다.")
                 .build();
 
+        User user = User.builder()
+                .name("testname")
+                .email("testemail@test.com")
+                .password("testpassword")
+                .build();
+        User savedUser = userRepository.save(user);
+
         // when
-        postService.write(postCreate);
+        postService.write(savedUser.getId(), postCreate);
 
         // then
         assertEquals(1L, postRepository.count());

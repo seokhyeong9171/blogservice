@@ -1,10 +1,7 @@
 package com.blogservice.api.domain;
 
 import com.blogservice.api.request.PostEdit;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,10 +23,15 @@ public class Post {
     @Lob
     private String content;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @Builder
-    public Post(String title, String content) {
+    public Post(String title, String content, User user) {
         this.title = title;
         this.content = content;
+        this.user = user;
     }
 
     public void edit(PostEdit postEdit) {
@@ -39,5 +41,9 @@ public class Post {
         if (postEdit.getContent() != null) {
             content = postEdit.getContent();
         }
+    }
+
+    public Long getUserId() {
+        return user.getId();
     }
 }

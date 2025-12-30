@@ -1,10 +1,17 @@
 package com.blogservice.api.controller;
 
+import com.blogservice.api.config.BlogserviceMockSecurityContext;
+import com.blogservice.api.config.BlogserviceMockUser;
+import com.blogservice.api.config.UserPrincipal;
 import com.blogservice.api.domain.Post;
+import com.blogservice.api.domain.User;
 import com.blogservice.api.repository.PostRepository;
+import com.blogservice.api.repository.UserRepository;
 import com.blogservice.api.request.PostCreate;
 import com.blogservice.api.request.PostEdit;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.aspectj.lang.annotation.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,6 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -21,7 +32,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -37,12 +49,20 @@ class PostControllerTest {
     private PostRepository postRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private BlogserviceMockSecurityContext securityContext;
+
+    @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @BeforeEach
+    @AfterEach
     void clean() {
-        jdbcTemplate.execute("TRUNCATE TABLE post");
+        postRepository.deleteAll();
+        userRepository.deleteAll();
         jdbcTemplate.execute("ALTER TABLE post ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("ALTER TABLE users ALTER COLUMN id RESTART WITH 1");
     }
 
     @Test
@@ -68,7 +88,8 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("글 작성 요청 시 db에 값이 저장된다.")
+    @BlogserviceMockUser
+    @DisplayName("게시글 작성")
     void test3() throws Exception {
         // given
         PostCreate request = PostCreate.builder()
@@ -165,11 +186,13 @@ class PostControllerTest {
     }
 
     @Test
+    @BlogserviceMockUser
     @DisplayName("글 제목 수정.")
     void test7() throws Exception {
         // given
         Post requestPost = Post.builder()
                 .title("수정전제목").content("수정전내용")
+                .user(securityContext.getCurrentUser())
                 .build();
         Post savedPost = postRepository.save(requestPost);
 
@@ -187,11 +210,14 @@ class PostControllerTest {
     }
 
     @Test
+    @BlogserviceMockUser
     @DisplayName("게시글 삭제")
     void test8() throws Exception {
         // given
         Post requestPost = Post.builder()
                 .title("글제목").content("글내용")
+//                .user(getUserBySecurityHolder())
+                .user(securityContext.getCurrentUser())
                 .build();
         Post savedPost = postRepository.save(requestPost);
 
@@ -206,13 +232,14 @@ class PostControllerTest {
     @DisplayName("존재하지 않는 게시글 조회")
     void test9() throws Exception {
         // expected
-        mockMvc.perform(delete("/posts/{postId}", 100L)
+        mockMvc.perform(get("/posts/{postId}", 100L)
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andDo(print());
     }
 
     @Test
+    @BlogserviceMockUser
     @DisplayName("존재하지 않는 게시글 수정")
     void test10() throws Exception {
         // given

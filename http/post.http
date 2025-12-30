@@ -1,5 +1,16 @@
-### 테스트 요청
+### 게시글 작성
 
-GET http://localhost:8080/test
+POST http://localhost:8080/posts
 Content-Type: application/json
 Authorization: 555
+
+{
+  "title": "제목입니다.",
+  "content": "내용입니다."
+}
+
+
+### 게시글 삭제
+
+DELETE http://localhost:8080/posts/3
+Content-Type: application/json
