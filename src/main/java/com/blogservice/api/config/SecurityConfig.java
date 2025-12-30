@@ -4,6 +4,7 @@ import com.blogservice.api.config.filter.EmailPasswordAuthFilter;
 import com.blogservice.api.config.handler.Http401Handler;
 import com.blogservice.api.config.handler.Http403Handler;
 import com.blogservice.api.config.handler.LoginFailHandler;
+import com.blogservice.api.config.handler.LoginSuccessHandler;
 import com.blogservice.api.domain.User;
 import com.blogservice.api.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,6 +19,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -46,6 +49,7 @@ import static org.springframework.http.HttpMethod.*;
 
 @Configuration
 @EnableWebSecurity(debug = true)
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -92,10 +96,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login", "auth/signup").permitAll()
-                        .requestMatchers("/user").hasRole("USER")
-                        .requestMatchers("/admin").hasRole("ADMIN")
-                        .anyRequest().authenticated())
+//                        .requestMatchers("/auth/login", "auth/signup").permitAll()
+//                        .requestMatchers("/user").hasRole("USER")
+//                        .requestMatchers("/admin").hasRole("ADMIN")
+                        .anyRequest().permitAll())
                 .csrf(AbstractHttpConfigurer::disable)
 //                .formLogin(form -> form
 //                        .usernameParameter("username")
@@ -131,9 +135,7 @@ public class SecurityConfig {
     public EmailPasswordAuthFilter emailPasswordAuthFilter() {
         EmailPasswordAuthFilter filter = new EmailPasswordAuthFilter(objectMapper);
         filter.setAuthenticationManager(authenticationManager());
-        filter.setAuthenticationSuccessHandler(
-                new SimpleUrlAuthenticationSuccessHandler("/")
-        );
+        filter.setAuthenticationSuccessHandler(new LoginSuccessHandler(objectMapper));
         filter.setAuthenticationFailureHandler(new LoginFailHandler(objectMapper));
         filter.setSecurityContextRepository(new HttpSessionSecurityContextRepository());
         return filter;

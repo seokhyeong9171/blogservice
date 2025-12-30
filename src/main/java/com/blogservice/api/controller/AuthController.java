@@ -16,14 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final JwtProvider jwtProvider;
-
     private final AuthService authService;
-
-    @PostMapping("/auth/login")
-    public String login() {
-        return "로그인 페이지입니다.";
-    }
 
     @PostMapping("/auth/signup")
     public void signup(@RequestBody Signup signup) {
