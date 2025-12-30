@@ -35,7 +35,7 @@ class AuthControllerTest {
 
     @BeforeEach
     void clean() {
-        jdbcTemplate.execute("TRUNCATE TABLE users");
+        userRepository.deleteAll();
         jdbcTemplate.execute("ALTER TABLE users ALTER COLUMN id RESTART WITH 1");
     }
 

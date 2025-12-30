@@ -45,7 +45,7 @@ public class PostController {
         return postService.getList(postSearch);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') && hasPermission(#postId, 'POST', 'PATCH')")
     @PatchMapping("/posts/{postId}")
     public void edit(@PathVariable Long postId, @RequestBody @Validated PostEdit request) {
         postService.edit(postId, request);
