@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -69,7 +70,8 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("글 작성 요청 시 db에 값이 저장된다.")
+    @WithMockUser(username = "admin@admin.com", roles = {"ADMIN"})
+    @DisplayName("게시글 작성")
     void test3() throws Exception {
         // given
         PostCreate request = PostCreate.builder()
@@ -166,6 +168,7 @@ class PostControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin@admin.com", roles = {"ADMIN"})
     @DisplayName("글 제목 수정.")
     void test7() throws Exception {
         // given
@@ -188,6 +191,7 @@ class PostControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin@admin.com", roles = {"ADMIN"})
     @DisplayName("게시글 삭제")
     void test8() throws Exception {
         // given
@@ -207,13 +211,14 @@ class PostControllerTest {
     @DisplayName("존재하지 않는 게시글 조회")
     void test9() throws Exception {
         // expected
-        mockMvc.perform(delete("/posts/{postId}", 100L)
+        mockMvc.perform(get("/posts/{postId}", 100L)
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andDo(print());
     }
 
     @Test
+    @WithMockUser(username = "admin@admin.com", roles = {"ADMIN"})
     @DisplayName("존재하지 않는 게시글 수정")
     void test10() throws Exception {
         // given
