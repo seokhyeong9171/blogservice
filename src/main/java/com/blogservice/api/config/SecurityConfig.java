@@ -49,7 +49,6 @@ import static org.springframework.http.HttpMethod.*;
 
 @Configuration
 @EnableWebSecurity(debug = true)
-@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 

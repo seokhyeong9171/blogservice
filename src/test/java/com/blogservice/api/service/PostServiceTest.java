@@ -47,7 +47,7 @@ class PostServiceTest {
                 .build();
 
         // when
-        postService.write(postCreate);
+        postService.write(userPrincipal.getUserId(), postCreate);
 
         // then
         assertEquals(1L, postRepository.count());
