@@ -1,14 +1,23 @@
 package com.blogservice.api.config;
 
+import com.blogservice.api.config.filter.EmailPasswordAuthFilter;
+import com.blogservice.api.config.handler.Http401Handler;
+import com.blogservice.api.config.handler.Http403Handler;
+import com.blogservice.api.config.handler.LoginFailHandler;
 import com.blogservice.api.domain.User;
 import com.blogservice.api.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -22,6 +31,10 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -33,7 +46,11 @@ import static org.springframework.http.HttpMethod.*;
 
 @Configuration
 @EnableWebSecurity(debug = true)
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final ObjectMapper objectMapper;
+    private final UserRepository userRepository;
 
     @Bean
     public SecretKey secretKey(@Value("${jwt.secret}") String secret) {
@@ -75,38 +92,60 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(POST, "/auth/login").permitAll()
-                        .requestMatchers(POST, "auth/signup").permitAll()
+                        .requestMatchers("/auth/login", "auth/signup").permitAll()
+                        .requestMatchers("/user").hasRole("USER")
+                        .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
-                .formLogin(form -> form
-                        .usernameParameter("username")
-                        .passwordParameter("password")
-                        .loginPage("/auth/login")
-                        .loginProcessingUrl("/auth/login")
-                        .defaultSuccessUrl("/"))
+//                .formLogin(form -> form
+//                        .usernameParameter("username")
+//                        .passwordParameter("password")
+//                        .loginPage("/auth/login")
+//                        .loginProcessingUrl("/auth/login")
+//                        .defaultSuccessUrl("/")
+//                        .failureHandler(new LoginFailHandler(objectMapper)))
+                .addFilterBefore(emailPasswordAuthFilter(), UsernamePasswordAuthenticationFilter.class)
                 .rememberMe(rememberMe -> rememberMe
                         .rememberMeParameter("remember")
                         .alwaysRemember(false)
                         .tokenValiditySeconds(2592000))
+                .exceptionHandling(e -> {
+                            e.accessDeniedHandler(new Http403Handler(objectMapper));
+                            e.authenticationEntryPoint(new Http401Handler(objectMapper));
+                        }
+                )
                 .build();
     }
 
     @Bean
     public UserDetailsService userDetailService(UserRepository userRepository) {
-//        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-//        manager.createUser(User
-//                .withUsername("admin@admin.com")
-//                .password(passwordEncoder().encode("1234"))
-//                .roles("ADMIN")
-//                .build());
-//        return manager;
         return username -> {
             User user = userRepository.findByEmail(username)
                     .orElseThrow(() -> new UsernameNotFoundException(username));
 
             return new UserPrincipal(user);
-            };
         };
     }
 
+    @Bean
+    public EmailPasswordAuthFilter emailPasswordAuthFilter() {
+        EmailPasswordAuthFilter filter = new EmailPasswordAuthFilter(objectMapper);
+        filter.setAuthenticationManager(authenticationManager());
+        filter.setAuthenticationSuccessHandler(
+                new SimpleUrlAuthenticationSuccessHandler("/")
+        );
+        filter.setAuthenticationFailureHandler(new LoginFailHandler(objectMapper));
+        filter.setSecurityContextRepository(new HttpSessionSecurityContextRepository());
+        return filter;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager() {
+        DaoAuthenticationProvider provider =
+                new DaoAuthenticationProvider(userDetailService(userRepository));
+        provider.setPasswordEncoder(passwordEncoder());
+        return new ProviderManager(provider);
+    }
+
+
+}
