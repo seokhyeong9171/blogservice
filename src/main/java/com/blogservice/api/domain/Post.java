@@ -52,4 +52,9 @@ public class Post {
     public Long getUserId() {
         return user.getId();
     }
+
+    public void addComment(Comment comment) {
+        comment.setPost(this);
+        comments.add(comment);
+    }
 }

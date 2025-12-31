@@ -1,14 +1,13 @@
 package com.blogservice.api.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import static jakarta.persistence.FetchType.*;
 import static jakarta.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
 
+@Getter
 @Entity
 @Table(
         indexes =
@@ -30,16 +29,17 @@ public class Comment {
     @Column(nullable = false)
     private String content;
 
+    @Setter
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
 
     @Builder
-    public Comment(String author, String password, String content, Post post) {
+    public Comment(String author, String password, String content) {
         this.author = author;
         this.password = password;
         this.content = content;
-        this.post = post;
     }
+
 }
 

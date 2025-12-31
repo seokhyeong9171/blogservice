@@ -16,7 +16,7 @@ public class CommentCreate {
     @NotBlank(message = "비밀번호를 입력해주세요.")
     private String password;
 
-    @Length(min = 10, max = 1000, message = "내용은 1000자까지 입력해주세요.")
+    @Length(min = 10, max = 1000, message = "내용은 10~1000자까지 입력해주세요.")
     @NotBlank(message = "내용을 입력해주세요.")
     private String content;
 
