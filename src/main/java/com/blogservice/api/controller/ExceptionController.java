@@ -44,4 +44,17 @@ public class ExceptionController {
 
         return ResponseEntity.status(statusCode).body(response);
     }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseBody
+    public ResponseEntity<ErrorResponse> exception(Exception e) {
+        log.error("예외발생", e);
+
+        ErrorResponse response = ErrorResponse.builder()
+                .code("500")
+                .message(e.getMessage())
+                .build();
+
+        return ResponseEntity.status(500).body(response);
+    }
 }

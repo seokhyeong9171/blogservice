@@ -1,9 +1,9 @@
 package com.blogservice.api.controller;
 
 import com.blogservice.api.config.UserPrincipal;
-import com.blogservice.api.request.PostCreate;
-import com.blogservice.api.request.PostEdit;
-import com.blogservice.api.request.PostSearch;
+import com.blogservice.api.request.post.PostCreate;
+import com.blogservice.api.request.post.PostEdit;
+import com.blogservice.api.request.post.PostSearch;
 import com.blogservice.api.response.PostResponse;
 import com.blogservice.api.service.PostService;
 import lombok.RequiredArgsConstructor;

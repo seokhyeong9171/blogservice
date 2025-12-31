@@ -1,10 +1,13 @@
 package com.blogservice.api.domain;
 
-import com.blogservice.api.request.PostEdit;
+import com.blogservice.api.request.post.PostEdit;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PUBLIC;
@@ -27,6 +30,9 @@ public class Post {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<>();
+
     @Builder
     public Post(String title, String content, User user) {
         this.title = title;
@@ -45,5 +51,10 @@ public class Post {
 
     public Long getUserId() {
         return user.getId();
+    }
+
+    public void addComment(Comment comment) {
+        comment.setPost(this);
+        comments.add(comment);
     }
 }

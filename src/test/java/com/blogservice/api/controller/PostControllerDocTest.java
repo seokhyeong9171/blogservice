@@ -2,12 +2,11 @@ package com.blogservice.api.controller;
 
 import com.blogservice.api.config.BlogserviceMockSecurityContext;
 import com.blogservice.api.config.BlogserviceMockUser;
-import com.blogservice.api.config.UserPrincipal;
 import com.blogservice.api.domain.Post;
-import com.blogservice.api.repository.PostRepository;
+import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.UserRepository;
-import com.blogservice.api.request.PostCreate;
-import com.blogservice.api.request.PostEdit;
+import com.blogservice.api.request.post.PostCreate;
+import com.blogservice.api.request.post.PostEdit;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,7 +18,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;

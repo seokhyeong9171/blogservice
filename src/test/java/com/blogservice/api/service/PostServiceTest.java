@@ -1,14 +1,13 @@
 package com.blogservice.api.service;
 
-import com.blogservice.api.config.UserPrincipal;
 import com.blogservice.api.domain.Post;
 import com.blogservice.api.domain.User;
 import com.blogservice.api.exception.PostNotFound;
-import com.blogservice.api.repository.PostRepository;
+import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.UserRepository;
-import com.blogservice.api.request.PostCreate;
-import com.blogservice.api.request.PostEdit;
-import com.blogservice.api.request.PostSearch;
+import com.blogservice.api.request.post.PostCreate;
+import com.blogservice.api.request.post.PostEdit;
+import com.blogservice.api.request.post.PostSearch;
 import com.blogservice.api.response.PostResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
