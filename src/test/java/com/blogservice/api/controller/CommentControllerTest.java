@@ -1,11 +1,13 @@
 package com.blogservice.api.controller;
 
+import com.blogservice.api.domain.Comment;
 import com.blogservice.api.domain.Post;
 import com.blogservice.api.domain.User;
 import com.blogservice.api.repository.UserRepository;
 import com.blogservice.api.repository.comment.CommentRepository;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.request.comment.CommentCreate;
+import com.blogservice.api.request.comment.CommentDelete;
 import com.blogservice.api.request.post.PostCreate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
@@ -16,6 +18,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -47,6 +50,8 @@ class CommentControllerTest {
 
     @Autowired
     private PostRepository postRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @AfterEach
     void clean() {
@@ -81,11 +86,77 @@ class CommentControllerTest {
 
         // expected
         mockMvc.perform(post("/posts/{postId}/comments", post.getId())
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
 
+    @Test
+    @DisplayName("댓글 삭제")
+    void deleteComment() throws Exception {
+        // given
+        User user = User.builder()
+                .name("testname")
+                .email("testemail")
+                .password("testpassword")
+                .build();
+        User savedUser = userRepository.save(user);
 
+        Post post = Post.builder()
+                .title("123456789012345")
+                .content("bar")
+                .user(savedUser)
+                .build();
+        postRepository.save(post);
+
+        String commentPassword = "123456";
+        Comment comment = Comment.builder()
+                .author("author").password(passwordEncoder.encode(commentPassword)).content("testcomment").build();
+        comment.setPost(post);
+        commentRepository.save(comment);
+
+        CommentDelete request = new CommentDelete(commentPassword);
+
+        //expected
+        mockMvc.perform(post("/comments/{commentId}/delete", comment.getId())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 실패 - 잘못된 비밀번호")
+    void deleteComment_fail_wrong_password() throws Exception {
+        // given
+        User user = User.builder()
+                .name("testname")
+                .email("testemail")
+                .password("testpassword")
+                .build();
+        User savedUser = userRepository.save(user);
+
+        Post post = Post.builder()
+                .title("123456789012345")
+                .content("bar")
+                .user(savedUser)
+                .build();
+        postRepository.save(post);
+
+        String commentPassword = "123456";
+        Comment comment = Comment.builder()
+                .author("author").password(passwordEncoder.encode(commentPassword)).content("testcomment").build();
+        comment.setPost(post);
+        commentRepository.save(comment);
+
+        CommentDelete request = new CommentDelete(commentPassword);
+
+        //expected
+        mockMvc.perform(post("/comments/{commentId}/delete", comment.getId())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
 }
