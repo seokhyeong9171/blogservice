@@ -1,14 +1,14 @@
-package com.blogservice.api.domain;
+package com.blogservice.api.domain.post;
 
+import com.blogservice.api.domain.BaseTimeEntity;
+import com.blogservice.api.domain.user.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.FetchType.*;
 import static jakarta.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
@@ -16,24 +16,26 @@ import static lombok.AccessLevel.*;
 @Getter
 @Entity
 @NoArgsConstructor(access = PROTECTED)
-public class Like extends BaseTimeEntity{
+public class View extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = LAZY, cascade = ALL)
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = LAZY, cascade = ALL)
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "post_id")
     private Post post;
 
-    private LocalDateTime likedAt = this.getCreatedAt();
+    private LocalDateTime viewedAt = this.getCreatedAt();
 
     @Builder
-    public Like(User user, Post post, LocalDateTime likedAt) {
+    public View(User user, Post post, LocalDateTime viewedAt) {
         this.user = user;
         this.post = post;
-        this.likedAt = likedAt;
+        this.viewedAt = viewedAt;
     }
 }

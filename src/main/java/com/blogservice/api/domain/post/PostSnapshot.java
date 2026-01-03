@@ -1,5 +1,6 @@
-package com.blogservice.api.domain;
+package com.blogservice.api.domain.post;
 
+import com.blogservice.api.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -13,7 +14,7 @@ import static jakarta.persistence.GenerationType.*;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PostSnapshot extends BaseTimeEntity{
+public class PostSnapshot extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)

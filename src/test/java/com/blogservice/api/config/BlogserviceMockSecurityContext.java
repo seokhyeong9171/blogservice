@@ -1,7 +1,7 @@
 package com.blogservice.api.config;
 
-import com.blogservice.api.domain.User;
-import com.blogservice.api.repository.UserRepository;
+import com.blogservice.api.domain.user.User;
+import com.blogservice.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

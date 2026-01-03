@@ -1,5 +1,7 @@
-package com.blogservice.api.domain;
+package com.blogservice.api.domain.auth;
 
+import com.blogservice.api.domain.BaseTimeEntity;
+import com.blogservice.api.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,7 +14,7 @@ import static lombok.AccessLevel.*;
 @Getter
 @Entity
 @NoArgsConstructor(access = PROTECTED)
-public class LoginLog extends BaseTimeEntity{
+public class LoginLog extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)

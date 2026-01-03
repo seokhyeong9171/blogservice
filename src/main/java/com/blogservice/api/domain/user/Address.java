@@ -1,4 +1,4 @@
-package com.blogservice.api.domain;
+package com.blogservice.api.domain.user;
 
 import jakarta.persistence.Embeddable;
 import lombok.Getter;

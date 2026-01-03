@@ -1,11 +1,11 @@
 package com.blogservice.api.service;
 
-import com.blogservice.api.domain.Post;
-import com.blogservice.api.domain.User;
+import com.blogservice.api.domain.post.Post;
+import com.blogservice.api.domain.user.User;
 import com.blogservice.api.exception.PostNotFound;
 import com.blogservice.api.exception.UserNotFound;
 import com.blogservice.api.repository.post.PostRepository;
-import com.blogservice.api.repository.UserRepository;
+import com.blogservice.api.repository.user.UserRepository;
 import com.blogservice.api.request.post.PostCreate;
 import com.blogservice.api.request.post.PostEdit;
 import com.blogservice.api.request.post.PostSearch;

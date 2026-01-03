@@ -1,17 +1,18 @@
-package com.blogservice.api.domain;
+package com.blogservice.api.domain.user;
 
+import com.blogservice.api.domain.*;
+import com.blogservice.api.domain.auth.LoginLog;
+import com.blogservice.api.domain.comment.Comment;
+import com.blogservice.api.domain.post.Post;
+import com.blogservice.api.domain.post.View;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.yaml.snakeyaml.events.Event;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static jakarta.persistence.CascadeType.*;

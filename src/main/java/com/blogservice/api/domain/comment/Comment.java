@@ -1,5 +1,8 @@
-package com.blogservice.api.domain;
+package com.blogservice.api.domain.comment;
 
+import com.blogservice.api.domain.BaseTimeEntity;
+import com.blogservice.api.domain.post.Post;
+import com.blogservice.api.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,7 +21,7 @@ import static lombok.AccessLevel.*;
                 @Index(name = "IDX_COMMENT_POST_ID", columnList = "post_id")
 )
 @NoArgsConstructor(access = PROTECTED)
-public class Comment extends BaseTimeEntity{
+public class Comment extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)

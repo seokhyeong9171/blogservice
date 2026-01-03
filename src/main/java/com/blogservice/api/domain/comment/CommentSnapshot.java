@@ -1,7 +1,6 @@
-package com.blogservice.api.domain;
+package com.blogservice.api.domain.comment;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

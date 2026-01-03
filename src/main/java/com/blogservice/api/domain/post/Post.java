@@ -1,5 +1,8 @@
-package com.blogservice.api.domain;
+package com.blogservice.api.domain.post;
 
+import com.blogservice.api.domain.BaseTimeEntity;
+import com.blogservice.api.domain.comment.Comment;
+import com.blogservice.api.domain.user.User;
 import com.blogservice.api.request.post.PostEdit;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -16,7 +19,7 @@ import static lombok.AccessLevel.PUBLIC;
 @Entity
 @Getter
 @NoArgsConstructor(access = PUBLIC)
-public class Post extends BaseTimeEntity{
+public class Post extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)

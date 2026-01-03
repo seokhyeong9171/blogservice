@@ -1,8 +1,8 @@
 package com.blogservice.api.service;
 
-import com.blogservice.api.domain.User;
+import com.blogservice.api.domain.user.User;
 import com.blogservice.api.exception.AlreadyExistEmailException;
-import com.blogservice.api.repository.UserRepository;
+import com.blogservice.api.repository.user.UserRepository;
 import com.blogservice.api.request.Signup;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

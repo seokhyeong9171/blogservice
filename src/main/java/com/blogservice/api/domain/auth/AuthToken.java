@@ -1,20 +1,20 @@
-package com.blogservice.api.domain;
+package com.blogservice.api.domain.auth;
 
+import com.blogservice.api.domain.BaseTimeEntity;
+import com.blogservice.api.domain.user.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.FetchType.*;
-import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.*;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = PROTECTED)
-public class AuthToken extends BaseTimeEntity{
+public class AuthToken extends BaseTimeEntity {
 
     @Id
     private String jwt;
