@@ -28,8 +28,8 @@ public class CommentService {
         Post findedPost = postRepository.findById(postId).orElseThrow(PostNotFound::new);
 
         Comment comment = Comment.builder()
-                .author(request.getAuthor())
-                .password(passwordEncoder.encode(request.getPassword()))
+//                .author(request.getAuthor())
+//                .password(passwordEncoder.encode(request.getPassword()))
                 .content(request.getContent())
                 .build();
 

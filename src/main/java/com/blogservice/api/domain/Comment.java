@@ -3,6 +3,10 @@ package com.blogservice.api.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import static jakarta.persistence.FetchType.*;
 import static jakarta.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
@@ -14,17 +18,25 @@ import static lombok.AccessLevel.*;
                 @Index(name = "IDX_COMMENT_POST_ID", columnList = "post_id")
 )
 @NoArgsConstructor(access = PROTECTED)
-public class Comment {
+public class Comment extends BaseTimeEntity{
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String author;
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "post_id")
+    private Comment parentComment;
 
-    @Column(nullable = false)
-    private String password;
+    @OneToMany(mappedBy = "parentComment")
+    private List<Comment> childComments = new ArrayList<>();
+
+//    @Column(nullable = false)
+//    private String author;
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(nullable = false)
     private String content;
@@ -34,12 +46,19 @@ public class Comment {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @Builder
-    public Comment(String author, String password, String content) {
-        this.author = author;
-        this.password = password;
-        this.content = content;
-    }
+    private boolean isDeleted;
 
+    private LocalDateTime wroteAt = this.getCreatedAt();
+
+    @Builder
+    public Comment(
+            Comment parentComment, User user, String content, Post post, boolean isDeleted
+    ) {
+        this.parentComment = parentComment;
+        this.user = user;
+        this.content = content;
+        this.post = post;
+        this.isDeleted = isDeleted;
+    }
 }
 

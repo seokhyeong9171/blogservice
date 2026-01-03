@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +16,7 @@ import static lombok.AccessLevel.PUBLIC;
 @Entity
 @Getter
 @NoArgsConstructor(access = PUBLIC)
-public class Post {
+public class Post extends BaseTimeEntity{
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -30,14 +31,22 @@ public class Post {
     @JoinColumn(name = "user_id")
     private User user;
 
+    private LocalDateTime wroteAt = this.getCreatedAt();
+
+    private boolean isDeleted;
+
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<View> views = new ArrayList<>();
+
     @Builder
-    public Post(String title, String content, User user) {
+    public Post(String title, String content, User user, boolean isDeleted) {
         this.title = title;
         this.content = content;
         this.user = user;
+        this.isDeleted = isDeleted;
     }
 
     public void edit(PostEdit postEdit) {

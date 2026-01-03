@@ -112,7 +112,9 @@ class CommentControllerTest {
 
         String commentPassword = "123456";
         Comment comment = Comment.builder()
-                .author("author").password(passwordEncoder.encode(commentPassword)).content("testcomment").build();
+//                .author("author")
+//                .password(passwordEncoder.encode(commentPassword)).content("testcomment")
+                .build();
         comment.setPost(post);
         commentRepository.save(comment);
 
@@ -146,7 +148,9 @@ class CommentControllerTest {
 
         String commentPassword = "123456";
         Comment comment = Comment.builder()
-                .author("author").password(passwordEncoder.encode(commentPassword)).content("testcomment").build();
+//                .author("author")
+//                .password(passwordEncoder.encode(commentPassword))
+                .content("testcomment").build();
         comment.setPost(post);
         commentRepository.save(comment);
 
