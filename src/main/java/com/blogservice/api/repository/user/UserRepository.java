@@ -1,6 +1,6 @@
-package com.blogservice.api.repository;
+package com.blogservice.api.repository.user;
 
-import com.blogservice.api.domain.User;
+import com.blogservice.api.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,14 +1,13 @@
 package com.blogservice.api.controller;
 
-import com.blogservice.api.domain.Comment;
-import com.blogservice.api.domain.Post;
-import com.blogservice.api.domain.User;
-import com.blogservice.api.repository.UserRepository;
+import com.blogservice.api.domain.comment.Comment;
+import com.blogservice.api.domain.post.Post;
+import com.blogservice.api.domain.user.User;
+import com.blogservice.api.repository.user.UserRepository;
 import com.blogservice.api.repository.comment.CommentRepository;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.request.comment.CommentCreate;
 import com.blogservice.api.request.comment.CommentDelete;
-import com.blogservice.api.request.post.PostCreate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,11 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -112,7 +107,9 @@ class CommentControllerTest {
 
         String commentPassword = "123456";
         Comment comment = Comment.builder()
-                .author("author").password(passwordEncoder.encode(commentPassword)).content("testcomment").build();
+//                .author("author")
+//                .password(passwordEncoder.encode(commentPassword)).content("testcomment")
+                .build();
         comment.setPost(post);
         commentRepository.save(comment);
 
@@ -146,7 +143,9 @@ class CommentControllerTest {
 
         String commentPassword = "123456";
         Comment comment = Comment.builder()
-                .author("author").password(passwordEncoder.encode(commentPassword)).content("testcomment").build();
+//                .author("author")
+//                .password(passwordEncoder.encode(commentPassword))
+                .content("testcomment").build();
         comment.setPost(post);
         commentRepository.save(comment);
 

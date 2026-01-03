@@ -2,9 +2,9 @@ package com.blogservice.api.controller;
 
 import com.blogservice.api.config.BlogserviceMockSecurityContext;
 import com.blogservice.api.config.BlogserviceMockUser;
-import com.blogservice.api.domain.Post;
+import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.repository.post.PostRepository;
-import com.blogservice.api.repository.UserRepository;
+import com.blogservice.api.repository.user.UserRepository;
 import com.blogservice.api.request.post.PostCreate;
 import com.blogservice.api.request.post.PostEdit;
 import com.fasterxml.jackson.databind.ObjectMapper;

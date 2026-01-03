@@ -1,6 +1,6 @@
 package com.blogservice.api.response;
 
-import com.blogservice.api.domain.Post;
+import com.blogservice.api.domain.post.Post;
 import lombok.Builder;
 import lombok.Getter;
 

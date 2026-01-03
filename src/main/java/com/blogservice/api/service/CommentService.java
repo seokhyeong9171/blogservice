@@ -1,9 +1,8 @@
 package com.blogservice.api.service;
 
-import com.blogservice.api.domain.Comment;
-import com.blogservice.api.domain.Post;
+import com.blogservice.api.domain.comment.Comment;
+import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.exception.CommentNotFound;
-import com.blogservice.api.exception.InvalidPassword;
 import com.blogservice.api.exception.PostNotFound;
 import com.blogservice.api.repository.comment.CommentRepository;
 import com.blogservice.api.repository.post.PostRepository;
@@ -28,8 +27,8 @@ public class CommentService {
         Post findedPost = postRepository.findById(postId).orElseThrow(PostNotFound::new);
 
         Comment comment = Comment.builder()
-                .author(request.getAuthor())
-                .password(passwordEncoder.encode(request.getPassword()))
+//                .author(request.getAuthor())
+//                .password(passwordEncoder.encode(request.getPassword()))
                 .content(request.getContent())
                 .build();
 
@@ -40,10 +39,10 @@ public class CommentService {
         Comment findedComment = commentRepository.findById(commentId)
                 .orElseThrow(CommentNotFound::new);
 
-        boolean isMatch = passwordEncoder.matches(request.getPassword(), findedComment.getPassword());
-        if(!isMatch) {
-            throw new InvalidPassword();
-        }
+//        boolean isMatch = passwordEncoder.matches(request.getPassword(), findedComment.getPassword());
+//        if(!isMatch) {
+//            throw new InvalidPassword();
+//        }
 
         commentRepository.delete(findedComment);
     }
