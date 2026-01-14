@@ -1,6 +1,7 @@
 package com.blogservice.api.controller;
 
 import com.blogservice.api.exception.CustomException;
+import com.blogservice.api.exception.ServiceException;
 import com.blogservice.api.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,20 @@ public class ExceptionController {
         }
 
         return response;
+    }
+
+    @ExceptionHandler(ServiceException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorResponse> serviceExceptionHandler(ServiceException e) {
+        int statusCode = e.getStatus().value();
+
+        ErrorResponse response = ErrorResponse.builder()
+                // todo
+                //  에러이름 리스폰스에 추가
+                .code(String.valueOf(statusCode))
+                .message(e.getMessage())
+                .build();
+        return ResponseEntity.status(statusCode).body(response);
     }
 
     @ExceptionHandler(CustomException.class)
