@@ -1,6 +1,7 @@
 package com.blogservice.api.dto;
 
 import com.blogservice.api.domain.user.User;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -25,6 +26,7 @@ public class Signup {
         @Pattern(regexp = "^010-?\\d{4}-?\\d{4}$", message = "올바른 휴대폰 번호 형식으로 입력해 주세요")
         private String phone;
         @NotNull(message = "생년월일을 입력해 주세요.")
+//        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         private LocalDate birthDt;
 
         @NotNull

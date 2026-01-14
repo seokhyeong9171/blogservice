@@ -1,5 +1,6 @@
 package com.blogservice.api.service;
 
+import com.blogservice.api.domain.user.Role;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.exception.AlreadyExistEmailException;
 import com.blogservice.api.exception.ErrorCode;
@@ -59,6 +60,12 @@ class AuthServiceTest {
         User findUser = userRepository.findAll().getFirst();
         assertEquals(request.getEmail(), findUser.getEmail());
         assertEquals(request.getName(), findUser.getName());
+        assertEquals(request.getPhone(), findUser.getPhone());
+        assertEquals(request.getBirthDt(), findUser.getBirthDt());
+        assertEquals(request.getAddress().getPostal(), findUser.getAddress().getPostal());
+        assertEquals(request.getAddress().getAddress(), findUser.getAddress().getAddress());
+        assertFalse(findUser.isWithdrawal());
+        assertEquals(Role.USER, findUser.getRole());
         assertTrue(passwordEncoder.matches(request.getPassword(), findUser.getPassword()));
     }
 

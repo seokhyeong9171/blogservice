@@ -1,6 +1,7 @@
 package com.blogservice.api.service;
 
 import com.blogservice.api.domain.user.Address;
+import com.blogservice.api.domain.user.Role;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.exception.AlreadyExistEmailException;
 import com.blogservice.api.exception.ErrorCode;
@@ -40,8 +41,10 @@ public class AuthService {
                 .email(request.getEmail())
                 .password(encryptedPassword)
                 .phone(request.getPhone())
+                .birthDt(request.getBirthDt())
                 .address(Address.fromRequest(request.getAddress()))
                 .isWithdrawal(false)
+                .role(Role.USER)
                 .build();
     }
 }
