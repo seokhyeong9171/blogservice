@@ -12,13 +12,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @Slf4j
-@RestController
+@RestController("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/auth/signup")
+    /**
+     * 회원가입
+     */
+    @PostMapping("/signup")
     public void signup(@RequestBody Signup signup) {
         authService.signup(signup);
     }
