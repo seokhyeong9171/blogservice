@@ -29,9 +29,6 @@ class AuthControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
     private ObjectMapper objectMapper;
 
     @Autowired
@@ -49,6 +46,7 @@ class AuthControllerTest {
     void signup_success() throws Exception {
         // given
         Signup.Request request = Signup.Request.builder()
+                .nickname("nickname")
                 .name("testname")
                 .email("testemail@test.com")
                 .password("testpassword")

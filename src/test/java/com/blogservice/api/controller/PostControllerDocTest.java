@@ -67,8 +67,8 @@ public class PostControllerDocTest {
     void clean() {
         postRepository.deleteAll();
         userRepository.deleteAll();
-        jdbcTemplate.execute("ALTER TABLE post ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("ALTER TABLE users ALTER COLUMN id RESTART WITH 1");
+//        jdbcTemplate.execute("ALTER TABLE post ALTER COLUMN id RESTART WITH 1");
+//        jdbcTemplate.execute("ALTER TABLE users ALTER COLUMN id RESTART WITH 1");
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.blogservice.api.config;
 
+import com.blogservice.api.domain.user.Role;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +25,13 @@ public class BlogserviceMockSecurityContext implements WithSecurityContextFactor
                 .email(annotation.email())
                 .name(annotation.name())
                 .password(annotation.password())
+                .role(Role.USER)
                 .build();
         userRepository.save(user);
 
         UserPrincipal principal = new UserPrincipal(user);
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                principal, user.getPassword(), List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))
+                principal, user.getPassword(), List.of(new SimpleGrantedAuthority(user.getRole().name()))
         );
 
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();

@@ -1,0 +1,3 @@
+### 이메일 중복체크
+
+GET http://localhost:8080/api/user/email/exist?email=test@test1.com
