@@ -1,5 +1,6 @@
 package com.blogservice.api.controller;
 
+import com.blogservice.api.domain.user.User;
 import com.blogservice.api.repository.user.UserRepository;
 import com.blogservice.api.dto.Signup;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,9 +13,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
+
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -35,26 +39,34 @@ class AuthControllerTest {
 
     @BeforeEach
     void clean() {
+//        userRepository.deleteAll();
+//        jdbcTemplate.execute("ALTER TABLE USERS ALTER COLUMN id RESTART WITH 1");
         userRepository.deleteAll();
-        jdbcTemplate.execute("ALTER TABLE users ALTER COLUMN id RESTART WITH 1");
     }
 
     @Test
-    @DisplayName("회원가입")
-    void test1() throws Exception {
+    @DisplayName("회원가입_성공")
+    void signup_success() throws Exception {
         // given
-        Signup signup = Signup.builder()
+        Signup.Request request = Signup.Request.builder()
                 .name("testname")
-                .email("testemail")
+                .email("testemail@test.com")
                 .password("testpassword")
+                .phone("01012345678")
+                .birthDt(LocalDate.now())
+                .address(Signup.Request.Address.builder()
+                        .postal(12345)
+                        .address("testaddress")
+                        .build())
                 .build();
 
         // expected
-        mockMvc.perform(post("/auth/signup")
-                        .content(objectMapper.writeValueAsString(signup))
+        mockMvc.perform(post("/api/auth/signup")
+                        .content(objectMapper.writeValueAsString(request))
                         .contentType(APPLICATION_JSON)
                 )
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.userId").exists())
                 .andDo(print());
     }
 

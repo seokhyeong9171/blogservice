@@ -2,6 +2,8 @@ package com.blogservice.api.service;
 
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.exception.AlreadyExistEmailException;
+import com.blogservice.api.exception.ErrorCode;
+import com.blogservice.api.exception.ServiceException;
 import com.blogservice.api.repository.user.UserRepository;
 import com.blogservice.api.dto.Signup;
 import org.junit.jupiter.api.AfterEach;
@@ -11,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDate;
+
+import static com.blogservice.api.exception.ErrorCode.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -32,28 +37,34 @@ class AuthServiceTest {
 
     @Test
     @DisplayName("회원가입 성공")
-    void test1() {
+    void signup_success() {
         // given
-        Signup.Request signup = Signup.Request.builder()
+        Signup.Request request = Signup.Request.builder()
                 .name("testname")
-                .email("testemail")
+                .email("testemail@test.com")
                 .password("testpassword")
+                .phone("01012345678")
+                .birthDt(LocalDate.now())
+                .address(Signup.Request.Address.builder()
+                        .postal(12345)
+                        .address("testaddress")
+                        .build())
                 .build();
 
         // when
-        authService.signup(signup);
+        authService.signup(request);
 
         // then
         assertEquals(1, userRepository.count());
         User findUser = userRepository.findAll().getFirst();
-        assertEquals(signup.getEmail(), findUser.getEmail());
-        assertEquals(signup.getName(), findUser.getName());
-        assertTrue(passwordEncoder.matches(signup.getPassword(), findUser.getPassword()));
+        assertEquals(request.getEmail(), findUser.getEmail());
+        assertEquals(request.getName(), findUser.getName());
+        assertTrue(passwordEncoder.matches(request.getPassword(), findUser.getPassword()));
     }
 
     @Test
-    @DisplayName("회원가입시 중복된 이메일")
-    void test2() {
+    @DisplayName("회원가입 실패_중복된 이메일")
+    void signup_fail_dup_email() {
         // given
         String testemail = "testemail";
 
@@ -71,7 +82,11 @@ class AuthServiceTest {
                 .build();
 
         // expected
-        assertThrowsExactly(AlreadyExistEmailException.class, () -> authService.signup(signup));
+        ServiceException exception =
+                assertThrowsExactly(ServiceException.class, () -> authService.signup(signup));
+        assertEquals(EMAIL_DUPLICATED.getStatus(), exception.getStatus());
+        assertEquals(EMAIL_DUPLICATED.getMessage(), exception.getMessage());
+
     }
 
 }

@@ -31,7 +31,10 @@ public class Signup {
         private Address address;
 
 
-        @Data
+        @Getter
+        @AllArgsConstructor
+        @NoArgsConstructor(access = PROTECTED)
+        @Builder
         public static class Address {
             @Pattern(regexp = "^\\d{5}$\n", message = "올바른 우편번호 형식으로 입력해 주세요.")
             private Integer postal;
