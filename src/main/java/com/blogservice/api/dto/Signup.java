@@ -16,6 +16,8 @@ public class Signup {
     @NoArgsConstructor(access = PROTECTED)
     @Builder
     public static class Request {
+        @Size(min = 3, max = 10, message = "닉네임은 3자 이상, 10자 이하여야 합니다.")
+        private String nickname;
         @NotBlank(message = "이름을 입력해주세요.")
         private String name;
         @Email(message = "올바른 이메일 형식으로 입력해 주세요.")

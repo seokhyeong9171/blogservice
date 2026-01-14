@@ -29,6 +29,10 @@ public class AuthService {
             throw new ServiceException(EMAIL_DUPLICATED);
         }
 
+        if (userRepository.existsByNickname(request.getNickname())) {
+            throw new ServiceException(NICKNAME_DUPLICATED);
+        }
+
         User user = createNewUser(request);
 
         return userRepository.save(user).getId();
@@ -37,6 +41,7 @@ public class AuthService {
     private User createNewUser(Signup.Request request) {
         String encryptedPassword = passwordEncoder.encode(request.getPassword());
         return User.builder()
+                .nickname(request.getNickname())
                 .name(request.getName())
                 .email(request.getEmail())
                 .password(encryptedPassword)

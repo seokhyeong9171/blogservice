@@ -28,6 +28,7 @@ public class User extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
+    private String nickname;
     private String name;
     private String email;
     private String password;
@@ -55,9 +56,10 @@ public class User extends BaseTimeEntity {
 
     @Builder
     public User(
-            String name, String email, String password, String phone,
+            String nickname, String name, String email, String password, String phone,
             LocalDate birthDt, Address address, boolean isWithdrawal, Role role
     ) {
+        this.nickname = nickname;
         this.name = name;
         this.email = email;
         this.password = password;

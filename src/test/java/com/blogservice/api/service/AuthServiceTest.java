@@ -41,6 +41,7 @@ class AuthServiceTest {
     void signup_success() {
         // given
         Signup.Request request = Signup.Request.builder()
+                .nickname("nickname")
                 .name("testname")
                 .email("testemail@test.com")
                 .password("testpassword")
@@ -58,6 +59,7 @@ class AuthServiceTest {
         // then
         assertEquals(1, userRepository.count());
         User findUser = userRepository.findAll().getFirst();
+        assertEquals(request.getNickname(), findUser.getNickname());
         assertEquals(request.getEmail(), findUser.getEmail());
         assertEquals(request.getName(), findUser.getName());
         assertEquals(request.getPhone(), findUser.getPhone());
@@ -93,7 +95,34 @@ class AuthServiceTest {
                 assertThrowsExactly(ServiceException.class, () -> authService.signup(signup));
         assertEquals(EMAIL_DUPLICATED.getStatus(), exception.getStatus());
         assertEquals(EMAIL_DUPLICATED.getMessage(), exception.getMessage());
+    }
 
+    @Test
+    @DisplayName("회원가입 실패_중복된 닉네임")
+    void signup_fail_dup_nickname() {
+        // given
+        String testemail = "testemail";
+
+        User alreadyUser = User.builder()
+                .email(testemail)
+                .name("testname")
+                .nickname("testnick")
+                .password("testpassword")
+                .build();
+        userRepository.save(alreadyUser);
+
+        Signup.Request signup = Signup.Request.builder()
+                .name("testname")
+                .nickname("testnick")
+                .email(testemail + 1)
+                .password("testpassword")
+                .build();
+
+        // expected
+        ServiceException exception =
+                assertThrowsExactly(ServiceException.class, () -> authService.signup(signup));
+        assertEquals(NICKNAME_DUPLICATED.getStatus(), exception.getStatus());
+        assertEquals(NICKNAME_DUPLICATED.getMessage(), exception.getMessage());
     }
 
 }

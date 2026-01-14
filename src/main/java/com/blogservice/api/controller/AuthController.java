@@ -2,6 +2,7 @@ package com.blogservice.api.controller;
 
 import com.blogservice.api.dto.Signup;
 import com.blogservice.api.service.AuthService;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -31,4 +32,5 @@ public class AuthController {
         return ResponseEntity.status(CREATED)
                 .body(Signup.Response.builder().userId(registeredUser).build());
     }
+
 }

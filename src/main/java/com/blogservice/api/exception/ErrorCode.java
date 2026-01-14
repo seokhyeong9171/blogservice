@@ -9,7 +9,8 @@ import static org.springframework.http.HttpStatus.*;
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode {
-    EMAIL_DUPLICATED(CONFLICT, "this email already exists"),;
+    EMAIL_DUPLICATED(CONFLICT, "this email already exists"),
+    NICKNAME_DUPLICATED(CONFLICT, "this nickname already exists");
 
     private final HttpStatus status;
     private final String message;
