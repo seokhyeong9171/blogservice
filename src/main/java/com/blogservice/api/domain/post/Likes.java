@@ -17,7 +17,7 @@ import static lombok.AccessLevel.*;
 @Getter
 @Entity
 @NoArgsConstructor(access = PROTECTED)
-public class Like extends BaseTimeEntity {
+public class Likes extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -29,12 +29,9 @@ public class Like extends BaseTimeEntity {
     @ManyToOne(fetch = LAZY, cascade = ALL)
     private Post post;
 
-    private LocalDateTime likedAt = this.getCreatedAt();
-
     @Builder
-    public Like(User user, Post post, LocalDateTime likedAt) {
+    public Likes(User user, Post post) {
         this.user = user;
         this.post = post;
-        this.likedAt = likedAt;
     }
 }

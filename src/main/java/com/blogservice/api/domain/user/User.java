@@ -35,7 +35,6 @@ public class User extends BaseTimeEntity {
     @Embedded
     private Address address;
     private boolean isWithdrawal;
-    private LocalDateTime registered_at = this.getCreatedAt();
 
     @OneToMany(mappedBy = "user", cascade = ALL)
     private List<Post> posts = new ArrayList<>();
@@ -52,7 +51,7 @@ public class User extends BaseTimeEntity {
     @Builder
     public User(
             String name, String email, String password, String phone,
-            LocalDate birthDt, Address address, boolean isWithdrawal, LocalDateTime registered_at
+            LocalDate birthDt, Address address, boolean isWithdrawal
     ) {
         this.name = name;
         this.email = email;
@@ -61,6 +60,5 @@ public class User extends BaseTimeEntity {
         this.birthDt = birthDt;
         this.address = address;
         this.isWithdrawal = isWithdrawal;
-        this.registered_at = registered_at;
     }
 }

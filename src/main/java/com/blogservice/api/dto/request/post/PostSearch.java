@@ -1,4 +1,4 @@
-package com.blogservice.api.request.post;
+package com.blogservice.api.dto.request.post;
 
 import lombok.Builder;
 import lombok.Getter;

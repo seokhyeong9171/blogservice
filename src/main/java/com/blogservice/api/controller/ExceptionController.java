@@ -2,7 +2,7 @@ package com.blogservice.api.controller;
 
 import com.blogservice.api.exception.CustomException;
 import com.blogservice.api.exception.ServiceException;
-import com.blogservice.api.response.ErrorResponse;
+import com.blogservice.api.dto.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;

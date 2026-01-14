@@ -1,14 +1,13 @@
 package com.blogservice.api.controller;
 
 import com.blogservice.api.config.UserPrincipal;
-import com.blogservice.api.request.post.PostCreate;
-import com.blogservice.api.request.post.PostEdit;
-import com.blogservice.api.request.post.PostSearch;
-import com.blogservice.api.response.PostResponse;
+import com.blogservice.api.dto.request.post.PostCreate;
+import com.blogservice.api.dto.request.post.PostEdit;
+import com.blogservice.api.dto.request.post.PostSearch;
+import com.blogservice.api.dto.response.PostResponse;
 import com.blogservice.api.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;

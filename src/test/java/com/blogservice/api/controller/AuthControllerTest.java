@@ -1,7 +1,7 @@
 package com.blogservice.api.controller;
 
 import com.blogservice.api.repository.user.UserRepository;
-import com.blogservice.api.request.Signup;
+import com.blogservice.api.dto.Signup;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

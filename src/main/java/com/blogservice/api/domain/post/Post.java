@@ -3,7 +3,7 @@ package com.blogservice.api.domain.post;
 import com.blogservice.api.domain.BaseTimeEntity;
 import com.blogservice.api.domain.comment.Comment;
 import com.blogservice.api.domain.user.User;
-import com.blogservice.api.request.post.PostEdit;
+import com.blogservice.api.dto.request.post.PostEdit;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,8 +33,6 @@ public class Post extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-
-    private LocalDateTime wroteAt = this.getCreatedAt();
 
     private boolean isDeleted;
 

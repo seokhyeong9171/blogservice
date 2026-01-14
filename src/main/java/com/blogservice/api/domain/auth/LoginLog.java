@@ -28,13 +28,10 @@ public class LoginLog extends BaseTimeEntity {
 
     private String userAgent;
 
-    private LocalDateTime loginAt = this.getCreatedAt();
-
     @Builder
-    public LoginLog(User user, String ipAddress, String userAgent, LocalDateTime loginAt) {
+    public LoginLog(User user, String ipAddress, String userAgent) {
         this.user = user;
         this.ipAddress = ipAddress;
         this.userAgent = userAgent;
-        this.loginAt = loginAt;
     }
 }

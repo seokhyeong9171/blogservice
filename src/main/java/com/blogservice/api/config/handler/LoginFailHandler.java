@@ -1,6 +1,6 @@
 package com.blogservice.api.config.handler;
 
-import com.blogservice.api.response.ErrorResponse;
+import com.blogservice.api.dto.response.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

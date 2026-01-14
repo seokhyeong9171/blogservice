@@ -30,13 +30,10 @@ public class CommentSnapshot {
 
     private boolean isDeleted;
 
-    private final LocalDateTime wroteAt = this.comment.getWroteAt();
-    private LocalDateTime updatedAt = this.getUpdatedAt();
-
-    public CommentSnapshot(Comment comment, String content, boolean isDeleted, LocalDateTime updatedAt) {
+    private LocalDateTime wroteAt;
+    public CommentSnapshot(Comment comment, String content, boolean isDeleted) {
         this.comment = comment;
         this.content = content;
         this.isDeleted = isDeleted;
-        this.updatedAt = updatedAt;
     }
 }

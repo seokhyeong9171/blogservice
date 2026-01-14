@@ -1,12 +1,18 @@
 ### 회원가입
 
-POST  http://localhost:8080/auth/signup
+POST  http://localhost:8080/api/auth/signup
 Content-Type: application/json
 
 {
   "name": "testname",
   "email": "admin@admin.com",
-  "password": "1234"
+  "password": "12345678",
+  "phone": "01012345678",
+  "birthDt": "1998-09-19",
+  "address": {
+    "postal": 12345,
+    "address": "주소"
+  }
 }
 
 ### 로그인

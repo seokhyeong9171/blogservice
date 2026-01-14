@@ -3,7 +3,7 @@ package com.blogservice.api.service;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.exception.AlreadyExistEmailException;
 import com.blogservice.api.repository.user.UserRepository;
-import com.blogservice.api.request.Signup;
+import com.blogservice.api.dto.Signup;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ class AuthServiceTest {
     @DisplayName("회원가입 성공")
     void test1() {
         // given
-        Signup signup = Signup.builder()
+        Signup.Request signup = Signup.Request.builder()
                 .name("testname")
                 .email("testemail")
                 .password("testpassword")
@@ -64,7 +64,7 @@ class AuthServiceTest {
                 .build();
         userRepository.save(alreadyUser);
 
-        Signup signup = Signup.builder()
+        Signup.Request signup = Signup.Request.builder()
                 .name("testname")
                 .email(testemail)
                 .password("testpassword")

@@ -4,7 +4,7 @@ import com.blogservice.api.domain.comment.Comment;
 import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.repository.comment.CommentRepository;
 import com.blogservice.api.repository.post.PostRepository;
-import com.blogservice.api.request.comment.CommentCreate;
+import com.blogservice.api.dto.request.comment.CommentCreate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

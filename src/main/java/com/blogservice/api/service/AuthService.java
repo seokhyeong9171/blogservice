@@ -1,13 +1,18 @@
 package com.blogservice.api.service;
 
+import com.blogservice.api.domain.user.Address;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.exception.AlreadyExistEmailException;
+import com.blogservice.api.exception.ErrorCode;
+import com.blogservice.api.exception.ServiceException;
 import com.blogservice.api.repository.user.UserRepository;
-import com.blogservice.api.request.Signup;
+import com.blogservice.api.dto.Signup;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.blogservice.api.exception.ErrorCode.*;
 
 @Service
 @Transactional
@@ -18,19 +23,25 @@ public class AuthService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public void signup(Signup signup) {
-        if(userRepository.existsByEmail(signup.getEmail())) {
-            throw new AlreadyExistEmailException();
+    public Long signup(Signup.Request request) {
+        if(userRepository.existsByEmail(request.getEmail())) {
+            throw new ServiceException(EMAIL_DUPLICATED);
         }
 
-        String encryptedPassword = passwordEncoder.encode(signup.getPassword());
+        User user = createNewUser(request);
 
-        User user = User.builder()
-                .email(signup.getEmail())
-                .name(signup.getName())
+        return userRepository.save(user).getId();
+    }
+
+    private User createNewUser(Signup.Request request) {
+        String encryptedPassword = passwordEncoder.encode(request.getPassword());
+        return User.builder()
+                .name(request.getName())
+                .email(request.getEmail())
                 .password(encryptedPassword)
+                .phone(request.getPhone())
+                .address(Address.fromRequest(request.getAddress()))
+                .isWithdrawal(false)
                 .build();
-
-        userRepository.save(user);
     }
 }

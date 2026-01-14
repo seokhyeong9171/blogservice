@@ -28,7 +28,7 @@ public class Comment extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "post_id")
+    @JoinColumn(name = "parent_id")
     private Comment parentComment;
 
     @OneToMany(mappedBy = "parentComment")
@@ -50,8 +50,6 @@ public class Comment extends BaseTimeEntity {
     private Post post;
 
     private boolean isDeleted;
-
-    private LocalDateTime wroteAt = this.getCreatedAt();
 
     @Builder
     public Comment(

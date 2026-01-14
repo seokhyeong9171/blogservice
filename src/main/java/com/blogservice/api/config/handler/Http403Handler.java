@@ -1,6 +1,6 @@
 package com.blogservice.api.config.handler;
 
-import com.blogservice.api.response.ErrorResponse;
+import com.blogservice.api.dto.response.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,7 +13,6 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import java.io.IOException;
 
 import static jakarta.servlet.http.HttpServletResponse.*;
-import static jakarta.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 

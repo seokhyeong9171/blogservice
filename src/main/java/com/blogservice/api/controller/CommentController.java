@@ -1,7 +1,7 @@
 package com.blogservice.api.controller;
 
-import com.blogservice.api.request.comment.CommentCreate;
-import com.blogservice.api.request.comment.CommentDelete;
+import com.blogservice.api.dto.request.comment.CommentCreate;
+import com.blogservice.api.dto.request.comment.CommentDelete;
 import com.blogservice.api.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

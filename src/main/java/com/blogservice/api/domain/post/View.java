@@ -30,12 +30,9 @@ public class View extends BaseTimeEntity {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    private LocalDateTime viewedAt = this.getCreatedAt();
-
     @Builder
-    public View(User user, Post post, LocalDateTime viewedAt) {
+    public View(User user, Post post) {
         this.user = user;
         this.post = post;
-        this.viewedAt = viewedAt;
     }
 }
