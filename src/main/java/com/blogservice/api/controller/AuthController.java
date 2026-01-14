@@ -5,6 +5,7 @@ import com.blogservice.api.request.Signup;
 import com.blogservice.api.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,7 +23,7 @@ public class AuthController {
      * 회원가입
      */
     @PostMapping("/signup")
-    public void signup(@RequestBody Signup signup) {
+    public void signup(@RequestBody @Validated Signup signup) {
         authService.signup(signup);
     }
 }
