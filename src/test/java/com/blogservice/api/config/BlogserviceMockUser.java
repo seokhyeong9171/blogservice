@@ -1,5 +1,6 @@
 package com.blogservice.api.config;
 
+import com.blogservice.api.domain.user.Role;
 import org.springframework.security.test.context.support.WithSecurityContext;
 
 import java.lang.annotation.Retention;
@@ -12,5 +13,5 @@ public @interface BlogserviceMockUser {
     String email() default "testemail@test.com";
     String name() default "testname";
     String password() default "testpassword";
-    String role() default "ROLE_ADMIN";
+    Role role() default Role.ROLE_USER;
 }

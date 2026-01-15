@@ -1,8 +1,14 @@
 package com.blogservice.api.controller;
 
+import com.blogservice.api.auth.RefreshTokenProvider;
 import com.blogservice.api.config.BlogserviceMockSecurityContext;
+import com.blogservice.api.config.BlogserviceMockUser;
+import com.blogservice.api.domain.auth.RefreshToken;
 import com.blogservice.api.domain.post.Post;
+import com.blogservice.api.dto.Login;
+import com.blogservice.api.dto.ReIssue;
 import com.blogservice.api.dto.Signup;
+import com.blogservice.api.repository.auth.RefreshTokenRepository;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,6 +34,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -50,6 +57,11 @@ public class AuthControllerDoctest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private RefreshTokenProvider refreshTokenProvider;
+    @Autowired
+    private RefreshTokenRepository refreshTokenRepository;
 
     @AfterEach
     void clean() {
@@ -95,5 +107,54 @@ public class AuthControllerDoctest {
                                 fieldWithPath("userId").description("유저아이디")
                         )
                 ));
+    }
+
+    @Test
+    @DisplayName("유저 로그인")
+    @BlogserviceMockUser
+    void user_login() throws Exception {
+        // given
+        Login.Request request = Login.Request.builder()
+                .email("testemail@test.com")
+                .password("testpassword")
+                .build();
+
+        // expected
+        this.mockMvc.perform(post("/api/auth/login")
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("user-login",
+                        requestFields(
+                                fieldWithPath("email").description("이메일"),
+                                fieldWithPath("password").description("비밀번호")
+                        ),
+                        responseFields(
+                                fieldWithPath("jwt").description("JWT token")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("토큰 재발급")
+    @BlogserviceMockUser
+    void reissue_token() throws Exception {
+        // given
+        RefreshToken refreshToken = refreshTokenProvider.getRefreshToken(securityContext.getCurrentUser());
+        refreshTokenRepository.save(refreshToken);
+
+        // expected
+        this.mockMvc.perform(post("/api/auth/reissue")
+                        .cookie(refreshTokenProvider.getRefreshTokenCookie(refreshToken))
+                        )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("token-reissue",
+                        responseFields(
+                                fieldWithPath("jwt").description("JWT token")
+                        )
+                ));
+
     }
 }

@@ -59,7 +59,7 @@ public class AuthController {
      * 토큰 재발급
      */
     @PostMapping("/reissue")
-    public ResponseEntity<?> refresh(
+    public ResponseEntity<ReIssue> refresh(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             HttpServletRequest servletRequest, HttpServletResponse servletResponse
     ) {

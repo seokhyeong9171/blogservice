@@ -28,15 +28,15 @@ Content-Type: application/json
 
 ### 토큰 재발급
 POST http://localhost:8080/api/auth/reissue
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJ1c2VybmFtZSI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE3Njg0NTQzNjcsImV4cCI6MTc2ODQ1NjE2N30.mAlAavkOVs0-BUfZKNIbu5aZIziLAgosxQnBw2Aryvls9DhcTN9QbbU5FgmwwuJf
-Cookie: refreshToken=5cd1130f-ab7c-4b44-a0ae-2d04723c9c5a
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiJkM2FmMjNjNy1kZGQ3LTQ5ZWMtYjIzZi03YjE4YjE2YmE3M2UiLCJ1c2VybmFtZSI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE3Njg0ODgzOTcsImV4cCI6MTc2ODQ5MDE5N30.xgmurT51LLWmwj2B8kCllcmV7JSR5wCx6cVaCPVm2Ha6uAzTd8tpE5uY9Rc1uMIE
+Cookie: refreshToken=fe308a83-796d-4d2c-a91b-53cb5f5dfcf4
 
 ### 권한 없는 페이지
 GET http://localhost:8080/api/test/permit
 
 ### 유저 권한 페이지
 GET http://localhost:8080/api/test/auth
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJ1c2VybmFtZSI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE3Njg0NTI1NTcsImV4cCI6MTc2ODQ1NDM1N30.RM0ewtZqnkwMP-9FeNQaFLy86s1rgmUtvu7ZYdiZ86LpUox-ISETjEiNo3-pJTaa
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiJkM2FmMjNjNy1kZGQ3LTQ5ZWMtYjIzZi03YjE4YjE2YmE3M2UiLCJ1c2VybmFtZSI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE3Njg0ODgzOTcsImV4cCI6MTc2ODQ5MDE5N30.xgmurT51LLWmwj2B8kCllcmV7JSR5wCx6cVaCPVm2Ha6uAzTd8tpE5uY9Rc1uMIE
 
 
 ### 메인 페이지

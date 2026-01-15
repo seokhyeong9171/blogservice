@@ -17,6 +17,25 @@ include::{snippets}/user-signup/request-fields.adoc[]
 include::{snippets}/user-signup/http-response.adoc[]
 include::{snippets}/user-signup/response-fields.adoc[]
 
+== 로그인
+
+=== 요청
+include::{snippets}/user-login/request-fields.adoc[]
+
+=== 응답
+include::{snippets}/user-login/http-response.adoc[]
+include::{snippets}/user-login/response-fields.adoc[]
+
+== 토큰 재발급
+
+=== 요청
+include::{snippets}/token-reissue/http-request.adoc[]
+
+=== 응답
+include::{snippets}/token-reissue/http-response.adoc[]
+include::{snippets}/token-reissue/response-fields.adoc[]
+
+
 = 회원정보
 
 == 이메일 중복체크
