@@ -5,13 +5,10 @@ import com.blogservice.api.domain.user.Address;
 import com.blogservice.api.domain.user.Role;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.Login;
-import com.blogservice.api.exception.AlreadyExistEmailException;
-import com.blogservice.api.exception.ErrorCode;
 import com.blogservice.api.exception.ServiceException;
 import com.blogservice.api.repository.user.UserRepository;
 import com.blogservice.api.dto.Signup;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +39,20 @@ public class AuthService {
         return userRepository.save(user).getId();
     }
 
+    public String login(Login.Request request) {
+        String email = request.getEmail();
+        String password = request.getPassword();
+
+        User findUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+
+        if (!passwordEncoder.matches(password, findUser.getPassword())) {
+            throw new ServiceException(PASSWORD_NOT_MATCHING);
+        }
+
+        return jwtProvider.generateJwtToken(email);
+    }
+
     private User createNewUser(Signup.Request request) {
         String encryptedPassword = passwordEncoder.encode(request.getPassword());
         return User.builder()
@@ -55,19 +66,5 @@ public class AuthService {
                 .isWithdrawal(false)
                 .role(Role.ROLE_USER)
                 .build();
-    }
-
-    public String login(Login.Request request) {
-        String email = request.getEmail();
-        String password = request.getPassword();
-
-        User findUser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
-
-        if (!passwordEncoder.matches(password, findUser.getPassword())) {
-            throw new ServiceException(PASSWORD_NOT_MATCHING);
-        }
-
-        return jwtProvider.generateJwtToken(email);
     }
 }
