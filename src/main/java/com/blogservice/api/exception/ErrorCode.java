@@ -10,7 +10,10 @@ import static org.springframework.http.HttpStatus.*;
 @RequiredArgsConstructor
 public enum ErrorCode {
     EMAIL_DUPLICATED(CONFLICT, "this email already exists"),
-    NICKNAME_DUPLICATED(CONFLICT, "this nickname already exists");
+    NICKNAME_DUPLICATED(CONFLICT, "this nickname already exists"),
+
+    USER_NOT_FOUND(BAD_REQUEST, "user not found"),
+    PASSWORD_NOT_MATCHING(BAD_REQUEST, "password not matching"),;
 
     private final HttpStatus status;
     private final String message;

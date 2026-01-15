@@ -67,7 +67,7 @@ class AuthServiceTest {
         assertEquals(request.getAddress().getPostal(), findUser.getAddress().getPostal());
         assertEquals(request.getAddress().getAddress(), findUser.getAddress().getAddress());
         assertFalse(findUser.isWithdrawal());
-        assertEquals(Role.USER, findUser.getRole());
+        assertEquals(Role.ROLE_USER, findUser.getRole());
         assertTrue(passwordEncoder.matches(request.getPassword(), findUser.getPassword()));
     }
 

@@ -1,8 +1,7 @@
 package com.blogservice.api.config;
 
-import com.blogservice.api.config.filter.EmailPasswordAuthFilter;
-import com.blogservice.api.config.handler.Http401Handler;
-import com.blogservice.api.config.handler.Http403Handler;
+import com.blogservice.api.auth.JwtProvider;
+import com.blogservice.api.config.filter.JwtAuthenticationFilter;
 import com.blogservice.api.config.handler.LoginFailHandler;
 import com.blogservice.api.config.handler.LoginSuccessHandler;
 import com.blogservice.api.domain.user.User;
@@ -24,7 +23,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -42,16 +40,9 @@ public class SecurityConfig {
 
     private final ObjectMapper objectMapper;
     private final UserRepository userRepository;
-
-    @Bean
-    public SecretKey secretKey(@Value("${jwt.secret}") String secret) {
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    }
+    private final JwtProvider jwtProvider;
+    private final UserDetailsService userDetailsService;
+    private final PasswordEncoder passwordEncoder;
 
 //    @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -86,27 +77,23 @@ public class SecurityConfig {
 //                        .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().permitAll())
                 .csrf(AbstractHttpConfigurer::disable)
-//                .formLogin(form -> form
-//                        .usernameParameter("username")
-//                        .passwordParameter("password")
-//                        .loginPage("/auth/login")
-//                        .loginProcessingUrl("/auth/login")
-//                        .defaultSuccessUrl("/")
-//                        .failureHandler(new LoginFailHandler(objectMapper)))
-                .addFilterBefore(emailPasswordAuthFilter(), UsernamePasswordAuthenticationFilter.class)
-                .rememberMe(rememberMe -> rememberMe
-                        .rememberMeParameter("remember")
-                        .alwaysRemember(false)
-                        .tokenValiditySeconds(2592000))
-                .exceptionHandling(e -> {
-                            e.accessDeniedHandler(new Http403Handler(objectMapper));
-                            e.authenticationEntryPoint(new Http401Handler(objectMapper));
-                        }
-                )
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider, userDetailsService), UsernamePasswordAuthenticationFilter.class)
+//                .addFilterBefore(emailPasswordAuthFilter(), UsernamePasswordAuthenticationFilter.class)
+//                .rememberMe(rememberMe -> rememberMe
+//                        .rememberMeParameter("remember")
+//                        .alwaysRemember(false)
+//                        .tokenValiditySeconds(2592000))
+//                .exceptionHandling(e -> {
+//                            e.accessDeniedHandler(new Http403Handler(objectMapper));
+//                            e.authenticationEntryPoint(new Http401Handler(objectMapper));
+//                        }
+//                )
                 .build();
     }
 
-    @Bean
+//    @Bean
     public UserDetailsService userDetailService(UserRepository userRepository) {
         return username -> {
             User user = userRepository.findByEmail(username)
@@ -116,21 +103,21 @@ public class SecurityConfig {
         };
     }
 
-    @Bean
-    public EmailPasswordAuthFilter emailPasswordAuthFilter() {
-        EmailPasswordAuthFilter filter = new EmailPasswordAuthFilter(objectMapper);
-        filter.setAuthenticationManager(authenticationManager());
-        filter.setAuthenticationSuccessHandler(new LoginSuccessHandler(objectMapper));
-        filter.setAuthenticationFailureHandler(new LoginFailHandler(objectMapper));
-        filter.setSecurityContextRepository(new HttpSessionSecurityContextRepository());
-        return filter;
-    }
+//    @Bean
+//    public EmailPasswordAuthFilter emailPasswordAuthFilter() {
+//        EmailPasswordAuthFilter filter = new EmailPasswordAuthFilter(objectMapper);
+//        filter.setAuthenticationManager(authenticationManager());
+//        filter.setAuthenticationSuccessHandler(new LoginSuccessHandler(objectMapper));
+//        filter.setAuthenticationFailureHandler(new LoginFailHandler(objectMapper));
+//        filter.setSecurityContextRepository(new HttpSessionSecurityContextRepository());
+//        return filter;
+//    }
 
     @Bean
     public AuthenticationManager authenticationManager() {
         DaoAuthenticationProvider provider =
                 new DaoAuthenticationProvider(userDetailService(userRepository));
-        provider.setPasswordEncoder(passwordEncoder());
+        provider.setPasswordEncoder(passwordEncoder);
         return new ProviderManager(provider);
     }
 

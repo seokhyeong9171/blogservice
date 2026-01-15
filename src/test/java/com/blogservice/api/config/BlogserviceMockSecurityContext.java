@@ -25,7 +25,7 @@ public class BlogserviceMockSecurityContext implements WithSecurityContextFactor
                 .email(annotation.email())
                 .name(annotation.name())
                 .password(annotation.password())
-                .role(Role.USER)
+                .role(Role.ROLE_USER)
                 .build();
         userRepository.save(user);
 
