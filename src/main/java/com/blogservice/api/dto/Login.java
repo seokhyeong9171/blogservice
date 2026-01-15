@@ -1,5 +1,6 @@
 package com.blogservice.api.dto;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -25,5 +26,14 @@ public class Login {
     @Builder
     public static class Response {
         private String jwt;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor(access = PROTECTED)
+    @Builder
+    public static class ResponseDto {
+        private String jwt;
+        private Cookie cookie;
     }
 }

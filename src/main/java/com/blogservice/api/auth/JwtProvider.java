@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -14,6 +15,8 @@ import java.util.Date;
 public class JwtProvider {
 
     private final SecretKey secretKey;
+    @Value("${jwt.expire}")
+    private Long jwtExpireMs;
 
     public String generateJwtToken(String username) {
         // todo
@@ -23,7 +26,7 @@ public class JwtProvider {
                 .claim("username", username)
                 .signWith(secretKey)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 360000L))
+                .expiration(new Date(System.currentTimeMillis() + jwtExpireMs))
                 .compact();
     }
 

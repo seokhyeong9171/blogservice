@@ -42,9 +42,11 @@ management:
 #      password: 1234
 
 
-
+refreshtoken:
+  expire: 604800000   # 7일 (1주일)
 jwt:
   secret: dskjfsd32r5fj023jfdsjd3fopsfjd09fsdvsdfv23r3fnomnkn2fosk23p9fjpo23
+  expire: 1800000      # 30분
 server:
   servlet:
     session:

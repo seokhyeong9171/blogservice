@@ -1,13 +1,17 @@
 package com.blogservice.api.service;
 
 import com.blogservice.api.auth.JwtProvider;
+import com.blogservice.api.auth.RefreshTokenProvider;
+import com.blogservice.api.domain.auth.RefreshToken;
 import com.blogservice.api.domain.user.Address;
 import com.blogservice.api.domain.user.Role;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.Login;
 import com.blogservice.api.exception.ServiceException;
+import com.blogservice.api.repository.auth.RefreshTokenRepository;
 import com.blogservice.api.repository.user.UserRepository;
 import com.blogservice.api.dto.Signup;
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,9 +25,11 @@ import static com.blogservice.api.exception.ErrorCode.*;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
+    private final RefreshTokenProvider refreshTokenProvider;
 
     public Long signup(Signup.Request request) {
         if(userRepository.existsByEmail(request.getEmail())) {
@@ -39,7 +45,7 @@ public class AuthService {
         return userRepository.save(user).getId();
     }
 
-    public String login(Login.Request request) {
+    public Login.ResponseDto login(Login.Request request) {
         String email = request.getEmail();
         String password = request.getPassword();
 
@@ -50,7 +56,15 @@ public class AuthService {
             throw new ServiceException(PASSWORD_NOT_MATCHING);
         }
 
-        return jwtProvider.generateJwtToken(email);
+        String jwt = jwtProvider.generateJwtToken(email);
+        RefreshToken refreshToken = refreshTokenProvider.getRefreshToken(findUser);
+        refreshTokenRepository.save(refreshToken);
+        Cookie refreshTokenCookie = refreshTokenProvider.getRefreshTokenCookie(refreshToken);
+
+        return Login.ResponseDto.builder()
+                .jwt(jwt)
+                .cookie(refreshTokenCookie)
+                .build();
     }
 
     private User createNewUser(Signup.Request request) {

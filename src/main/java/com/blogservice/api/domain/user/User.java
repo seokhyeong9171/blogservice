@@ -2,6 +2,7 @@ package com.blogservice.api.domain.user;
 
 import com.blogservice.api.domain.*;
 import com.blogservice.api.domain.auth.LoginLog;
+import com.blogservice.api.domain.auth.RefreshToken;
 import com.blogservice.api.domain.comment.Comment;
 import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.domain.post.View;
@@ -53,6 +54,9 @@ public class User extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "user", cascade = ALL)
     private List<View> views = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = ALL)
+    private List<RefreshToken> refreshTokens = new ArrayList<>();
 
     @Builder
     public User(

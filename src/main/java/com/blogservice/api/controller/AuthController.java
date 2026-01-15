@@ -4,10 +4,8 @@ import com.blogservice.api.dto.Login;
 import com.blogservice.api.dto.Signup;
 import com.blogservice.api.service.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,11 +39,15 @@ public class AuthController {
      * 로그인
      */
     @PostMapping("/login")
-    public ResponseEntity<Login.Response> login(HttpServletResponse response, @RequestBody @Validated Login.Request request) {
-        String jwt = authService.login(request);
-        response.setHeader(AUTHORIZATION, jwt);
+    public ResponseEntity<Login.Response> login(HttpServletResponse servletResponse, @RequestBody @Validated Login.Request request) {
+        Login.ResponseDto responseDto = authService.login(request);
+        String jwt = responseDto.getJwt();
+        servletResponse.setHeader(AUTHORIZATION, jwt);
+        servletResponse.addCookie(responseDto.getCookie());
+
         // todo
         //  refresh token 생성 로직
+
         return ResponseEntity.ok(Login.Response.builder().jwt(jwt).build());
     }
 
