@@ -100,6 +100,7 @@ class AuthControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(header().exists(AUTHORIZATION))
+                .andExpect(cookie().exists("refreshToken"))
                 .andExpect(jsonPath("$.jwt").exists())
                 .andDo(print());
     }

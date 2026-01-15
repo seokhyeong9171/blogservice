@@ -13,7 +13,11 @@ public enum ErrorCode {
     NICKNAME_DUPLICATED(CONFLICT, "this nickname already exists"),
 
     USER_NOT_FOUND(BAD_REQUEST, "user not found"),
-    PASSWORD_NOT_MATCHING(BAD_REQUEST, "password not matching"),;
+    PASSWORD_NOT_MATCHING(BAD_REQUEST, "password not matching"),
+
+    REFRESH_TOKEN_COOKIE_NOT_FOUND(BAD_REQUEST, "refresh token cookie not found"),
+    REFRESH_TOKEN_INVALID(BAD_REQUEST, "refresh token invalid"),
+    TOKEN_LIST_EMPTY(NOT_FOUND, "token list is empty"),;
 
     private final HttpStatus status;
     private final String message;

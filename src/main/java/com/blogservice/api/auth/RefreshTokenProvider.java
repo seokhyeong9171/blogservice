@@ -2,13 +2,18 @@ package com.blogservice.api.auth;
 
 import com.blogservice.api.domain.auth.RefreshToken;
 import com.blogservice.api.domain.user.User;
+import com.blogservice.api.exception.ErrorCode;
+import com.blogservice.api.exception.ServiceException;
 import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.UUID;
+
+import static com.blogservice.api.exception.ErrorCode.*;
 
 @Component
 public class RefreshTokenProvider {
@@ -25,7 +30,7 @@ public class RefreshTokenProvider {
     }
 
     public Cookie getRefreshTokenCookie(RefreshToken refreshToken) {
-        Cookie cookie = new Cookie("refreshtoken", refreshToken.getRefreshToken());
+        Cookie cookie = new Cookie("refreshToken", refreshToken.getRefreshToken());
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
@@ -35,5 +40,19 @@ public class RefreshTokenProvider {
 
     public String generateRefreshToken() {
         return UUID.randomUUID().toString();
+    }
+
+    public String getTokenFromCookies(Cookie[] cookies) {
+        Cookie refreshTokenCookie =
+                Arrays.stream(cookies)
+                        .filter(cookie -> cookie.getName().equals("refreshToken"))
+                        .findAny()
+                        .orElseThrow(() -> new ServiceException(REFRESH_TOKEN_COOKIE_NOT_FOUND));
+
+        return refreshTokenCookie.getValue();
+    }
+
+    public boolean validateRefreshToken(RefreshToken refreshToken) {
+        return refreshToken != null && refreshToken.getExpireAt().isAfter(LocalDateTime.now());
     }
 }

@@ -19,8 +19,6 @@ spring:
       hibernate:
         format_sql: true
         use_sql_comments: true
-  session:
-    timeout: 86400
 
   sql:
     init:

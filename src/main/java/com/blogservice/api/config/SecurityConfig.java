@@ -2,9 +2,6 @@ package com.blogservice.api.config;
 
 import com.blogservice.api.auth.JwtProvider;
 import com.blogservice.api.config.filter.JwtAuthenticationFilter;
-import com.blogservice.api.config.handler.LoginFailHandler;
-import com.blogservice.api.config.handler.LoginSuccessHandler;
-import com.blogservice.api.domain.user.User;
 import com.blogservice.api.repository.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.io.Decoders;
@@ -75,7 +72,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/test/auth").hasRole("USER")
+                        .requestMatchers("/api/test/auth", "/api/auth/reissue").hasRole("USER")
                         .anyRequest().permitAll())
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)

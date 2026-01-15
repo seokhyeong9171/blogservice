@@ -1,12 +1,18 @@
 package com.blogservice.api.controller;
 
+import com.blogservice.api.auth.RefreshTokenProvider;
+import com.blogservice.api.config.UserPrincipal;
 import com.blogservice.api.dto.Login;
+import com.blogservice.api.dto.ReIssue;
 import com.blogservice.api.dto.Signup;
 import com.blogservice.api.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +30,7 @@ import static org.springframework.http.HttpStatus.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final RefreshTokenProvider refreshTokenProvider;
 
     /**
      * 회원가입
@@ -42,13 +49,27 @@ public class AuthController {
     public ResponseEntity<Login.Response> login(HttpServletResponse servletResponse, @RequestBody @Validated Login.Request request) {
         Login.ResponseDto responseDto = authService.login(request);
         String jwt = responseDto.getJwt();
-        servletResponse.setHeader(AUTHORIZATION, jwt);
+        servletResponse.setHeader(AUTHORIZATION, "Bearer " + jwt);
         servletResponse.addCookie(responseDto.getCookie());
 
-        // todo
-        //  refresh token 생성 로직
-
         return ResponseEntity.ok(Login.Response.builder().jwt(jwt).build());
+    }
+
+    /**
+     * 토큰 재발급
+     */
+    @PostMapping("/reissue")
+    public ResponseEntity<?> refresh(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            HttpServletRequest servletRequest, HttpServletResponse servletResponse
+    ) {
+
+        String refreshToken = refreshTokenProvider.getTokenFromCookies(servletRequest.getCookies());
+
+        String jwt = authService.reissueToken(userPrincipal.getUserId(), refreshToken);
+        servletResponse.setHeader(AUTHORIZATION, "Bearer " + jwt);
+
+        return ResponseEntity.ok(ReIssue.builder().jwt(jwt).build());
     }
 
 }
