@@ -1,12 +1,11 @@
 package com.blogservice.api.domain.user;
 
-import com.blogservice.api.domain.*;
+import com.blogservice.api.domain.BaseTimeEntity;
 import com.blogservice.api.domain.auth.LoginLog;
 import com.blogservice.api.domain.auth.RefreshToken;
 import com.blogservice.api.domain.comment.Comment;
 import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.domain.post.View;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,8 +15,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static jakarta.persistence.CascadeType.*;
-import static jakarta.persistence.EnumType.*;
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 

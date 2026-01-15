@@ -2,19 +2,15 @@ package com.blogservice.api.auth;
 
 import com.blogservice.api.config.UserPrincipal;
 import com.blogservice.api.domain.user.User;
-import com.blogservice.api.exception.ErrorCode;
 import com.blogservice.api.exception.ServiceException;
 import com.blogservice.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
-import static com.blogservice.api.exception.ErrorCode.*;
+import static com.blogservice.api.exception.ErrorCode.USER_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor

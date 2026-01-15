@@ -2,12 +2,12 @@ package com.blogservice.api.service;
 
 import com.blogservice.api.domain.comment.Comment;
 import com.blogservice.api.domain.post.Post;
+import com.blogservice.api.dto.request.comment.CommentCreate;
+import com.blogservice.api.dto.request.comment.CommentDelete;
 import com.blogservice.api.exception.CommentNotFound;
 import com.blogservice.api.exception.PostNotFound;
 import com.blogservice.api.repository.comment.CommentRepository;
 import com.blogservice.api.repository.post.PostRepository;
-import com.blogservice.api.dto.request.comment.CommentCreate;
-import com.blogservice.api.dto.request.comment.CommentDelete;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

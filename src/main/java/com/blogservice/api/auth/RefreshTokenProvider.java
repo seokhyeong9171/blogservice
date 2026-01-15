@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.UUID;
 
-import static com.blogservice.api.exception.ErrorCode.*;
+import static com.blogservice.api.exception.ErrorCode.REFRESH_TOKEN_COOKIE_NOT_FOUND;
 
 @Component
 public class RefreshTokenProvider {

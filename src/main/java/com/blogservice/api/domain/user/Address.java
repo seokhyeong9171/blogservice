@@ -2,9 +2,12 @@ package com.blogservice.api.domain.user;
 
 import com.blogservice.api.dto.Signup;
 import jakarta.persistence.Embeddable;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import static lombok.AccessLevel.*;
+import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Embeddable
