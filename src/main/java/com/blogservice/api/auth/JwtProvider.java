@@ -23,7 +23,7 @@ public class JwtProvider {
                 .claim("username", username)
                 .signWith(secretKey)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 3600L))
+                .expiration(new Date(System.currentTimeMillis() + 360000L))
                 .compact();
     }
 

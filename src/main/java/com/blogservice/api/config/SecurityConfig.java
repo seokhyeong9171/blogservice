@@ -21,6 +21,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -32,6 +33,8 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.crypto.SecretKey;
+
+import static org.springframework.security.config.http.SessionCreationPolicy.*;
 
 @Configuration
 @EnableWebSecurity(debug = true)
@@ -72,51 +75,20 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/auth/login", "auth/signup").permitAll()
-//                        .requestMatchers("/user").hasRole("USER")
-//                        .requestMatchers("/admin").hasRole("ADMIN")
+                        .requestMatchers("/api/test/auth").hasRole("USER")
                         .anyRequest().permitAll())
+                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider, userDetailsService), UsernamePasswordAuthenticationFilter.class)
-//                .addFilterBefore(emailPasswordAuthFilter(), UsernamePasswordAuthenticationFilter.class)
-//                .rememberMe(rememberMe -> rememberMe
-//                        .rememberMeParameter("remember")
-//                        .alwaysRemember(false)
-//                        .tokenValiditySeconds(2592000))
-//                .exceptionHandling(e -> {
-//                            e.accessDeniedHandler(new Http403Handler(objectMapper));
-//                            e.authenticationEntryPoint(new Http401Handler(objectMapper));
-//                        }
-//                )
                 .build();
     }
-
-//    @Bean
-    public UserDetailsService userDetailService(UserRepository userRepository) {
-        return username -> {
-            User user = userRepository.findByEmail(username)
-                    .orElseThrow(() -> new UsernameNotFoundException(username));
-
-            return new UserPrincipal(user);
-        };
-    }
-
-//    @Bean
-//    public EmailPasswordAuthFilter emailPasswordAuthFilter() {
-//        EmailPasswordAuthFilter filter = new EmailPasswordAuthFilter(objectMapper);
-//        filter.setAuthenticationManager(authenticationManager());
-//        filter.setAuthenticationSuccessHandler(new LoginSuccessHandler(objectMapper));
-//        filter.setAuthenticationFailureHandler(new LoginFailHandler(objectMapper));
-//        filter.setSecurityContextRepository(new HttpSessionSecurityContextRepository());
-//        return filter;
-//    }
 
     @Bean
     public AuthenticationManager authenticationManager() {
         DaoAuthenticationProvider provider =
-                new DaoAuthenticationProvider(userDetailService(userRepository));
+                new DaoAuthenticationProvider(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder);
         return new ProviderManager(provider);
     }

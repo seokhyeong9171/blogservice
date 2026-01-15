@@ -41,6 +41,8 @@ management:
 #      name: user
 #      password: 1234
 
+
+
 jwt:
   secret: dskjfsd32r5fj023jfdsjd3fopsfjd09fsdvsdfv23r3fnomnkn2fosk23p9fjpo23
 server:
@@ -48,3 +50,4 @@ server:
     session:
       cookie:
         max-age: 172800
+      timeout: 0
