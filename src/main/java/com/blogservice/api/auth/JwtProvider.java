@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -23,6 +24,7 @@ public class JwtProvider {
         //  1. jwt 생성 클래스 분리
         //  2. jwt 만료 시간 등 설정
         return Jwts.builder()
+                .id(UUID.randomUUID().toString())
                 .claim("username", username)
                 .signWith(secretKey)
                 .issuedAt(new Date())

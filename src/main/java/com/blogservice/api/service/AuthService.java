@@ -69,6 +69,22 @@ public class AuthService {
                 .build();
     }
 
+    public String reissueToken(Long userId, String refreshTokenFromCookie) {
+        User findUser = userRepository.findById(userId)
+                .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+
+        List<RefreshToken> tokenList = refreshTokenRepository.findByUserOrderByExpireAtDesc(findUser);
+        if (tokenList.isEmpty()) {
+            throw new ServiceException(TOKEN_LIST_EMPTY);
+        }
+        RefreshToken refreshTokenFromDB = tokenList.getFirst();
+        if (!refreshTokenProvider.validateRefreshToken(refreshTokenFromCookie, refreshTokenFromDB)) {
+            throw new ServiceException(REFRESH_TOKEN_INVALID);
+        }
+
+        return jwtProvider.generateJwtToken(findUser.getEmail());
+    }
+
     private User createNewUser(Signup.Request request) {
         String encryptedPassword = passwordEncoder.encode(request.getPassword());
         return User.builder()
@@ -82,21 +98,5 @@ public class AuthService {
                 .isWithdrawal(false)
                 .role(Role.ROLE_USER)
                 .build();
-    }
-
-    public String reissueToken(Long userId, String refreshToken) {
-        User findUser = userRepository.findById(userId)
-                .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
-
-        List<RefreshToken> tokenList = refreshTokenRepository.findByUserOrderByExpireAtDesc(findUser);
-        if (tokenList.isEmpty()) {
-            throw new ServiceException(TOKEN_LIST_EMPTY);
-        }
-        RefreshToken token = tokenList.getFirst();
-        if (!refreshTokenProvider.validateRefreshToken(token)) {
-            throw new ServiceException(REFRESH_TOKEN_INVALID);
-        }
-
-        return jwtProvider.generateJwtToken(findUser.getEmail());
     }
 }

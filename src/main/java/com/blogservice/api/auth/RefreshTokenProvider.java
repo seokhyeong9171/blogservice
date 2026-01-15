@@ -2,7 +2,6 @@ package com.blogservice.api.auth;
 
 import com.blogservice.api.domain.auth.RefreshToken;
 import com.blogservice.api.domain.user.User;
-import com.blogservice.api.exception.ErrorCode;
 import com.blogservice.api.exception.ServiceException;
 import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.UUID;
 
 import static com.blogservice.api.exception.ErrorCode.*;
@@ -52,7 +50,9 @@ public class RefreshTokenProvider {
         return refreshTokenCookie.getValue();
     }
 
-    public boolean validateRefreshToken(RefreshToken refreshToken) {
-        return refreshToken != null && refreshToken.getExpireAt().isAfter(LocalDateTime.now());
+    public boolean validateRefreshToken(String refreshTokenFromCookie, RefreshToken refreshToken) {
+        return refreshToken != null
+                && refreshToken.getExpireAt().isAfter(LocalDateTime.now())
+                && refreshToken.getRefreshToken().equals(refreshTokenFromCookie);
     }
 }
