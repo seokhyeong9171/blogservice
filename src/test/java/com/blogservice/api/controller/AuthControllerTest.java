@@ -1,12 +1,20 @@
 package com.blogservice.api.controller;
 
+import com.blogservice.api.auth.JwtProvider;
+import com.blogservice.api.config.BlogserviceMockSecurityContext;
+import com.blogservice.api.config.BlogserviceMockUser;
+import com.blogservice.api.domain.auth.RefreshToken;
 import com.blogservice.api.domain.user.Role;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.Login;
 import com.blogservice.api.exception.ErrorCode;
+import com.blogservice.api.repository.auth.RefreshTokenRepository;
 import com.blogservice.api.repository.user.UserRepository;
 import com.blogservice.api.dto.Signup;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Jwt;
+import jakarta.servlet.http.Cookie;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +27,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static com.blogservice.api.exception.ErrorCode.*;
 import static org.springframework.http.HttpHeaders.*;
@@ -41,8 +51,15 @@ class AuthControllerTest {
     private UserRepository userRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private RefreshTokenRepository refreshTokenRepository;
+    @Autowired
+    private JwtProvider jwtProvider;
 
-    @BeforeEach
+    @Autowired
+    private BlogserviceMockSecurityContext securityContext;
+
+    @AfterEach
     void clean() {
 //        userRepository.deleteAll();
 //        jdbcTemplate.execute("ALTER TABLE USERS ALTER COLUMN id RESTART WITH 1");
@@ -158,6 +175,36 @@ class AuthControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(PASSWORD_NOT_MATCHING.getStatus().value()))
                 .andExpect(jsonPath("$.message").value(PASSWORD_NOT_MATCHING.getMessage()))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("refresh token 재발급 성공")
+    @BlogserviceMockUser
+    void refresh_token_reissue_success() throws Exception{
+        // when
+        User user = securityContext.getCurrentUser();
+
+        String jwt = jwtProvider.generateJwtToken(user.getEmail());
+
+        RefreshToken refreshToken = RefreshToken.builder()
+                .refreshToken(UUID.randomUUID().toString())
+                .user(user)
+                .expireAt(LocalDateTime.now().plusSeconds(360000))
+                .build();
+
+        refreshTokenRepository.save(refreshToken);
+
+
+        // expected
+        mockMvc.perform(post("/api/auth/reissue")
+                        .header(AUTHORIZATION, "Bearer " + jwt)
+                        .cookie(new Cookie("refreshToken", refreshToken.getRefreshToken()))
+                )
+                .andExpect(status().isOk())
+                .andExpect(header().exists(AUTHORIZATION))
+//                .andExpect(cookie().exists("refreshToken"))
+                .andExpect(jsonPath("$.jwt").exists())
                 .andDo(print());
     }
 

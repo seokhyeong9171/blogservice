@@ -27,7 +27,7 @@ public class RefreshToken extends BaseTimeEntity {
 
     private LocalDateTime expireAt;
 
-    @ManyToOne(fetch = LAZY, cascade = ALL)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
