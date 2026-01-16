@@ -4,15 +4,17 @@ import com.blogservice.api.domain.BaseTimeEntity;
 import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.domain.user.User;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static jakarta.persistence.FetchType.*;
-import static jakarta.persistence.GenerationType.*;
-import static lombok.AccessLevel.*;
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Entity
@@ -28,7 +30,7 @@ public class Comment extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "post_id")
+    @JoinColumn(name = "parent_id")
     private Comment parentComment;
 
     @OneToMany(mappedBy = "parentComment")
@@ -50,8 +52,6 @@ public class Comment extends BaseTimeEntity {
     private Post post;
 
     private boolean isDeleted;
-
-    private LocalDateTime wroteAt = this.getCreatedAt();
 
     @Builder
     public Comment(

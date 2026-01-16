@@ -2,22 +2,23 @@ package com.blogservice.api.domain.post;
 
 import com.blogservice.api.domain.BaseTimeEntity;
 import com.blogservice.api.domain.user.User;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
-import static jakarta.persistence.CascadeType.*;
-import static jakarta.persistence.FetchType.*;
-import static jakarta.persistence.GenerationType.*;
-import static lombok.AccessLevel.*;
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = PROTECTED)
-public class Like extends BaseTimeEntity {
+public class Likes extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -29,12 +30,9 @@ public class Like extends BaseTimeEntity {
     @ManyToOne(fetch = LAZY, cascade = ALL)
     private Post post;
 
-    private LocalDateTime likedAt = this.getCreatedAt();
-
     @Builder
-    public Like(User user, Post post, LocalDateTime likedAt) {
+    public Likes(User user, Post post) {
         this.user = user;
         this.post = post;
-        this.likedAt = likedAt;
     }
 }

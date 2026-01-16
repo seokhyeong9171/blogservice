@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import static jakarta.persistence.FetchType.*;
-import static jakarta.persistence.GenerationType.*;
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Getter
 @Entity
@@ -28,13 +28,11 @@ public class PostSnapshot extends BaseTimeEntity {
     @Lob
     private String content;
 
-    private final LocalDateTime wroteAt = this.post.getWroteAt();
-    private LocalDateTime updatedAt = this.getCreatedAt();
+    private LocalDateTime wroteAt;
 
-    public PostSnapshot(Post post, String title, String content, LocalDateTime updatedAt) {
+    public PostSnapshot(Post post, String title, String content) {
         this.post = post;
         this.title = title;
         this.content = content;
-        this.updatedAt = updatedAt;
     }
 }

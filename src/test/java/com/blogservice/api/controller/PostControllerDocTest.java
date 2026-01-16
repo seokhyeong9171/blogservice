@@ -5,8 +5,8 @@ import com.blogservice.api.config.BlogserviceMockUser;
 import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.user.UserRepository;
-import com.blogservice.api.request.post.PostCreate;
-import com.blogservice.api.request.post.PostEdit;
+import com.blogservice.api.dto.request.post.PostCreate;
+import com.blogservice.api.dto.request.post.PostEdit;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -67,8 +67,8 @@ public class PostControllerDocTest {
     void clean() {
         postRepository.deleteAll();
         userRepository.deleteAll();
-        jdbcTemplate.execute("ALTER TABLE post ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("ALTER TABLE users ALTER COLUMN id RESTART WITH 1");
+//        jdbcTemplate.execute("ALTER TABLE post ALTER COLUMN id RESTART WITH 1");
+//        jdbcTemplate.execute("ALTER TABLE users ALTER COLUMN id RESTART WITH 1");
     }
 
     @Test

@@ -3,13 +3,13 @@ package com.blogservice.api.domain.auth;
 import com.blogservice.api.domain.BaseTimeEntity;
 import com.blogservice.api.domain.user.User;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
-import static jakarta.persistence.FetchType.*;
-import static jakarta.persistence.GenerationType.*;
-import static lombok.AccessLevel.*;
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Entity
@@ -28,13 +28,10 @@ public class LoginLog extends BaseTimeEntity {
 
     private String userAgent;
 
-    private LocalDateTime loginAt = this.getCreatedAt();
-
     @Builder
-    public LoginLog(User user, String ipAddress, String userAgent, LocalDateTime loginAt) {
+    public LoginLog(User user, String ipAddress, String userAgent) {
         this.user = user;
         this.ipAddress = ipAddress;
         this.userAgent = userAgent;
-        this.loginAt = loginAt;
     }
 }

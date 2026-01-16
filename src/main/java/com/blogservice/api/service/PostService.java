@@ -2,14 +2,14 @@ package com.blogservice.api.service;
 
 import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.domain.user.User;
+import com.blogservice.api.dto.request.post.PostCreate;
+import com.blogservice.api.dto.request.post.PostEdit;
+import com.blogservice.api.dto.request.post.PostSearch;
+import com.blogservice.api.dto.response.PostResponse;
 import com.blogservice.api.exception.PostNotFound;
 import com.blogservice.api.exception.UserNotFound;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.user.UserRepository;
-import com.blogservice.api.request.post.PostCreate;
-import com.blogservice.api.request.post.PostEdit;
-import com.blogservice.api.request.post.PostSearch;
-import com.blogservice.api.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

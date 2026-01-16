@@ -6,35 +6,83 @@
 :toclevels: 2
 :sectlinks:
 
+= 인증
+
+== 회원가입
+
+=== 요청
+include::{snippets}/user-signup/request-fields.adoc[]
+
+=== 응답
+include::{snippets}/user-signup/http-response.adoc[]
+include::{snippets}/user-signup/response-fields.adoc[]
+
+== 로그인
+
+=== 요청
+include::{snippets}/user-login/request-fields.adoc[]
+
+=== 응답
+include::{snippets}/user-login/http-response.adoc[]
+include::{snippets}/user-login/response-fields.adoc[]
+
+== 토큰 재발급
+
+=== 요청
+include::{snippets}/token-reissue/http-request.adoc[]
+
+=== 응답
+include::{snippets}/token-reissue/http-response.adoc[]
+include::{snippets}/token-reissue/response-fields.adoc[]
+
+
+= 회원정보
+
+== 이메일 중복체크
+
+=== 요청
+include::{snippets}/user-email-check/http-request.adoc[]
+
+=== 응답
+include::{snippets}/user-email-check/http-response.adoc[]
+include::{snippets}/user-email-check/response-fields.adoc[]
+
+== 닉네임 중복체크
+
+=== 요청
+include::{snippets}/user-nickname-check/http-request.adoc[]
+
+=== 응답
+include::{snippets}/user-nickname-check/http-response.adoc[]
+include::{snippets}/user-nickname-check/response-fields.adoc[]
+
+= 게시글
+
 == 글 단건 조회
 
 === 요청
 include::{snippets}/post-inquiry/http-request.adoc[]
-
 include::{snippets}/post-inquiry/path-parameters.adoc[]
 
 === 응답
 include::{snippets}/post-inquiry/http-response.adoc[]
-
 include::{snippets}/post-inquiry/response-fields.adoc[]
+
 
 == 글 여러개 조회
 
 === 요청
 include::{snippets}/post-list-inquiry/http-request.adoc[]
-
 include::{snippets}/post-list-inquiry/query-parameters.adoc[]
 
 === 응답
 include::{snippets}/post-list-inquiry/http-response.adoc[]
-
 include::{snippets}/post-list-inquiry/response-fields.adoc[]
 
 == 글 작성
 
 === 요청
 include::{snippets}/post-create/http-request.adoc[]
-
 include::{snippets}/post-create/request-fields.adoc[]
 
 === 응답
@@ -44,9 +92,7 @@ include::{snippets}/post-create/http-response.adoc[]
 
 === 요청
 include::{snippets}/post-edit/http-request.adoc[]
-
 include::{snippets}/post-edit/path-parameters.adoc[]
-
 include::{snippets}/post-edit/request-fields.adoc[]
 
 === 응답
@@ -56,7 +102,6 @@ include::{snippets}/post-edit/http-response.adoc[]
 
 === 요청
 include::{snippets}/post-delete/http-request.adoc[]
-
 include::{snippets}/post-delete/path-parameters.adoc[]
 
 === 응답

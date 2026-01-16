@@ -1,4 +1,4 @@
-package com.blogservice.api.response;
+package com.blogservice.api.dto.response;
 
 import com.blogservice.api.domain.post.Post;
 import lombok.Builder;

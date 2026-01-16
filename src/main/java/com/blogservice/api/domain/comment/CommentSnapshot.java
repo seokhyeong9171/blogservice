@@ -8,8 +8,8 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 import static jakarta.persistence.FetchType.LAZY;
-import static jakarta.persistence.GenerationType.*;
-import static lombok.AccessLevel.*;
+import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Entity
@@ -30,13 +30,10 @@ public class CommentSnapshot {
 
     private boolean isDeleted;
 
-    private final LocalDateTime wroteAt = this.comment.getWroteAt();
-    private LocalDateTime updatedAt = this.getUpdatedAt();
-
-    public CommentSnapshot(Comment comment, String content, boolean isDeleted, LocalDateTime updatedAt) {
+    private LocalDateTime wroteAt;
+    public CommentSnapshot(Comment comment, String content, boolean isDeleted) {
         this.comment = comment;
         this.content = content;
         this.isDeleted = isDeleted;
-        this.updatedAt = updatedAt;
     }
 }

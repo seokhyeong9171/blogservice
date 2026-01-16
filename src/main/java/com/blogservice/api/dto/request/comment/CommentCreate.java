@@ -1,4 +1,4 @@
-package com.blogservice.api.request.comment;
+package com.blogservice.api.dto.request.comment;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;

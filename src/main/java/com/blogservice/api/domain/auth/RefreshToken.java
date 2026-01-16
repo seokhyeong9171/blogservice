@@ -7,27 +7,32 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import static jakarta.persistence.CascadeType.*;
-import static jakarta.persistence.FetchType.*;
-import static lombok.AccessLevel.*;
+import java.time.LocalDateTime;
+
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = PROTECTED)
-public class AuthToken extends BaseTimeEntity {
+public class RefreshToken extends BaseTimeEntity {
 
     @Id
-    private String jwt;
+    @GeneratedValue(strategy = IDENTITY)
+    private Long id;
     private String refreshToken;
 
-    @ManyToOne(fetch = LAZY, cascade = ALL)
+    private LocalDateTime expireAt;
+
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
     @Builder
-    public AuthToken(String jwt, String refreshToken, User user) {
-        this.jwt = jwt;
+    public RefreshToken(String refreshToken, LocalDateTime expireAt, User user) {
         this.refreshToken = refreshToken;
+        this.expireAt = expireAt;
         this.user = user;
     }
 }
