@@ -3,7 +3,7 @@ package com.blogservice.api.domain.post;
 import com.blogservice.api.domain.BaseTimeEntity;
 import com.blogservice.api.domain.comment.Comment;
 import com.blogservice.api.domain.user.User;
-import com.blogservice.api.dto.request.post.PostEdit;
+import com.blogservice.api.dto.PostEdit;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -49,12 +49,12 @@ public class Post extends BaseTimeEntity {
         this.isDeleted = isDeleted;
     }
 
-    public void edit(PostEdit postEdit) {
-        if (postEdit.getTitle() != null) {
-            title = postEdit.getTitle();
+    public void edit(PostEdit.Request request) {
+        if (request.getTitle() != null) {
+            this.title = request.getTitle();
         }
-        if (postEdit.getContent() != null) {
-            content = postEdit.getContent();
+        if (request.getContent() != null) {
+            this.content = request.getContent();
         }
     }
 

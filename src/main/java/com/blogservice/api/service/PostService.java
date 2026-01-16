@@ -3,13 +3,11 @@ package com.blogservice.api.service;
 import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.PostCreate;
-import com.blogservice.api.dto.request.post.PostEdit;
+import com.blogservice.api.dto.PostEdit;
 import com.blogservice.api.dto.request.post.PostSearch;
 import com.blogservice.api.dto.response.PostResponse;
-import com.blogservice.api.exception.ErrorCode;
 import com.blogservice.api.exception.PostNotFound;
 import com.blogservice.api.exception.ServiceException;
-import com.blogservice.api.exception.UserNotFound;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.blogservice.api.exception.ErrorCode.*;
@@ -67,11 +66,22 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
-    public void edit(Long id, PostEdit postEdit) {
-        Post post = postRepository.findById(id)
-                .orElseThrow(PostNotFound::new);
+    public PostEdit.Response edit(Long userId, Long postId, PostEdit.Request request) {
+        Post findPost = findPostById(postId);
 
-        post.edit(postEdit);
+        if (!Objects.equals(findPost.getUser().getId(), userId)) {
+            throw new ServiceException(POST_AUTHOR_NOT_MATCHING);
+        }
+
+        findPost.edit(request);
+        return PostEdit.Response.builder()
+                .postId(postId)
+                .build();
+    }
+
+    private Post findPostById(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new ServiceException(POST_NOT_FOUND));
     }
 
     public void delete(Long postId) {

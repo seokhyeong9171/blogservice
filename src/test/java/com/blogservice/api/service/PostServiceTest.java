@@ -2,13 +2,11 @@ package com.blogservice.api.service;
 
 import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.domain.user.User;
-import com.blogservice.api.exception.ErrorCode;
 import com.blogservice.api.exception.PostNotFound;
 import com.blogservice.api.exception.ServiceException;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.user.UserRepository;
 import com.blogservice.api.dto.PostCreate;
-import com.blogservice.api.dto.request.post.PostEdit;
 import com.blogservice.api.dto.request.post.PostSearch;
 import com.blogservice.api.dto.response.PostResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +14,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.List;
 import java.util.stream.IntStream;
