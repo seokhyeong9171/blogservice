@@ -5,7 +5,7 @@ import com.blogservice.api.domain.user.User;
 import com.blogservice.api.exception.PostNotFound;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.user.UserRepository;
-import com.blogservice.api.dto.request.post.PostCreate;
+import com.blogservice.api.dto.PostCreate;
 import com.blogservice.api.dto.request.post.PostEdit;
 import com.blogservice.api.dto.request.post.PostSearch;
 import com.blogservice.api.dto.response.PostResponse;

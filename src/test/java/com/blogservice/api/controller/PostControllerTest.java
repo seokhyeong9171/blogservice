@@ -5,7 +5,7 @@ import com.blogservice.api.config.BlogserviceMockUser;
 import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.user.UserRepository;
-import com.blogservice.api.dto.request.post.PostCreate;
+import com.blogservice.api.dto.PostCreate;
 import com.blogservice.api.dto.request.post.PostEdit;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;

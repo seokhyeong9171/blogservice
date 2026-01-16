@@ -53,8 +53,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/test/auth", "/api/auth/reissue").hasRole("USER")
-                        .anyRequest().permitAll())
+//                        .requestMatchers("/api/test/auth", "/api/auth/reissue").hasRole("USER")
+                        .requestMatchers("/api/auth/login").permitAll()
+                        .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)

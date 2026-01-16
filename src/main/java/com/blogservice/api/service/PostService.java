@@ -2,11 +2,13 @@ package com.blogservice.api.service;
 
 import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.domain.user.User;
-import com.blogservice.api.dto.request.post.PostCreate;
+import com.blogservice.api.dto.PostCreate;
 import com.blogservice.api.dto.request.post.PostEdit;
 import com.blogservice.api.dto.request.post.PostSearch;
 import com.blogservice.api.dto.response.PostResponse;
+import com.blogservice.api.exception.ErrorCode;
 import com.blogservice.api.exception.PostNotFound;
+import com.blogservice.api.exception.ServiceException;
 import com.blogservice.api.exception.UserNotFound;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.user.UserRepository;
@@ -18,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.blogservice.api.exception.ErrorCode.*;
+
 @Slf4j
 @Transactional
 @Service
@@ -27,12 +31,12 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
-    public void write(Long userId, PostCreate postCreate) {
-        User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
+    public PostCreate.Response write(Long userId, PostCreate.Request request) {
+        User user = findUserById(userId);
 
         Post post = Post.builder()
-                .title(postCreate.getTitle())
-                .content(postCreate.getContent())
+                .title(request.getTitle())
+                .content(request.getContent())
                 .user(user)
                 .build();
 
@@ -70,5 +74,9 @@ public class PostService {
                 .orElseThrow(PostNotFound::new);
 
         postRepository.delete(post);
+    }
+
+    private User findUserById(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
     }
 }

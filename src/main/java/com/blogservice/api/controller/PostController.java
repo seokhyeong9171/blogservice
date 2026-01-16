@@ -1,13 +1,15 @@
 package com.blogservice.api.controller;
 
 import com.blogservice.api.config.UserPrincipal;
-import com.blogservice.api.dto.request.post.PostCreate;
+import com.blogservice.api.dto.PostCreate;
 import com.blogservice.api.dto.request.post.PostEdit;
 import com.blogservice.api.dto.request.post.PostSearch;
 import com.blogservice.api.dto.response.PostResponse;
 import com.blogservice.api.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -15,18 +17,21 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+import static org.springframework.http.HttpStatus.*;
+
 @Slf4j
 @RestController
+@RequestMapping("/api/post")
 @RequiredArgsConstructor
 public class PostController {
 
     private final PostService postService;
 
-//    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/posts")
-    public Map<String, String> post(@AuthenticationPrincipal UserPrincipal userPrincipal, @RequestBody @Validated PostCreate request) {
-        postService.write(userPrincipal.getUserId(), request);
-        return Map.of();
+    public ResponseEntity<PostCreate.Response> post
+            (@AuthenticationPrincipal UserPrincipal userPrincipal, @RequestBody @Validated PostCreate.Request request) {
+        PostCreate.Response response = postService.write(userPrincipal.getUserId(), request);
+        return ResponseEntity.status(CREATED).body(response);
     }
 
     @GetMapping("/posts/{postId}")
