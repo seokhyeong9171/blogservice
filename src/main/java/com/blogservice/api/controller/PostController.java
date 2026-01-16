@@ -21,13 +21,13 @@ import static org.springframework.http.HttpStatus.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/post")
+@RequestMapping("/api/posts")
 @RequiredArgsConstructor
 public class PostController {
 
     private final PostService postService;
 
-    @PostMapping("/posts")
+    @PostMapping()
     public ResponseEntity<PostCreate.Response> post
             (@AuthenticationPrincipal UserPrincipal userPrincipal, @RequestBody @Validated PostCreate.Request request) {
         PostCreate.Response response = postService.write(userPrincipal.getUserId(), request);

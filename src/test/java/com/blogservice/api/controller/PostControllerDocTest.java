@@ -101,7 +101,7 @@ public class PostControllerDocTest {
     @DisplayName("글 등록")
     void test2() throws Exception {
         // given
-        PostCreate request = PostCreate.builder()
+        PostCreate.Request request = PostCreate.Request.builder()
                 .title("제목입니다.")
                 .content("내용입니다.")
                 .build();

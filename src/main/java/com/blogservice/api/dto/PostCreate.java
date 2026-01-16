@@ -28,6 +28,6 @@ public class PostCreate {
     @NoArgsConstructor(access = PROTECTED)
     @Builder
     public static class Response {
-        private String postId;
+        private Long postId;
     }
 }

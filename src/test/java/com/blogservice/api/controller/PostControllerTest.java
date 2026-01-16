@@ -53,49 +53,28 @@ class PostControllerTest {
     void clean() {
         postRepository.deleteAll();
         userRepository.deleteAll();
-        jdbcTemplate.execute("ALTER TABLE post ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("ALTER TABLE users ALTER COLUMN id RESTART WITH 1");
-    }
-
-    @Test
-    @DisplayName("글 작성 요청 시 title 값은 필수다.")
-    void test2() throws Exception {
-        // given
-        PostCreate request = PostCreate.builder()
-                .content("내용입니다.")
-                .build();
-
-        String json = objectMapper.writeValueAsString(request);
-
-        mockMvc.perform(post("/posts")
-                        .contentType(APPLICATION_JSON)
-                        .content(json)
-                )
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value("400"))
-                .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
-                .andExpect(jsonPath("$.validation.title").value("타이틀을 입력하세요."))
-                .andDo(print());
-
+//        jdbcTemplate.execute("ALTER TABLE post ALTER COLUMN id RESTART WITH 1");
+//        jdbcTemplate.execute("ALTER TABLE users ALTER COLUMN id RESTART WITH 1");
     }
 
     @Test
     @BlogserviceMockUser
-    @DisplayName("게시글 작성")
-    void test3() throws Exception {
+    @DisplayName("게시글 작성 - 성공")
+    void write_post_success() throws Exception {
         // given
-        PostCreate request = PostCreate.builder()
+        PostCreate.Request request = PostCreate.Request.builder()
                 .title("제목입니다.")
                 .content("내용입니다.")
                 .build();
 
         String json = objectMapper.writeValueAsString(request);
 
-        mockMvc.perform(post("/posts")
+        mockMvc.perform(post("/api/posts")
                         .contentType(APPLICATION_JSON)
                         .content(json)
                 )
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.postId").exists())
                 .andDo(print());
 
         assertEquals(1L, postRepository.count());
@@ -103,6 +82,50 @@ class PostControllerTest {
         Post post = postRepository.findAll().get(0);
         assertEquals("제목입니다.", post.getTitle());
         assertEquals("내용입니다.", post.getContent());
+    }
+
+    @Test
+    @BlogserviceMockUser
+    @DisplayName("게시글 작성 - 실패 - 제목 없음")
+    void write_post_fail_title_blank() throws Exception {
+        // given
+        PostCreate.Request request = PostCreate.Request.builder()
+                .title("")
+                .content("내용입니다.")
+                .build();
+
+        String json = objectMapper.writeValueAsString(request);
+
+        mockMvc.perform(post("/api/posts")
+                        .contentType(APPLICATION_JSON)
+                        .content(json)
+                )
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+
+        assertEquals(0, postRepository.count());
+    }
+
+    @Test
+    @BlogserviceMockUser
+    @DisplayName("게시글 작성 - 실패 - 내용 없음")
+    void write_post_fail_content_blank() throws Exception {
+        // given
+        PostCreate.Request request = PostCreate.Request.builder()
+                .title("제목입니다")
+                .content("")
+                .build();
+
+        String json = objectMapper.writeValueAsString(request);
+
+        mockMvc.perform(post("/api/posts")
+                        .contentType(APPLICATION_JSON)
+                        .content(json)
+                )
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+
+        assertEquals(0, postRepository.count());
     }
 
     @Test

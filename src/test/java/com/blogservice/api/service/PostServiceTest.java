@@ -2,7 +2,9 @@ package com.blogservice.api.service;
 
 import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.domain.user.User;
+import com.blogservice.api.exception.ErrorCode;
 import com.blogservice.api.exception.PostNotFound;
+import com.blogservice.api.exception.ServiceException;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.user.UserRepository;
 import com.blogservice.api.dto.PostCreate;
@@ -19,6 +21,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import static com.blogservice.api.exception.ErrorCode.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -33,9 +36,6 @@ class PostServiceTest {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     @BeforeEach
     void clean() {
         postRepository.deleteAll();
@@ -43,10 +43,10 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("글 작성")
-    void test1() {
+    @DisplayName("글 작성 - 성공")
+    void write_post_success() {
         // given
-        PostCreate postCreate = PostCreate.builder()
+        PostCreate.Request request = PostCreate.Request.builder()
                 .title("제목입니다.")
                 .content("내용입니다.")
                 .build();
@@ -59,13 +59,38 @@ class PostServiceTest {
         User savedUser = userRepository.save(user);
 
         // when
-        postService.write(savedUser.getId(), postCreate);
+        postService.write(savedUser.getId(), request);
 
         // then
         assertEquals(1L, postRepository.count());
         Post post = postRepository.findAll().getFirst();
         assertEquals("제목입니다.", post.getTitle());
         assertEquals("내용입니다.", post.getContent());
+        assertEquals(savedUser.getId(), post.getUserId());
+    }
+
+    @Test
+    @DisplayName("글 작성 - 실패 - 해당 유저 없음")
+    void write_post_fail_user_not_found() {
+        // given
+        PostCreate.Request request = PostCreate.Request.builder()
+                .title("제목입니다.")
+                .content("내용입니다.")
+                .build();
+
+        User user = User.builder()
+                .name("testname")
+                .email("testemail@test.com")
+                .password("testpassword")
+                .build();
+        User savedUser = userRepository.save(user);
+
+        // expected
+        ServiceException serviceException = assertThrowsExactly(
+                ServiceException.class, () -> postService.write(savedUser.getId() + 1, request)
+        );
+        assertEquals(USER_NOT_FOUND.getMessage(), serviceException.getMessage());
+        assertEquals(0, postRepository.count());
     }
 
     @Test

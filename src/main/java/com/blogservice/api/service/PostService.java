@@ -40,7 +40,11 @@ public class PostService {
                 .user(user)
                 .build();
 
-        postRepository.save(post);
+        Post savedPost = postRepository.save(post);
+
+        return PostCreate.Response.builder()
+                .postId(savedPost.getId())
+                .build();
     }
 
     @Transactional(readOnly = true)
