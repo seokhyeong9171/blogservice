@@ -38,6 +38,7 @@ public class PostService {
                 .title(request.getTitle())
                 .content(request.getContent())
                 .user(user)
+                .isDeleted(false)
                 .build();
 
         Post savedPost = postRepository.save(post);

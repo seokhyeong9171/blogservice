@@ -67,6 +67,7 @@ class PostServiceTest {
         assertEquals("제목입니다.", post.getTitle());
         assertEquals("내용입니다.", post.getContent());
         assertEquals(savedUser.getId(), post.getUserId());
+        assertFalse(post.isDeleted());
     }
 
     @Test
