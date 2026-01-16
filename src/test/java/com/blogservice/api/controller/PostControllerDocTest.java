@@ -182,7 +182,7 @@ public class PostControllerDocTest {
                 .build();
 
         // expected
-        this.mockMvc.perform(patch("/posts/{postId}", savedPost.getId())
+        this.mockMvc.perform(patch("/api/posts/{postId}", savedPost.getId())
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postEdit)))
                 .andDo(print())
