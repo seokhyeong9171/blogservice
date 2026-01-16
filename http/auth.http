@@ -28,8 +28,8 @@ Content-Type: application/json
 
 ### 로그아웃
 POST http://localhost:8080/api/auth/logout
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiI4OGUyYzU3Ny0wMGM0LTQwNjQtYTc4Zi00MzM4MWEzYjA4ODYiLCJ1c2VybmFtZSI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE3Njg1MzE4OTIsImV4cCI6MTc2ODUzMzY5Mn0.ym7LietxB0n0Df07eXcwXNTglYuAtXrf1_afyASHx4ooq0e5oQOcSQl2P-hCWCCK
-Cookie: refreshToken=1d128e39-1467-4bb7-96f4-8abe31ff181e
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiJjN2ZhMDA0MC1mM2RhLTQyNTktYmNkYy02OTI3MWQxMjUxN2QiLCJ1c2VybmFtZSI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE3Njg1MzM1MDAsImV4cCI6MTc2ODUzNTMwMH0.NOhJYsY0BAZYHHDWjKlltetP4V5znonbZCdGCrndytPCw1B33oUU2_S7AhlE9aaO
+Cookie: refreshToken=e0c25a8f-650d-4b79-9016-447122082782
 
 ### 토큰 재발급
 POST http://localhost:8080/api/auth/reissue

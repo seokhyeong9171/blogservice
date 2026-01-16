@@ -76,17 +76,19 @@ public class AuthController {
      * 로그아웃
      */
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(
-            @AuthenticationPrincipal UserPrincipal userPrincipal,
+    public ResponseEntity<Void> logout(
             HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
 
         String refreshTokenFromCookie = refreshTokenProvider.getTokenFromCookies(servletRequest.getCookies());
-        authService.logout(userPrincipal.getUserId(), refreshTokenFromCookie);
-        // 쿠키 헤더 비활성화
-        servletResponse.setHeader(AUTHORIZATION, null);
-        servletResponse.addCookie(new Cookie("refreshToken", null));
+        authService.logout(refreshTokenFromCookie);
 
-        return ResponseEntity.ok(null);
+        servletResponse.setHeader(AUTHORIZATION, null);
+        Cookie cookie = new Cookie("refreshToken", "");
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        servletResponse.addCookie(cookie);
+
+        return ResponseEntity.ok().build();
     }
 
 }

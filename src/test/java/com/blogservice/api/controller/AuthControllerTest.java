@@ -18,6 +18,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.matchers.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -207,6 +208,38 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.jwt").exists())
                 .andDo(print());
     }
+
+    @Test
+    @DisplayName("로그아웃 성공")
+    @BlogserviceMockUser
+    void logout_success() throws Exception{
+        // when
+        User user = securityContext.getCurrentUser();
+
+        String jwt = jwtProvider.generateJwtToken(user.getEmail());
+
+        RefreshToken refreshToken = RefreshToken.builder()
+                .refreshToken(UUID.randomUUID().toString())
+                .user(user)
+                .expireAt(LocalDateTime.now().plusSeconds(360000))
+                .build();
+
+        refreshTokenRepository.save(refreshToken);
+
+
+        // expected
+        mockMvc.perform(post("/api/auth/logout")
+                        .header(AUTHORIZATION, "Bearer " + jwt)
+                        .cookie(new Cookie("refreshToken", refreshToken.getRefreshToken()))
+                )
+                .andExpect(status().isOk())
+//                .andExpect(header().exists(AUTHORIZATION))
+                .andExpect(header().doesNotExist(AUTHORIZATION))
+                .andExpect(cookie().value("refreshToken", ""))
+                .andDo(print());
+    }
+
+
 
 
 }

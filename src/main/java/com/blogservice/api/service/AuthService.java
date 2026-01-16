@@ -13,6 +13,7 @@ import com.blogservice.api.repository.auth.RefreshTokenRepository;
 import com.blogservice.api.repository.user.UserRepository;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -86,11 +87,11 @@ public class AuthService {
         return jwtProvider.generateJwtToken(findUser.getEmail());
     }
 
-    public void logout(Long userId, String refreshToken) {
-        User findUser = findUserById(userId);
+    public void logout(String refreshToken) {
         RefreshToken findRefreshToken = refreshTokenRepository.findByRefreshToken(refreshToken)
                 .orElseThrow(() -> new ServiceException(REFRESH_TOKEN_INVALID));
         refreshTokenRepository.delete(findRefreshToken);
+        SecurityContextHolder.clearContext();
     }
 
     private User createNewUser(Signup.Request request) {
