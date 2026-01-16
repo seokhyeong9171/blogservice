@@ -20,11 +20,6 @@ spring:
         format_sql: true
         use_sql_comments: true
 
-  sql:
-    init:
-#      mode: always
-      mode: never
-
 
 management:
   endpoints:
@@ -45,9 +40,3 @@ refreshtoken:
 jwt:
   secret: dskjfsd32r5fj023jfdsjd3fopsfjd09fsdvsdfv23r3fnomnkn2fosk23p9fjpo23
   expire: 1800000      # 30분
-server:
-  servlet:
-    session:
-      cookie:
-        max-age: 172800
-      timeout: 0
