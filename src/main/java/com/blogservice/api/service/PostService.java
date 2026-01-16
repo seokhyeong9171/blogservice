@@ -47,6 +47,19 @@ public class PostService {
                 .build();
     }
 
+    public PostEdit.Response edit(Long userId, Long postId, PostEdit.Request request) {
+        Post findPost = findPostById(postId);
+
+        if (!Objects.equals(findPost.getUser().getId(), userId)) {
+            throw new ServiceException(POST_AUTHOR_NOT_MATCHING);
+        }
+
+        findPost.edit(request);
+        return PostEdit.Response.builder()
+                .postId(postId)
+                .build();
+    }
+
     @Transactional(readOnly = true)
     public PostResponse get(Long id) {
         Post post = postRepository.findById(id)
@@ -64,19 +77,6 @@ public class PostService {
         return postRepository.getList(postSearch).stream()
                 .map(PostResponse::new)
                 .collect(Collectors.toList());
-    }
-
-    public PostEdit.Response edit(Long userId, Long postId, PostEdit.Request request) {
-        Post findPost = findPostById(postId);
-
-        if (!Objects.equals(findPost.getUser().getId(), userId)) {
-            throw new ServiceException(POST_AUTHOR_NOT_MATCHING);
-        }
-
-        findPost.edit(request);
-        return PostEdit.Response.builder()
-                .postId(postId)
-                .build();
     }
 
     private Post findPostById(Long postId) {

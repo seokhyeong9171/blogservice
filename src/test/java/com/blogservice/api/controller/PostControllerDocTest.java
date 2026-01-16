@@ -3,6 +3,7 @@ package com.blogservice.api.controller;
 import com.blogservice.api.config.BlogserviceMockSecurityContext;
 import com.blogservice.api.config.BlogserviceMockUser;
 import com.blogservice.api.domain.post.Post;
+import com.blogservice.api.dto.PostEdit;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.user.UserRepository;
 import com.blogservice.api.dto.PostCreate;
@@ -184,7 +185,7 @@ public class PostControllerDocTest {
                 .build();
         Post savedPost = postRepository.save(requestPost);
 
-        PostEdit postEdit = PostEdit.builder()
+        PostEdit.Request postEdit = PostEdit.Request.builder()
                 .title("수정후내용")
                 .content("수정전내용")
                 .build();

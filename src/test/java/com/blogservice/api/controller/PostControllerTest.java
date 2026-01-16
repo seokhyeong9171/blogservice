@@ -3,6 +3,7 @@ package com.blogservice.api.controller;
 import com.blogservice.api.config.BlogserviceMockSecurityContext;
 import com.blogservice.api.config.BlogserviceMockUser;
 import com.blogservice.api.domain.post.Post;
+import com.blogservice.api.dto.PostEdit;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.user.UserRepository;
 import com.blogservice.api.dto.PostCreate;
@@ -128,6 +129,83 @@ class PostControllerTest {
     }
 
     @Test
+    @BlogserviceMockUser
+    @DisplayName("글 제목 수정 - 성공")
+    void edit_post_title() throws Exception {
+        // given
+        Post requestPost = Post.builder()
+                .title("수정전제목").content("수정전내용")
+                .user(securityContext.getCurrentUser())
+                .build();
+        Post savedPost = postRepository.save(requestPost);
+
+        PostEdit.Request request = PostEdit.Request.builder()
+                .title("수정후내용")
+                .content("수정전내용")
+                .build();
+
+        // expected
+        mockMvc.perform(patch("/api/posts/{postId}", savedPost.getId())
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.postId").exists())
+                .andDo(print());
+    }
+
+    @Test
+    @BlogserviceMockUser
+    @DisplayName("게시글 수정 - 실패 - 제목 없음")
+    void edit_post_fail_title_blank() throws Exception {
+        // given
+        Post requestPost = Post.builder()
+                .title("수정전제목").content("수정전내용")
+                .user(securityContext.getCurrentUser())
+                .build();
+        Post savedPost = postRepository.save(requestPost);
+
+        PostEdit.Request request = PostEdit.Request.builder()
+                .title("")
+                .content("수정전내용")
+                .build();
+
+        mockMvc.perform(patch("/api/posts/{postId}", savedPost.getId())
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+
+        assertEquals(1, postRepository.count());
+    }
+
+    @Test
+    @BlogserviceMockUser
+    @DisplayName("게시글 수정 - 실패 - 내용 없음")
+    void edit_post_fail_content_blank() throws Exception {
+        // given
+        Post requestPost = Post.builder()
+                .title("수정전제목").content("수정전내용")
+                .user(securityContext.getCurrentUser())
+                .build();
+        Post savedPost = postRepository.save(requestPost);
+
+        PostEdit.Request request = PostEdit.Request.builder()
+                .title("수정전제목")
+                .content("")
+                .build();
+
+        mockMvc.perform(patch("/api/posts/{postId}", savedPost.getId())
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+
+        assertEquals(1, postRepository.count());
+    }
+
+    @Test
     @DisplayName("글 1개 조회")
     void test4() throws Exception {
         // given
@@ -210,7 +288,7 @@ class PostControllerTest {
                 .build();
         Post savedPost = postRepository.save(requestPost);
 
-        PostEdit postEdit = PostEdit.builder()
+        PostEdit.Request postEdit = PostEdit.Request.builder()
                 .title("수정후내용")
                 .content("수정전내용")
                 .build();
@@ -257,7 +335,7 @@ class PostControllerTest {
     @DisplayName("존재하지 않는 게시글 수정")
     void test10() throws Exception {
         // given
-        PostEdit postEdit = PostEdit.builder()
+        PostEdit.Request postEdit = PostEdit.Request.builder()
                 .title("수정후내용")
                 .content("수정전내용")
                 .build();
