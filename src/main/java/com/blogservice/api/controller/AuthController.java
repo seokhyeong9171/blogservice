@@ -6,6 +6,7 @@ import com.blogservice.api.dto.Login;
 import com.blogservice.api.dto.ReIssue;
 import com.blogservice.api.dto.Signup;
 import com.blogservice.api.service.AuthService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -69,6 +70,25 @@ public class AuthController {
         servletResponse.setHeader(AUTHORIZATION, "Bearer " + jwt);
 
         return ResponseEntity.ok(ReIssue.builder().jwt(jwt).build());
+    }
+
+    /**
+     * 로그아웃
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(
+            HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
+
+        String refreshTokenFromCookie = refreshTokenProvider.getTokenFromCookies(servletRequest.getCookies());
+        authService.logout(refreshTokenFromCookie);
+
+        servletResponse.setHeader(AUTHORIZATION, null);
+        Cookie cookie = new Cookie("refreshToken", "");
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        servletResponse.addCookie(cookie);
+
+        return ResponseEntity.ok().build();
     }
 
 }
