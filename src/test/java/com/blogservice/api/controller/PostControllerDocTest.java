@@ -53,22 +53,10 @@ public class PostControllerDocTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-//    @BeforeEach
-//    void setUp(WebApplicationContext webApplicationContext, RestDocumentationContextProvider restDocumentation) {
-//        this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-//                .apply(documentationConfiguration(restDocumentation))
-//                .build();
-//    }
-
     @AfterEach
     void clean() {
         postRepository.deleteAll();
         userRepository.deleteAll();
-//        jdbcTemplate.execute("ALTER TABLE post ALTER COLUMN id RESTART WITH 1");
-//        jdbcTemplate.execute("ALTER TABLE users ALTER COLUMN id RESTART WITH 1");
     }
 
     @Test
@@ -107,15 +95,18 @@ public class PostControllerDocTest {
                 .build();
 
         // expected
-        this.mockMvc.perform(post("/posts")
+        this.mockMvc.perform(post("/api/posts")
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andDo(document("post-create",
                         requestFields(
                                 fieldWithPath("title").description("제목"),
-                                fieldWithPath("content").description("내용").optional()
+                                fieldWithPath("content").description("내용")
+                        ),
+                        responseFields(
+                                fieldWithPath("postId").description("게시글 아이디")
                         )
                 ));
     }
@@ -203,6 +194,9 @@ public class PostControllerDocTest {
                         requestFields(
                                 fieldWithPath("title").description("제목"),
                                 fieldWithPath("content").description("내용")
+                        ),
+                        responseFields(
+                                fieldWithPath("postId").description("게시글 아이디")
                         )
                 ));
     }

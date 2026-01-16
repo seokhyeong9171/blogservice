@@ -3,6 +3,7 @@ package com.blogservice.api.controller;
 import com.blogservice.api.config.BlogserviceMockSecurityContext;
 import com.blogservice.api.config.BlogserviceMockUser;
 import com.blogservice.api.domain.post.Post;
+import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.PostEdit;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.user.UserRepository;
@@ -85,6 +86,27 @@ class PostControllerTest {
     }
 
     @Test
+    @DisplayName("게시글 작성 - 실패 - 인증 안됨")
+    void write_post_fail_unauthorized() throws Exception {
+        // given
+        PostCreate.Request request = PostCreate.Request.builder()
+                .title("제목입니다.")
+                .content("내용입니다.")
+                .build();
+
+        String json = objectMapper.writeValueAsString(request);
+
+        mockMvc.perform(post("/api/posts")
+                        .contentType(APPLICATION_JSON)
+                        .content(json)
+                )
+                .andExpect(status().isForbidden())
+                .andDo(print());
+
+        assertEquals(0, postRepository.count());
+    }
+
+    @Test
     @BlogserviceMockUser
     @DisplayName("게시글 작성 - 실패 - 제목 없음")
     void write_post_fail_title_blank() throws Exception {
@@ -150,6 +172,23 @@ class PostControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.postId").exists())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("게시글 수정 - 실패 - 인증 안됨")
+    void edit_post_fail_unauthorized() throws Exception {
+        // given
+        PostEdit.Request request = PostEdit.Request.builder()
+                .title("수정후제목")
+                .content("수정후내용")
+                .build();
+
+        mockMvc.perform(patch("/api/posts/{postId}", 1L)
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isForbidden())
                 .andDo(print());
     }
 
