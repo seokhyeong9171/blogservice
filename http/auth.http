@@ -26,6 +26,11 @@ Content-Type: application/json
   "password": "12345678"
 }
 
+### 로그아웃
+POST http://localhost:8080/api/auth/logout
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiI4OGUyYzU3Ny0wMGM0LTQwNjQtYTc4Zi00MzM4MWEzYjA4ODYiLCJ1c2VybmFtZSI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE3Njg1MzE4OTIsImV4cCI6MTc2ODUzMzY5Mn0.ym7LietxB0n0Df07eXcwXNTglYuAtXrf1_afyASHx4ooq0e5oQOcSQl2P-hCWCCK
+Cookie: refreshToken=1d128e39-1467-4bb7-96f4-8abe31ff181e
+
 ### 토큰 재발급
 POST http://localhost:8080/api/auth/reissue
 Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiJkM2FmMjNjNy1kZGQ3LTQ5ZWMtYjIzZi03YjE4YjE2YmE3M2UiLCJ1c2VybmFtZSI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE3Njg0ODgzOTcsImV4cCI6MTc2ODQ5MDE5N30.xgmurT51LLWmwj2B8kCllcmV7JSR5wCx6cVaCPVm2Ha6uAzTd8tpE5uY9Rc1uMIE

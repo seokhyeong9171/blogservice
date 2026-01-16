@@ -51,8 +51,7 @@ public class AuthService {
         String email = request.getEmail();
         String password = request.getPassword();
 
-        User findUser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+        User findUser = findUserByEmail(email);
 
         if (!passwordEncoder.matches(password, findUser.getPassword())) {
             throw new ServiceException(PASSWORD_NOT_MATCHING);
@@ -63,6 +62,9 @@ public class AuthService {
         refreshTokenRepository.save(refreshToken);
         Cookie refreshTokenCookie = refreshTokenProvider.getRefreshTokenCookie(refreshToken);
 
+        // todo
+        //  로그인 로그 생성
+
         return Login.ResponseDto.builder()
                 .jwt(jwt)
                 .cookie(refreshTokenCookie)
@@ -70,8 +72,7 @@ public class AuthService {
     }
 
     public String reissueToken(Long userId, String refreshTokenFromCookie) {
-        User findUser = userRepository.findById(userId)
-                .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+        User findUser = findUserById(userId);
 
         List<RefreshToken> tokenList = refreshTokenRepository.findByUserOrderByExpireAtDesc(findUser);
         if (tokenList.isEmpty()) {
@@ -83,6 +84,13 @@ public class AuthService {
         }
 
         return jwtProvider.generateJwtToken(findUser.getEmail());
+    }
+
+    public void logout(Long userId, String refreshToken) {
+        User findUser = findUserById(userId);
+        RefreshToken findRefreshToken = refreshTokenRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new ServiceException(REFRESH_TOKEN_INVALID));
+        refreshTokenRepository.delete(findRefreshToken);
     }
 
     private User createNewUser(Signup.Request request) {
@@ -98,5 +106,15 @@ public class AuthService {
                 .isWithdrawal(false)
                 .role(Role.ROLE_USER)
                 .build();
+    }
+
+    private User findUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+    }
+
+    private User findUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
     }
 }
