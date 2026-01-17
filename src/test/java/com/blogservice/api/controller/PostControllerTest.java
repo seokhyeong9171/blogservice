@@ -3,9 +3,11 @@ package com.blogservice.api.controller;
 import com.blogservice.api.config.BlogserviceMockSecurityContext;
 import com.blogservice.api.config.BlogserviceMockUser;
 import com.blogservice.api.domain.post.Post;
+import com.blogservice.api.domain.post.View;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.PostEdit;
 import com.blogservice.api.repository.post.PostRepository;
+import com.blogservice.api.repository.post.ViewRepository;
 import com.blogservice.api.repository.user.UserRepository;
 import com.blogservice.api.dto.PostCreate;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,6 +51,8 @@ class PostControllerTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private ViewRepository viewRepository;
 
     @AfterEach
     void clean() {
@@ -245,22 +249,150 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("글 1개 조회")
-    void test4() throws Exception {
+    @DisplayName("글 상세 조회 - 성공")
+    void view_post_details_success() throws Exception {
         // given
-        Post post = Post.builder()
-                .title("123456789012345")
-                .content("bar")
+        User user = User.builder()
+                .nickname("testuser")
+                .email("testuser@testuser.com")
+                .password("testpassword")
                 .build();
-        postRepository.save(post);
+        User author = userRepository.save(user);
+
+        Post post = Post.builder()
+                .title("testtitle")
+                .content("testcontent")
+                .user(author)
+                .isDeleted(false)
+                .build();
+        Post savedPost = postRepository.save(post);
 
         // expected
-        mockMvc.perform(get("/posts/{postId}", post.getId())
+        mockMvc.perform(get("/api/posts/{postId}", savedPost.getId())
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(post.getId()))
-                .andExpect(jsonPath("$.title").value("1234567890"))
-                .andExpect(jsonPath("$.content").value("bar"))
+                .andExpect(jsonPath("$.title").value(savedPost.getTitle()))
+                .andExpect(jsonPath("$.content").value(savedPost.getContent()))
+                .andExpect(jsonPath("$.writeDt").value(savedPost.getCreatedAt().toString()))
+                .andExpect(jsonPath("$.author.id").value(author.getId()))
+                .andExpect(jsonPath("$.author.nickname").value(author.getNickname()))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("글 상세 조회 - 실패 - 해당 글 존재하지 않음")
+    void view_post_details_fail_post_not_found() throws Exception {
+
+        // expected
+        mockMvc.perform(get("/api/posts/{postId}", 999L)
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("글 상세 조회 - 실패 - 해당 글 삭제됨")
+    void view_post_details_fail_post_deleted() throws Exception {
+        // given
+        User user = User.builder().build();
+        User author = userRepository.save(user);
+
+        Post post = Post.builder()
+                .title("testtitle")
+                .content("testcontent")
+                .user(author)
+                .isDeleted(true)
+                .build();
+        Post savedPost = postRepository.save(post);
+
+        // expected
+        mockMvc.perform(get("/api/posts/{postId}", savedPost.getId())
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("글 조회수 조회 - 성공")
+    void view_post_view_count() throws Exception {
+        // given
+        User user1 = User.builder()
+                .nickname("testuser1")
+                .email("testuser1@testuser.com")
+                .password("testpassword")
+                .build();
+        User user2 = User.builder()
+                .nickname("testuser2")
+                .email("testuser2@testuser.com")
+                .password("testpassword")
+                .build();
+        User user3 = User.builder()
+                .nickname("testuser3")
+                .email("testuser3@testuser.com")
+                .password("testpassword")
+                .build();
+        userRepository.saveAll(List.of(user1, user2, user3));
+
+        Post post = Post.builder()
+                .title("testtitle")
+                .content("testcontent")
+                .user(user1)
+                .isDeleted(false)
+                .build();
+        Post savedPost = postRepository.save(post);
+
+        View view1 = View.builder()
+                .post(savedPost)
+                .user(user1)
+                .build();
+        View view2 = View.builder()
+                .post(savedPost)
+                .user(user2)
+                .build();
+        View view3 = View.builder()
+                .post(savedPost)
+                .user(user3)
+                .build();
+        viewRepository.saveAll(List.of(view1, view2, view3));
+
+        // expected
+        mockMvc.perform(get("/api/posts/{postId}/views", savedPost.getId())
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.views").value(3))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("글 조회수 조회 - 실패 - 해당 글 존재하지 않음")
+    void view_post_view_count_fail_post_not_found() throws Exception {
+
+        // expected
+        mockMvc.perform(get("/api/posts/{postId}/views", 999L)
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("글 조회수 조회 - 실패 - 해당 글 삭제됨")
+    void view_post_view_count_fail_post_deleted() throws Exception {
+        // given
+        User user = User.builder().build();
+        User author = userRepository.save(user);
+
+        Post post = Post.builder()
+                .title("testtitle")
+                .content("testcontent")
+                .user(author)
+                .isDeleted(true)
+                .build();
+        Post savedPost = postRepository.save(post);
+
+        // expected
+        mockMvc.perform(get("/api/posts/{postId}/views", savedPost.getId())
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
                 .andDo(print());
     }
 

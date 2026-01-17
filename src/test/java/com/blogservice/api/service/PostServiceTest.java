@@ -11,9 +11,8 @@ import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.user.UserRepository;
 import com.blogservice.api.dto.PostCreate;
 import com.blogservice.api.dto.request.post.PostSearch;
-import com.blogservice.api.dto.response.PostResponse;
+import com.blogservice.api.dto.PostResponse;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -160,22 +159,63 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("글 1개 조회")
-    void test2() {
+    @DisplayName("글 상세 조회 - 성공")
+    void view_post_details_success() {
         // given
-        Post requestPost = Post.builder()
-                .title("foo").content("bar")
+        User user = User.builder()
+                .nickname("testuser")
+                .email("testuser@testuser.com")
+                .password("testpassword")
                 .build();
-        postRepository.save(requestPost);
+        User author = userRepository.save(user);
+
+        Post post = Post.builder()
+                .title("testtitle")
+                .content("testcontent")
+                .user(author)
+                .isDeleted(false)
+                .build();
+        Post savedPost = postRepository.save(post);
 
         // when
-        PostResponse response = postService.get(requestPost.getId());
+        PostResponse.Details response = postService.getDetails(savedPost.getId());
 
         // then
         assertNotNull(response);
-        assertEquals(1L, postRepository.count());
-        assertEquals("foo", response.getTitle());
-        assertEquals("bar", response.getContent());
+        assertEquals("testtitle", response.getTitle());
+        assertEquals("testcontent", response.getContent());
+        assertEquals(savedPost.getCreatedAt(), response.getWriteDt());
+        assertEquals(author.getId(), response.getAuthor().getId());
+        assertEquals(author.getNickname(), response.getAuthor().getNickname());
+    }
+
+    @Test
+    @DisplayName("글 상세 조회 - 실패 - 해당 글 없음")
+    void view_post_details_fail_post_not_found() {
+        // expected
+        ServiceException serviceException =
+                assertThrowsExactly(ServiceException.class, () -> postService.getDetails(999L));
+        assertEquals(POST_NOT_FOUND.getMessage(), serviceException.getMessage());
+    }
+
+    @Test
+    @DisplayName("글 상세 조회 - 실패 - 게시글 삭제됨")
+    void view_post_details_fail_post_deleted() {
+        // given
+        User author = userRepository.save(User.builder().build());
+
+        Post post = Post.builder()
+                .title("testtitle")
+                .content("testcontent")
+                .user(author)
+                .isDeleted(true)
+                .build();
+        Post savedPost = postRepository.save(post);
+
+        // expected
+        ServiceException serviceException =
+                assertThrowsExactly(ServiceException.class, () -> postService.getDetails(savedPost.getId()));
+        assertEquals(POST_DELETED.getMessage(), serviceException.getMessage());
     }
 
     @Test
@@ -279,7 +319,7 @@ class PostServiceTest {
         postRepository.save(post);
 
         // expected
-        assertThrows(PostNotFound.class, () -> postService.get(post.getId() + 1));
+        assertThrows(PostNotFound.class, () -> postService.getDetails(post.getId() + 1));
     }
 
     @Test

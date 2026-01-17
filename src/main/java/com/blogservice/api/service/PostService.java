@@ -5,7 +5,7 @@ import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.PostCreate;
 import com.blogservice.api.dto.PostEdit;
 import com.blogservice.api.dto.request.post.PostSearch;
-import com.blogservice.api.dto.response.PostResponse;
+import com.blogservice.api.dto.PostResponse;
 import com.blogservice.api.exception.PostNotFound;
 import com.blogservice.api.exception.ServiceException;
 import com.blogservice.api.repository.post.PostRepository;
@@ -61,14 +61,16 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public PostResponse get(Long id) {
-        Post post = postRepository.findById(id)
-                .orElseThrow(PostNotFound::new);
+    public PostResponse.Details getDetails(Long postId) {
+        Post post = findPostById(postId);
 
-        return PostResponse.builder()
-                .id(post.getId())
+        verifyPostDeleted(post);
+
+        return PostResponse.Details.builder()
                 .title(post.getTitle())
                 .content(post.getContent())
+                .writeDt(post.getCreatedAt())
+                .author(PostResponse.Details.Author.of(post))
                 .build();
     }
 
@@ -79,9 +81,16 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
-    private Post findPostById(Long postId) {
-        return postRepository.findById(postId)
-                .orElseThrow(() -> new ServiceException(POST_NOT_FOUND));
+    @Transactional(readOnly = true)
+    public PostResponse.VIEWS getViewCounts(Long postId) {
+        Post findPost = findPostById(postId);
+
+        verifyPostDeleted(findPost);
+
+        int viewCount = findPost.getViews().size();
+        return PostResponse.VIEWS.builder()
+                .views((long) viewCount)
+                .build();
     }
 
     public void delete(Long postId) {
@@ -89,6 +98,17 @@ public class PostService {
                 .orElseThrow(PostNotFound::new);
 
         postRepository.delete(post);
+    }
+
+    private Post findPostById(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new ServiceException(POST_NOT_FOUND));
+    }
+
+    private static void verifyPostDeleted(Post post) {
+        if (post.isDeleted()) {
+            throw new ServiceException(POST_DELETED);
+        }
     }
 
     private User findUserById(Long userId) {

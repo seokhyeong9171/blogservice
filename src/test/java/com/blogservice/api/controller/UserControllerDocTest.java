@@ -58,7 +58,7 @@ public class UserControllerDocTest {
         userRepository.save(alreadyUser);
 
         // expected
-        this.mockMvc.perform(get("/api/user/email/exist")
+        this.mockMvc.perform(get("/api/user/email/exists")
                         .param("email", "test@test.com"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -83,7 +83,7 @@ public class UserControllerDocTest {
         userRepository.save(alreadyUser);
 
         // expected
-        this.mockMvc.perform(get("/api/user/nickname/exist")
+        this.mockMvc.perform(get("/api/user/nickname/exists")
                         .param("nickname", "testnick"))
                 .andDo(print())
                 .andExpect(status().isOk())

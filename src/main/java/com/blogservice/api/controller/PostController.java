@@ -4,7 +4,7 @@ import com.blogservice.api.config.UserPrincipal;
 import com.blogservice.api.dto.PostCreate;
 import com.blogservice.api.dto.PostEdit;
 import com.blogservice.api.dto.request.post.PostSearch;
-import com.blogservice.api.dto.response.PostResponse;
+import com.blogservice.api.dto.PostResponse;
 import com.blogservice.api.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +29,8 @@ public class PostController {
     public ResponseEntity<PostCreate.Response> writePost
             (@AuthenticationPrincipal UserPrincipal userPrincipal, @RequestBody @Validated PostCreate.Request request) {
         PostCreate.Response response = postService.write(userPrincipal.getUserId(), request);
+        // todo
+        //  snapshot 생성
         return ResponseEntity.status(CREATED).body(response);
     }
 
@@ -38,12 +40,23 @@ public class PostController {
             @PathVariable Long postId, @RequestBody @Validated PostEdit.Request request
     ) {
         PostEdit.Response response = postService.edit(userPrincipal.getUserId(), postId, request);
+        // todo
+        //  snapshot 생성
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{postId}")
-    public PostResponse get(@PathVariable Long postId) {
-        return postService.get(postId);
+    public ResponseEntity<PostResponse.Details> getDetails(@PathVariable Long postId) {
+        PostResponse.Details details = postService.getDetails(postId);
+        // todo
+        //  view 객체 생성 로직
+        return ResponseEntity.ok(details);
+    }
+
+    @GetMapping("/{postId}/views")
+    public ResponseEntity<PostResponse.VIEWS> getViewCounts(@PathVariable Long postId) {
+        PostResponse.VIEWS response = postService.getViewCounts(postId);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/posts")

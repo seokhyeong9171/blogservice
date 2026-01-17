@@ -3,8 +3,11 @@ package com.blogservice.api.controller;
 import com.blogservice.api.config.BlogserviceMockSecurityContext;
 import com.blogservice.api.config.BlogserviceMockUser;
 import com.blogservice.api.domain.post.Post;
+import com.blogservice.api.domain.post.View;
+import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.PostEdit;
 import com.blogservice.api.repository.post.PostRepository;
+import com.blogservice.api.repository.post.ViewRepository;
 import com.blogservice.api.repository.user.UserRepository;
 import com.blogservice.api.dto.PostCreate;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,6 +55,8 @@ public class PostControllerDocTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private ViewRepository viewRepository;
 
     @AfterEach
     void clean() {
@@ -61,27 +66,91 @@ public class PostControllerDocTest {
 
     @Test
     @DisplayName("글 단건 조회")
-    void test1() throws Exception {
+    void view_post_details() throws Exception {
         // given
+        User user = User.builder()
+                .nickname("nickname")
+                .build();
+        User savedUser = userRepository.save(user);
         Post post = Post.builder()
                 .title("제목")
                 .content("내용")
+                .isDeleted(false)
+                .user(savedUser)
                 .build();
-        postRepository.save(post);
+        Post savedPost = postRepository.save(post);
 
         // expected
-        this.mockMvc.perform(get("/posts/{postId}", 1L).accept(APPLICATION_JSON))
+        this.mockMvc.perform(get("/api/posts/{postId}", savedPost.getId()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("post-inquiry", pathParameters(
                         parameterWithName("postId").description("게시글 ID")
                         ),
                         responseFields(
-                                fieldWithPath("id").description("게시글 ID"),
                                 fieldWithPath("title").description("제목"),
-                                fieldWithPath("content").description("내용")
+                                fieldWithPath("content").description("내용"),
+                                fieldWithPath("writeDt").description("작성일"),
+                                fieldWithPath("author.id").description("작성자 아이디"),
+                                fieldWithPath("author.nickname").description("작성자 닉네임")
                         )
                         ));
+    }
+
+    @Test
+    @DisplayName("글 조회수 조회")
+    void view_post_view_count() throws Exception {
+        // given
+        User user1 = User.builder()
+                .nickname("testuser1")
+                .email("testuser1@testuser.com")
+                .password("testpassword")
+                .build();
+        User user2 = User.builder()
+                .nickname("testuser2")
+                .email("testuser2@testuser.com")
+                .password("testpassword")
+                .build();
+        User user3 = User.builder()
+                .nickname("testuser3")
+                .email("testuser3@testuser.com")
+                .password("testpassword")
+                .build();
+        userRepository.saveAll(List.of(user1, user2, user3));
+
+        Post post = Post.builder()
+                .title("testtitle")
+                .content("testcontent")
+                .user(user1)
+                .isDeleted(false)
+                .build();
+        Post savedPost = postRepository.save(post);
+
+        View view1 = View.builder()
+                .post(savedPost)
+                .user(user1)
+                .build();
+        View view2 = View.builder()
+                .post(savedPost)
+                .user(user2)
+                .build();
+        View view3 = View.builder()
+                .post(savedPost)
+                .user(user3)
+                .build();
+        viewRepository.saveAll(List.of(view1, view2, view3));
+
+        // expected
+        this.mockMvc.perform(get("/api/posts/{postId}/views", savedPost.getId()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("post-view-count", pathParameters(
+                                parameterWithName("postId").description("게시글 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("views").description("게시글 조회수")
+                        )
+                ));
     }
 
     @Test
