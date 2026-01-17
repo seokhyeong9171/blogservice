@@ -14,7 +14,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @Entity
 @NoArgsConstructor(access = PROTECTED)
-public class View extends BaseTimeEntity {
+public class Views extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -29,7 +29,7 @@ public class View extends BaseTimeEntity {
     private Post post;
 
     @Builder
-    public View(User user, Post post) {
+    public Views(User user, Post post) {
         this.user = user;
         this.post = post;
     }

@@ -93,6 +93,18 @@ public class PostService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
+    public PostResponse.LIKES getLikeCounts(Long postId) {
+        Post findPost = findPostById(postId);
+
+        verifyPostDeleted(findPost);
+
+        int likeCount = findPost.getLikes().size();
+        return PostResponse.LIKES.builder()
+                .likes((long) likeCount)
+                .build();
+    }
+
     public void delete(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(PostNotFound::new);

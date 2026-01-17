@@ -59,6 +59,12 @@ public class PostController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/{postId}/likes")
+    public ResponseEntity<PostResponse.LIKES> getLikeCounts(@PathVariable Long postId) {
+        PostResponse.LIKES response = postService.getLikeCounts(postId);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/posts")
     public List<PostResponse> getList(@ModelAttribute PostSearch postSearch) {
         return postService.getList(postSearch);

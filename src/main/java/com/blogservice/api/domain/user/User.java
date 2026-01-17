@@ -5,7 +5,7 @@ import com.blogservice.api.domain.auth.LoginLog;
 import com.blogservice.api.domain.auth.RefreshToken;
 import com.blogservice.api.domain.comment.Comment;
 import com.blogservice.api.domain.post.Post;
-import com.blogservice.api.domain.post.View;
+import com.blogservice.api.domain.post.Views;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -52,7 +52,7 @@ public class User extends BaseTimeEntity {
     private List<LoginLog> loginLogs = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = ALL)
-    private List<View> views = new ArrayList<>();
+    private List<Views> views = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = ALL)
     private List<RefreshToken> refreshTokens = new ArrayList<>();

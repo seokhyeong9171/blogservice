@@ -2,10 +2,12 @@ package com.blogservice.api.controller;
 
 import com.blogservice.api.config.BlogserviceMockSecurityContext;
 import com.blogservice.api.config.BlogserviceMockUser;
+import com.blogservice.api.domain.post.Likes;
 import com.blogservice.api.domain.post.Post;
-import com.blogservice.api.domain.post.View;
+import com.blogservice.api.domain.post.Views;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.PostEdit;
+import com.blogservice.api.repository.post.LikeRepository;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.post.ViewRepository;
 import com.blogservice.api.repository.user.UserRepository;
@@ -53,6 +55,8 @@ class PostControllerTest {
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private ViewRepository viewRepository;
+    @Autowired
+    private LikeRepository likeRepository;
 
     @AfterEach
     void clean() {
@@ -341,19 +345,19 @@ class PostControllerTest {
                 .build();
         Post savedPost = postRepository.save(post);
 
-        View view1 = View.builder()
+        Views views1 = Views.builder()
                 .post(savedPost)
                 .user(user1)
                 .build();
-        View view2 = View.builder()
+        Views views2 = Views.builder()
                 .post(savedPost)
                 .user(user2)
                 .build();
-        View view3 = View.builder()
+        Views views3 = Views.builder()
                 .post(savedPost)
                 .user(user3)
                 .build();
-        viewRepository.saveAll(List.of(view1, view2, view3));
+        viewRepository.saveAll(List.of(views1, views2, views3));
 
         // expected
         mockMvc.perform(get("/api/posts/{postId}/views", savedPost.getId())
@@ -391,6 +395,90 @@ class PostControllerTest {
 
         // expected
         mockMvc.perform(get("/api/posts/{postId}/views", savedPost.getId())
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("글 좋아요 수 조회 - 성공")
+    void view_post_like_count() throws Exception {
+        // given
+        User user1 = User.builder()
+                .nickname("testuser1")
+                .email("testuser1@testuser.com")
+                .password("testpassword")
+                .build();
+        User user2 = User.builder()
+                .nickname("testuser2")
+                .email("testuser2@testuser.com")
+                .password("testpassword")
+                .build();
+        User user3 = User.builder()
+                .nickname("testuser3")
+                .email("testuser3@testuser.com")
+                .password("testpassword")
+                .build();
+        userRepository.saveAll(List.of(user1, user2, user3));
+
+        Post post = Post.builder()
+                .title("testtitle")
+                .content("testcontent")
+                .user(user1)
+                .isDeleted(false)
+                .build();
+        Post savedPost = postRepository.save(post);
+
+        Likes likes1 = Likes.builder()
+                .post(savedPost)
+                .user(user1)
+                .build();
+        Likes likes2 = Likes.builder()
+                .post(savedPost)
+                .user(user2)
+                .build();
+        Likes likes3 = Likes.builder()
+                .post(savedPost)
+                .user(user3)
+                .build();
+        likeRepository.saveAll(List.of(likes1, likes2, likes3));
+
+        // expected
+        mockMvc.perform(get("/api/posts/{postId}/likes", savedPost.getId())
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.likes").value(3))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("글 좋아요 수 조회 - 실패 - 해당 글 존재하지 않음")
+    void view_post_like_count_fail_post_not_found() throws Exception {
+
+        // expected
+        mockMvc.perform(get("/api/posts/{postId}/likes", 999L)
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("글 좋아요 수 조회 - 실패 - 해당 글 삭제됨")
+    void view_post_like_count_fail_post_deleted() throws Exception {
+        // given
+        User user = User.builder().build();
+        User author = userRepository.save(user);
+
+        Post post = Post.builder()
+                .title("testtitle")
+                .content("testcontent")
+                .user(author)
+                .isDeleted(true)
+                .build();
+        Post savedPost = postRepository.save(post);
+
+        // expected
+        mockMvc.perform(get("/api/posts/{postId}/likes", savedPost.getId())
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andDo(print());

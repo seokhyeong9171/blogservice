@@ -2,12 +2,16 @@ package com.blogservice.api.service;
 
 import com.blogservice.api.config.BlogserviceMockSecurityContext;
 import com.blogservice.api.config.BlogserviceMockUser;
+import com.blogservice.api.domain.post.Likes;
 import com.blogservice.api.domain.post.Post;
+import com.blogservice.api.domain.post.Views;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.PostEdit;
 import com.blogservice.api.exception.PostNotFound;
 import com.blogservice.api.exception.ServiceException;
+import com.blogservice.api.repository.post.LikeRepository;
 import com.blogservice.api.repository.post.PostRepository;
+import com.blogservice.api.repository.post.ViewRepository;
 import com.blogservice.api.repository.user.UserRepository;
 import com.blogservice.api.dto.PostCreate;
 import com.blogservice.api.dto.request.post.PostSearch;
@@ -38,6 +42,10 @@ class PostServiceTest {
 
     @Autowired
     private BlogserviceMockSecurityContext securityContext;
+    @Autowired
+    private ViewRepository viewRepository;
+    @Autowired
+    private LikeRepository likeRepository;
 
     @AfterEach
     void clean() {
@@ -215,6 +223,161 @@ class PostServiceTest {
         // expected
         ServiceException serviceException =
                 assertThrowsExactly(ServiceException.class, () -> postService.getDetails(savedPost.getId()));
+        assertEquals(POST_DELETED.getMessage(), serviceException.getMessage());
+    }
+
+    @Test
+    @DisplayName("글 조회 수 조회 - 성공")
+    void view_post_view_counts_success() {
+
+        // given
+        User user1 = User.builder()
+                .nickname("testuser1")
+                .email("testuser1@testuser.com")
+                .password("testpassword")
+                .build();
+        User user2 = User.builder()
+                .nickname("testuser2")
+                .email("testuser2@testuser.com")
+                .password("testpassword")
+                .build();
+        User user3 = User.builder()
+                .nickname("testuser3")
+                .email("testuser3@testuser.com")
+                .password("testpassword")
+                .build();
+        userRepository.saveAll(List.of(user1, user2, user3));
+
+        Post post = Post.builder()
+                .title("testtitle")
+                .content("testcontent")
+                .user(user1)
+                .isDeleted(false)
+                .build();
+        Post savedPost = postRepository.save(post);
+
+        Views views1 = Views.builder()
+                .post(savedPost)
+                .user(user1)
+                .build();
+        Views views2 = Views.builder()
+                .post(savedPost)
+                .user(user2)
+                .build();
+        Views views3 = Views.builder()
+                .post(savedPost)
+                .user(user3)
+                .build();
+        viewRepository.saveAll(List.of(views1, views2, views3));
+
+        // when
+        PostResponse.VIEWS views = postService.getViewCounts(savedPost.getId());
+        assertEquals(3L, views.getViews());
+    }
+
+    @Test
+    @DisplayName("글 조회 수 조회 - 실패 - 해당 글 없음")
+    void view_post_view_counts_fail_post_not_found() {
+        // expected
+        ServiceException serviceException =
+                assertThrowsExactly(ServiceException.class, () -> postService.getViewCounts(999L));
+        assertEquals(POST_NOT_FOUND.getMessage(), serviceException.getMessage());
+    }
+
+    @Test
+    @DisplayName("글 조회 수 조회 - 실패 - 게시글 삭제됨")
+    void view_post_view_counts_fail_post_deleted() {
+        // given
+        User author = userRepository.save(User.builder().build());
+
+        Post post = Post.builder()
+                .title("testtitle")
+                .content("testcontent")
+                .user(author)
+                .isDeleted(true)
+                .build();
+        Post savedPost = postRepository.save(post);
+
+        // expected
+        ServiceException serviceException =
+                assertThrowsExactly(ServiceException.class, () -> postService.getViewCounts(savedPost.getId()));
+        assertEquals(POST_DELETED.getMessage(), serviceException.getMessage());
+    }
+
+    @Test
+    @DisplayName("글 좋아요 수 조회 - 성공")
+    void view_post_likes_counts_success() {
+        // given
+        User user1 = User.builder()
+                .nickname("testuser1")
+                .email("testuser1@testuser.com")
+                .password("testpassword")
+                .build();
+        User user2 = User.builder()
+                .nickname("testuser2")
+                .email("testuser2@testuser.com")
+                .password("testpassword")
+                .build();
+        User user3 = User.builder()
+                .nickname("testuser3")
+                .email("testuser3@testuser.com")
+                .password("testpassword")
+                .build();
+        userRepository.saveAll(List.of(user1, user2, user3));
+
+        Post post = Post.builder()
+                .title("testtitle")
+                .content("testcontent")
+                .user(user1)
+                .isDeleted(false)
+                .build();
+        Post savedPost = postRepository.save(post);
+
+        Likes likes1 = Likes.builder()
+                .post(savedPost)
+                .user(user1)
+                .build();
+        Likes likes2 = Likes.builder()
+                .post(savedPost)
+                .user(user2)
+                .build();
+        Likes likes3 = Likes.builder()
+                .post(savedPost)
+                .user(user3)
+                .build();
+        likeRepository.saveAll(List.of(likes1, likes2, likes3));
+
+        // when
+        PostResponse.LIKES likes = postService.getLikeCounts(savedPost.getId());
+        assertEquals(3L, likes.getLikes());
+    }
+
+    @Test
+    @DisplayName("글 좋아요 수 조회 - 실패 - 해당 글 없음")
+    void view_post_like_counts_fail_post_not_found() {
+        // expected
+        ServiceException serviceException =
+                assertThrowsExactly(ServiceException.class, () -> postService.getLikeCounts(999L));
+        assertEquals(POST_NOT_FOUND.getMessage(), serviceException.getMessage());
+    }
+
+    @Test
+    @DisplayName("글 좋아요 수 조회 - 실패 - 게시글 삭제됨")
+    void view_post_like_counts_fail_post_deleted() {
+        // given
+        User author = userRepository.save(User.builder().build());
+
+        Post post = Post.builder()
+                .title("testtitle")
+                .content("testcontent")
+                .user(author)
+                .isDeleted(true)
+                .build();
+        Post savedPost = postRepository.save(post);
+
+        // expected
+        ServiceException serviceException =
+                assertThrowsExactly(ServiceException.class, () -> postService.getLikeCounts(savedPost.getId()));
         assertEquals(POST_DELETED.getMessage(), serviceException.getMessage());
     }
 
