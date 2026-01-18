@@ -41,7 +41,7 @@ class UserControllerTest {
     @Test
     @DisplayName("이메일 중복 체크")
     void email_dup_check() throws Exception {
-        mockMvc.perform(get("/api/user/email/exist?email=test@test.com"))
+        mockMvc.perform(get("/api/user/email/exists?email=test@test.com"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.duplicate").exists())
                 .andDo(print());
@@ -50,7 +50,7 @@ class UserControllerTest {
     @Test
     @DisplayName("닉네임 중복 체크")
     void nickname_dup_check() throws Exception {
-        mockMvc.perform(get("/api/user/nickname/exist?nickname=test"))
+        mockMvc.perform(get("/api/user/nickname/exists?nickname=test"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.duplicate").exists())
                 .andDo(print());

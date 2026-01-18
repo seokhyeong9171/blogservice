@@ -16,12 +16,12 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/email/exist")
+    @GetMapping("/email/exists")
     public ResponseEntity<DupCheck> emailExist(@RequestParam String email) {
         return ResponseEntity.ok(DupCheck.of(userService.checkEmail(email)));
     }
 
-    @GetMapping("/nickname/exist")
+    @GetMapping("/nickname/exists")
     public ResponseEntity<DupCheck> nicknameExist(@RequestParam String nickname) {
         return ResponseEntity.ok(DupCheck.of(userService.checkNickname(nickname)));
     }
