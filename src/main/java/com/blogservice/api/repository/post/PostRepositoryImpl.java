@@ -1,26 +1,33 @@
 package com.blogservice.api.repository.post;
 
 import com.blogservice.api.domain.post.Post;
-import com.blogservice.api.dto.request.post.PostSearch;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
 import static com.blogservice.api.domain.post.QPost.post;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 @RequiredArgsConstructor
 public class PostRepositoryImpl implements PostRepositoryCustom{
 
     private final JPAQueryFactory jpaQueryFactory;
 
+    private static final int MAX_SIZE = 2000;
 
     @Override
-    public List<Post> getList(PostSearch postSearch) {
+    public List<Post> getList(int page, int size) {
         return jpaQueryFactory.selectFrom(post)
-                .limit(postSearch.getSize())
-                .offset(postSearch.getOffset())
-                .orderBy(post.id.desc())
+                .where(post.isDeleted.eq(false))
+                .limit(size)
+                .offset(getOffset(page, size))
+                .orderBy(post.createdAt.desc())
                 .fetch();
+    }
+
+    private long getOffset(int page, int size) {
+        return (long) (max(page, 1) - 1) * min(size, MAX_SIZE);
     }
 }

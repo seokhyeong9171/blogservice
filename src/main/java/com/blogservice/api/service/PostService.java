@@ -5,7 +5,6 @@ import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.PostCreate;
 import com.blogservice.api.dto.PostEdit;
-import com.blogservice.api.dto.request.post.PostSearch;
 import com.blogservice.api.dto.PostResponse;
 import com.blogservice.api.exception.ServiceException;
 import com.blogservice.api.repository.post.LikeRepository;
@@ -81,42 +80,52 @@ public class PostService {
                 .title(post.getTitle())
                 .content(post.getContent())
                 .writeDt(post.getCreatedAt())
-                .author(PostResponse.Details.Author.of(post))
+                .author(PostResponse.Author.of(post))
                 .build();
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponse> getList(PostSearch postSearch) {
-        return postRepository.getList(postSearch).stream()
-                .map(PostResponse::new)
-                .collect(Collectors.toList());
+    public List<PostResponse.List> getList(int page, int size) {
+        List<Post> postList = postRepository.getList(page, size);
+
+        return postList.stream().map(post -> {
+            long views = viewRepository.countByPost(post);
+            long likes = likeRepository.countByPost(post);
+            return PostResponse.List.builder()
+                    .postId(post.getId())
+                    .title(post.getTitle())
+                    .views(views)
+                    .likes(likes)
+                    .author(PostResponse.Author.of(post))
+                    .build();
+        }).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public PostResponse.VIEWS getViewCounts(Long postId) {
+    public PostResponse.Views getViewCounts(Long postId) {
         Post findPost = findPostById(postId);
 
         verifyPostDeleted(findPost);
 
         Long viewCount = viewRepository.countByPost(findPost);
-        return PostResponse.VIEWS.builder()
+        return PostResponse.Views.builder()
                 .views(viewCount)
                 .build();
     }
 
     @Transactional(readOnly = true)
-    public PostResponse.LIKES getLikeCounts(Long postId) {
+    public PostResponse.Likes getLikeCounts(Long postId) {
         Post findPost = findPostById(postId);
 
         verifyPostDeleted(findPost);
 
         Long likeCount = likeRepository.countByPost(findPost);
-        return PostResponse.LIKES.builder()
+        return PostResponse.Likes.builder()
                 .likes(likeCount)
                 .build();
     }
 
-    public PostResponse.LIKES likePost(Long userId, Long postId) {
+    public PostResponse.Likes likePost(Long userId, Long postId) {
         User findUser = findUserById(userId);
         Post findPost = findPostById(postId);
 
@@ -126,13 +135,13 @@ public class PostService {
         if (likes.isPresent()) {
             likeRepository.delete(likes.get());
         } else {
-            Likes like = Likes.builder()
+            Likes like = com.blogservice.api.domain.post.Likes.builder()
                     .user(findUser).post(findPost)
                     .build();
             likeRepository.save(like);
         }
 
-        return PostResponse.LIKES.builder()
+        return PostResponse.Likes.builder()
                 .likes(likeRepository.countByPost(findPost))
                 .build();
     }

@@ -3,7 +3,6 @@ package com.blogservice.api.controller;
 import com.blogservice.api.config.UserPrincipal;
 import com.blogservice.api.dto.PostCreate;
 import com.blogservice.api.dto.PostEdit;
-import com.blogservice.api.dto.request.post.PostSearch;
 import com.blogservice.api.dto.PostResponse;
 import com.blogservice.api.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -59,29 +58,30 @@ public class PostController {
         return ResponseEntity.ok(details);
     }
 
+    @GetMapping
+    public ResponseEntity<List<PostResponse.List>> getList(@RequestParam int page, @RequestParam int size) {
+        List<PostResponse.List> response = postService.getList(page, size);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/{postId}/views")
-    public ResponseEntity<PostResponse.VIEWS> getViewCounts(@PathVariable Long postId) {
-        PostResponse.VIEWS response = postService.getViewCounts(postId);
+    public ResponseEntity<PostResponse.Views> getViewCounts(@PathVariable Long postId) {
+        PostResponse.Views response = postService.getViewCounts(postId);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{postId}/likes")
-    public ResponseEntity<PostResponse.LIKES> getLikeCounts(@PathVariable Long postId) {
-        PostResponse.LIKES response = postService.getLikeCounts(postId);
+    public ResponseEntity<PostResponse.Likes> getLikeCounts(@PathVariable Long postId) {
+        PostResponse.Likes response = postService.getLikeCounts(postId);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/{postId}/likes")
-    public ResponseEntity<PostResponse.LIKES> likePost(
+    public ResponseEntity<PostResponse.Likes> likePost(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long postId) {
-        PostResponse.LIKES response = postService.likePost(userPrincipal.getUserId(), postId);
+        PostResponse.Likes response = postService.likePost(userPrincipal.getUserId(), postId);
         return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/posts")
-    public List<PostResponse> getList(@ModelAttribute PostSearch postSearch) {
-        return postService.getList(postSearch);
     }
 
 

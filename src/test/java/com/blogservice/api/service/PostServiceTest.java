@@ -7,14 +7,12 @@ import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.domain.post.Views;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.PostEdit;
-import com.blogservice.api.exception.PostNotFound;
 import com.blogservice.api.exception.ServiceException;
 import com.blogservice.api.repository.post.LikeRepository;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.post.ViewRepository;
 import com.blogservice.api.repository.user.UserRepository;
 import com.blogservice.api.dto.PostCreate;
-import com.blogservice.api.dto.request.post.PostSearch;
 import com.blogservice.api.dto.PostResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -313,22 +311,22 @@ class PostServiceTest {
                 .build();
         Post savedPost = postRepository.save(post);
 
-        Views views1 = Views.builder()
+        Views views1 = com.blogservice.api.domain.post.Views.builder()
                 .post(savedPost)
                 .user(user1)
                 .build();
-        Views views2 = Views.builder()
+        Views views2 = com.blogservice.api.domain.post.Views.builder()
                 .post(savedPost)
                 .user(user2)
                 .build();
-        Views views3 = Views.builder()
+        Views views3 = com.blogservice.api.domain.post.Views.builder()
                 .post(savedPost)
                 .user(user3)
                 .build();
         viewRepository.saveAll(List.of(views1, views2, views3));
 
         // when
-        PostResponse.VIEWS views = postService.getViewCounts(savedPost.getId());
+        PostResponse.Views views = postService.getViewCounts(savedPost.getId());
         assertEquals(3L, views.getViews());
     }
 
@@ -390,22 +388,22 @@ class PostServiceTest {
                 .build();
         Post savedPost = postRepository.save(post);
 
-        Likes likes1 = Likes.builder()
+        Likes likes1 = com.blogservice.api.domain.post.Likes.builder()
                 .post(savedPost)
                 .user(user1)
                 .build();
-        Likes likes2 = Likes.builder()
+        Likes likes2 = com.blogservice.api.domain.post.Likes.builder()
                 .post(savedPost)
                 .user(user2)
                 .build();
-        Likes likes3 = Likes.builder()
+        Likes likes3 = com.blogservice.api.domain.post.Likes.builder()
                 .post(savedPost)
                 .user(user3)
                 .build();
         likeRepository.saveAll(List.of(likes1, likes2, likes3));
 
         // when
-        PostResponse.LIKES likes = postService.getLikeCounts(savedPost.getId());
+        PostResponse.Likes likes = postService.getLikeCounts(savedPost.getId());
         assertEquals(3L, likes.getLikes());
     }
 
@@ -453,12 +451,9 @@ class PostServiceTest {
         postRepository.saveAll(requestPosts);
 
 //        Pageable pageable = PageRequest.of(0, 5, Sort.by(DESC, "id"));
-        PostSearch postSearch = PostSearch.builder()
-                .page(1).size(10)
-                .build();
 
         // when
-        List<PostResponse> posts = postService.getList(postSearch);
+        List<PostResponse.List> posts = postService.getList(1, 10);
 
         // then
         assertEquals(10L, posts.size());
