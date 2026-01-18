@@ -106,3 +106,30 @@ include::{snippets}/post-delete/path-parameters.adoc[]
 
 === 응답
 include::{snippets}/post-delete/http-response.adoc[]
+
+== 글 좋아요
+
+=== 요청
+include::{snippets}/post-like/http-request.adoc[]
+include::{snippets}/post-like/path-parameters.adoc[]
+
+=== 응답
+include::{snippets}/post-like/http-response.adoc[]
+
+== 글 좋아요 수
+
+=== 요청
+include::{snippets}/post-like-count/http-request.adoc[]
+include::{snippets}/post-like-count/path-parameters.adoc[]
+
+=== 응답
+include::{snippets}/post-like/http-response.adoc[]
+
+== 글 조회수
+
+=== 요청
+include::{snippets}/post-view-count/http-request.adoc[]
+include::{snippets}/post-view-count/path-parameters.adoc[]
+
+=== 응답
+include::{snippets}/post-view-count/http-response.adoc[]

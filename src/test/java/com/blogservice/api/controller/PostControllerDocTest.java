@@ -272,7 +272,7 @@ public class PostControllerDocTest {
     @Test
     @BlogserviceMockUser
     @DisplayName("글 등록")
-    void test2() throws Exception {
+    void create_post() throws Exception {
         // given
         PostCreate.Request request = PostCreate.Request.builder()
                 .title("제목입니다.")
@@ -298,11 +298,14 @@ public class PostControllerDocTest {
 
     @Test
     @DisplayName("글 여러개 조회")
-    void test3() throws Exception {
+    void post_list() throws Exception {
         // given
         List<Post> requestPosts = IntStream.range(1, 31)
                 .mapToObj(i -> {
+                    User user = User.builder().nickname("user " + i).build();
+                    User author = userRepository.save(user);
                     return Post.builder()
+                            .user(author)
                             .title("제목 " + i)
                             .content("내용 " + i)
                             .build();
@@ -312,7 +315,7 @@ public class PostControllerDocTest {
 
 
         // expected
-        this.mockMvc.perform(get("/posts?page=1&size=10")
+        this.mockMvc.perform(get("/api/posts?page=1&size=10")
                         .accept(APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -321,9 +324,12 @@ public class PostControllerDocTest {
                                 parameterWithName("size").description("사이즈")
                         ),
                         responseFields(
-                                fieldWithPath("[].id").description("게시글 ID"),
+                                fieldWithPath("[].postId").description("게시글 ID"),
                                 fieldWithPath("[].title").description("제목"),
-                                fieldWithPath("[].content").description("내용")
+                                fieldWithPath("[].views").description("조회수"),
+                                fieldWithPath("[].likes").description("좋아요 수"),
+                                fieldWithPath("[].author.id").description("작성자 아이디"),
+                                fieldWithPath("[].author.nickname").description("작성자 닉네임")
                         )
                 ));
     }
@@ -331,7 +337,7 @@ public class PostControllerDocTest {
     @Test
     @BlogserviceMockUser
     @DisplayName("글 삭제")
-    void test5() throws Exception {
+    void post_delete() throws Exception {
         // given
         Post post = Post.builder()
                 .title("제목")
@@ -344,7 +350,7 @@ public class PostControllerDocTest {
         this.mockMvc.perform(delete("/api/posts/{postId}", savedPost.getId()).accept(APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andDo(document("post-deletePost", pathParameters(
+                .andDo(document("post-delete", pathParameters(
                                 parameterWithName("postId").description("게시글 ID")
                         )
                 ));
@@ -353,7 +359,7 @@ public class PostControllerDocTest {
     @Test
     @BlogserviceMockUser
     @DisplayName("글 수정")
-    void test4() throws Exception {
+    void post_edit() throws Exception {
         // given
         Post requestPost = Post.builder()
                 .title("수정전제목").content("수정전내용")
