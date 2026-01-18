@@ -47,6 +47,10 @@ public class PostService {
 
         Post savedPost = postRepository.save(post);
 
+        // todo
+        //  snapshot
+
+
         return PostCreate.Response.builder()
                 .postId(savedPost.getId())
                 .build();
@@ -58,6 +62,10 @@ public class PostService {
         verifyAuthor(userId, findPost);
 
         findPost.edit(request);
+
+        // todo
+        //  snapshot
+
         return PostEdit.Response.builder()
                 .postId(postId)
                 .build();
@@ -123,6 +131,7 @@ public class PostService {
                     .build();
             likeRepository.save(like);
         }
+
         return PostResponse.LIKES.builder()
                 .likes(likeRepository.countByPost(findPost))
                 .build();
@@ -134,6 +143,9 @@ public class PostService {
         verifyPostDeleted(findPost);
 
         verifyAuthor(userId, findPost);
+
+        // todo
+        //  snapshot
 
         findPost.delete();
     }
