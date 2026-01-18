@@ -57,7 +57,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
 //                        .requestMatchers("/api/test/auth", "/api/auth/reissue").hasRole("USER")
                         .requestMatchers("/api/auth/login", "api/auth/signup").permitAll()
-                        .requestMatchers("/api/user/email/exists", "api/user/nickname/exists").permitAll()
+                        .requestMatchers("/api/user/email/exists/**", "api/user/nickname/exists/**").permitAll()
                         .requestMatchers(GET, "/api/posts/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))

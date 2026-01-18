@@ -62,6 +62,10 @@ public class Post extends BaseTimeEntity {
         }
     }
 
+    public void delete() {
+        this.isDeleted = true;
+    }
+
     public Long getUserId() {
         return user.getId();
     }

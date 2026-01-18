@@ -7,7 +7,6 @@ import com.blogservice.api.dto.PostCreate;
 import com.blogservice.api.dto.PostEdit;
 import com.blogservice.api.dto.request.post.PostSearch;
 import com.blogservice.api.dto.PostResponse;
-import com.blogservice.api.exception.PostNotFound;
 import com.blogservice.api.exception.ServiceException;
 import com.blogservice.api.repository.post.LikeRepository;
 import com.blogservice.api.repository.post.PostRepository;
@@ -56,9 +55,7 @@ public class PostService {
     public PostEdit.Response edit(Long userId, Long postId, PostEdit.Request request) {
         Post findPost = findPostById(postId);
 
-        if (!Objects.equals(findPost.getUser().getId(), userId)) {
-            throw new ServiceException(POST_AUTHOR_NOT_MATCHING);
-        }
+        verifyAuthor(userId, findPost);
 
         findPost.edit(request);
         return PostEdit.Response.builder()
@@ -131,11 +128,18 @@ public class PostService {
                 .build();
     }
 
-    public void delete(Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(PostNotFound::new);
+    public void delete(Long userId, Long postId) {
+        Post findPost = findPostById(postId);
 
-        postRepository.delete(post);
+        verifyPostDeleted(findPost);
+
+        verifyAuthor(userId, findPost);
+
+        findPost.delete();
+    }
+
+    private User findUserById(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
     }
 
     private Post findPostById(Long postId) {
@@ -143,13 +147,15 @@ public class PostService {
                 .orElseThrow(() -> new ServiceException(POST_NOT_FOUND));
     }
 
+    private void verifyAuthor(Long userId, Post findPost) {
+        if (!Objects.equals(findPost.getUser().getId(), userId)) {
+            throw new ServiceException(POST_AUTHOR_NOT_MATCHING);
+        }
+    }
+
     private static void verifyPostDeleted(Post post) {
         if (post.isDeleted()) {
             throw new ServiceException(POST_DELETED);
         }
-    }
-
-    private User findUserById(Long userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
     }
 }

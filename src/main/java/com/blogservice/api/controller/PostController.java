@@ -45,6 +45,12 @@ public class PostController {
         return ResponseEntity.ok(response);
     }
 
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<Void> deletePost(@AuthenticationPrincipal UserPrincipal userPrincipal, @PathVariable Long postId) {
+        postService.delete(userPrincipal.getUserId(), postId);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/{postId}")
     public ResponseEntity<PostResponse.Details> getDetails(@PathVariable Long postId) {
         PostResponse.Details details = postService.getDetails(postId);
@@ -78,11 +84,6 @@ public class PostController {
         return postService.getList(postSearch);
     }
 
-
-    @DeleteMapping("/posts/{postId}")
-    public void delete(@PathVariable Long postId) {
-        postService.delete(postId);
-    }
 
 
 }

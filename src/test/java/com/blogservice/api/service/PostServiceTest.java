@@ -167,6 +167,63 @@ class PostServiceTest {
     }
 
     @Test
+    @DisplayName("게시글 삭제 성공")
+    void delete_post_success() {
+        // given
+        User user = User.builder().build();
+        User savedUser = userRepository.save(user);
+        Post post = Post.builder()
+                .user(savedUser)
+                .isDeleted(false)
+                .build();
+        Post savedPost = postRepository.save(post);
+
+        // when
+        postService.delete(savedUser.getId(), savedPost.getId());
+
+        // then
+        post = postRepository.findById(savedPost.getId()).get();
+        assertTrue(post.isDeleted());
+    }
+
+    @Test
+    @BlogserviceMockUser
+    @DisplayName("글 삭제 - 실패 - 해당 게시글 없음")
+    void delete_post_fail_user_not_found() {
+        // given
+        Post requestPost = Post.builder()
+                .title("수정전제목").content("수정전내용")
+                .user(securityContext.getCurrentUser())
+                .build();
+        Post savedPost = postRepository.save(requestPost);
+
+        // expected
+        ServiceException serviceException = assertThrowsExactly(
+                ServiceException.class, () -> postService.delete(1L, savedPost.getId() + 1)
+        );
+        assertEquals(POST_NOT_FOUND.getMessage(), serviceException.getMessage());
+    }
+
+    @Test
+    @BlogserviceMockUser
+    @DisplayName("글 삭제 - 실패 - 작성자 아님")
+    void delete_post_fail_author_not_matched() {
+        // given
+        Post requestPost = Post.builder()
+                .title("수정전제목").content("수정전내용")
+                .user(securityContext.getCurrentUser())
+                .build();
+        Post savedPost = postRepository.save(requestPost);
+
+        // expected
+        ServiceException serviceException = assertThrowsExactly(
+                ServiceException.class, () -> postService.delete
+                        (securityContext.getCurrentUser().getId() + 1, savedPost.getId())
+        );
+        assertEquals(POST_AUTHOR_NOT_MATCHING.getMessage(), serviceException.getMessage());
+    }
+
+    @Test
     @DisplayName("글 상세 조회 - 성공")
     void view_post_details_success() {
         // given
@@ -407,112 +464,5 @@ class PostServiceTest {
         assertEquals(10L, posts.size());
         assertEquals("제목 19", posts.get(0).getTitle());
     }
-
-//    @Test
-//    @DisplayName("글 제목 수정")
-//    void test4() {
-//        // given
-//        Post requestPost = Post.builder()
-//                .title("수정전제목").content("수정전내용")
-//                .build();
-//        Post savedPost = postRepository.save(requestPost);
-//
-//        PostEdit.Request postEdit = PostEdit.Request.builder()
-//                .title("수정후제목")
-//                .build();
-//
-//        // when
-//        postService.edit(savedPost.getId(), postEdit);
-//
-//        // then
-//        Post changedPost = postRepository.findById(savedPost.getId())
-//                .orElseThrow(() -> new RuntimeException
-//                        ("글이 존재하지 않습니다. id: " + savedPost.getContent()));
-//        assertEquals("수정후제목", changedPost.getTitle());
-//        assertEquals("수정전내용", changedPost.getContent());
-//    }
-
-//    @Test
-//    @DisplayName("글 내용 수정")
-//    void test5() {
-//        // given
-//        Post requestPost = Post.builder()
-//                .title("수정전제목").content("수정전내용")
-//                .build();
-//        Post savedPost = postRepository.save(requestPost);
-//
-//        PostEdit postEdit = PostEdit.Request.builder()
-//                .content("수정후내용")
-//                .build();
-//
-//        // when
-//        postService.edit(savedPost.getId(), postEdit);
-//
-//        // then
-//        Post changedPost = postRepository.findById(savedPost.getId())
-//                .orElseThrow(() -> new RuntimeException
-//                        ("글이 존재하지 않습니다. id: " + savedPost.getContent()));
-//        assertEquals("수정전제목", changedPost.getTitle());
-//        assertEquals("수정후내용", changedPost.getContent());
-//    }
-
-    @Test
-    @DisplayName("게시글 삭제")
-    void test6() {
-        // given
-        Post requestPost = Post.builder()
-                .title("글제목").content("글내용")
-                .build();
-        Post savedPost = postRepository.save(requestPost);
-
-        // when
-        postService.delete(savedPost.getId());
-
-        // then
-        assertEquals(0, postRepository.count());
-    }
-
-    @Test
-    @DisplayName("글 1개 조회 - 존재하지 않는 글")
-    void test7() {
-        // given
-        Post post = Post.builder()
-                .title("foo").content("bar")
-                .build();
-        postRepository.save(post);
-
-        // expected
-        assertThrows(PostNotFound.class, () -> postService.getDetails(post.getId() + 1));
-    }
-
-    @Test
-    @DisplayName("게시글 삭제 - 존재하지 않는 글")
-    void test8() {
-        // given
-        Post requestPost = Post.builder()
-                .title("글제목").content("글내용")
-                .build();
-        Post savedPost = postRepository.save(requestPost);
-
-        // expected
-        assertThrows(PostNotFound.class, () -> postService.delete(savedPost.getId() + 1));
-    }
-
-//    @Test
-//    @DisplayName("글 내용 수정 - 존재하지 않는 글")
-//    void test9() {
-//        // given
-//        Post requestPost = Post.builder()
-//                .title("수정전제목").content("수정전내용")
-//                .build();
-//        Post savedPost = postRepository.save(requestPost);
-//
-//        PostEdit postEdit = PostEdit.builder()
-//                .content("수정후내용")
-//                .build();
-//
-//        // expected
-//        assertThrows(PostNotFound.class, () -> postService.edit(savedPost.getId() + 1, postEdit));
-//    }
 
 }

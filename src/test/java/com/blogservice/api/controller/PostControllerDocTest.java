@@ -341,10 +341,10 @@ public class PostControllerDocTest {
         Post savedPost = postRepository.save(post);
 
         // expected
-        this.mockMvc.perform(delete("/posts/{postId}", savedPost.getId()).accept(APPLICATION_JSON))
+        this.mockMvc.perform(delete("/api/posts/{postId}", savedPost.getId()).accept(APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andDo(document("post-delete", pathParameters(
+                .andDo(document("post-deletePost", pathParameters(
                                 parameterWithName("postId").description("게시글 ID")
                         )
                 ));

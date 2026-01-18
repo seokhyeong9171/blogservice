@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -253,6 +253,55 @@ class PostControllerTest {
                 .andDo(print());
 
         assertEquals(1, postRepository.count());
+    }
+
+    @Test
+    @DisplayName("글 삭제 - 성공")
+    @BlogserviceMockUser
+    void delete_post_success() throws Exception {
+        // given
+        Post post = Post.builder()
+                .user(securityContext.getCurrentUser())
+                .isDeleted(false)
+                .build();
+        Post savedPost = postRepository.save(post);
+
+        // expected
+        mockMvc.perform(delete("/api/posts/{postId}", savedPost.getId()))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+        Post findPost = postRepository.findById(savedPost.getId()).get();
+        assertTrue(findPost.isDeleted());
+    }
+
+    @Test
+    @DisplayName("글 삭제 - 실패 - 해당 글 삭제됨")
+    @BlogserviceMockUser
+    void delete_post_fail_post_deleted() throws Exception {
+        // given
+        Post post = Post.builder()
+                .user(securityContext.getCurrentUser())
+                .isDeleted(true)
+                .build();
+        Post savedPost = postRepository.save(post);
+
+        // expected
+        mockMvc.perform(delete("/api/posts/{postId}", savedPost.getId()))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("글 삭제 - 실패 - 해당 글 존재하지 않음")
+    @BlogserviceMockUser
+    void delete_post_fail_post_not_found() throws Exception {
+
+        // expected
+        mockMvc.perform(delete("/api/posts/{postId}", 999L)
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andDo(print());
     }
 
     @Test
@@ -648,7 +697,7 @@ class PostControllerTest {
 //        Post savedPost = postRepository.save(requestPost);
 //
 //        // expected
-//        mockMvc.perform(delete("/posts/{postId}", savedPost.getId())
+//        mockMvc.perform(deletePost("/posts/{postId}", savedPost.getId())
 //                .contentType(APPLICATION_JSON))
 //                .andExpect(status().isOk())
 //                .andDo(print());
