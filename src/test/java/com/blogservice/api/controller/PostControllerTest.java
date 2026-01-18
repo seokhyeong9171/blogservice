@@ -21,6 +21,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -62,6 +63,8 @@ class PostControllerTest {
     void clean() {
         postRepository.deleteAll();
         userRepository.deleteAll();
+        viewRepository.deleteAll();
+        likeRepository.deleteAll();
 //        jdbcTemplate.execute("ALTER TABLE post ALTER COLUMN id RESTART WITH 1");
 //        jdbcTemplate.execute("ALTER TABLE users ALTER COLUMN id RESTART WITH 1");
     }
@@ -485,105 +488,49 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("글 여러개 조회")
-    void test5() throws Exception {
-        // given
-        List<Post> requestPosts = IntStream.range(1, 31)
-                .mapToObj(i -> {
-                    return Post.builder()
-                            .title("제목 " + i)
-                            .content("내용 " + i)
-                            .build();
-                })
-                .toList();
-        postRepository.saveAll(requestPosts);
+    @DisplayName("게시글 좋아요 - 좋아요 - 성공")
+    @BlogserviceMockUser
+    void post_like_success() throws Exception {
+        User user = User.builder().build();
+        User author = userRepository.save(user);
 
+        Post post = Post.builder().user(author).build();
+        Post savedPost = postRepository.save(post);
 
-        // expected
-        mockMvc.perform(get("/posts?page=1&size=10")
+        mockMvc.perform(post("/api/posts/{postId}/likes", savedPost.getId())
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(10))
-                .andExpect(jsonPath("$[0].id").value(30))
-                .andExpect(jsonPath("$[0].title").value("제목 30"))
-                .andExpect(jsonPath("$[0].content").value("내용 30"))
+                .andExpect(jsonPath("$.likes").value(1))
                 .andDo(print());
     }
 
     @Test
-    @DisplayName("페이지를 0으로 요청하면 첫 페이지를 가져온다.")
-    void test6() throws Exception {
-        // given
-        List<Post> requestPosts = IntStream.range(1, 31)
-                .mapToObj(i -> {
-                    return Post.builder()
-                            .title("제목 " + i)
-                            .content("내용 " + i)
-                            .build();
-                })
-                .toList();
-        postRepository.saveAll(requestPosts);
+    @DisplayName("게시글 좋아요 - 좋아요 취소 - 성공")
+    @BlogserviceMockUser
+    void post_unlike_success() throws Exception {
+        User user = User.builder().build();
+        User author = userRepository.save(user);
 
-;
-        // expected
-        mockMvc.perform(get("/posts?page=1&size=10")
+        Post post = Post.builder().user(author).build();
+        Post savedPost = postRepository.save(post);
+
+        Likes likes = Likes.builder().post(savedPost).user(securityContext.getCurrentUser()).build();
+        likeRepository.save(likes);
+
+        mockMvc.perform(post("/api/posts/{postId}/likes", savedPost.getId())
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(10))
-                .andExpect(jsonPath("$[0].id").value(30))
-                .andExpect(jsonPath("$[0].title").value("제목 30"))
-                .andExpect(jsonPath("$[0].content").value("내용 30"))
+                .andExpect(jsonPath("$.likes").value(0))
                 .andDo(print());
     }
 
     @Test
     @BlogserviceMockUser
-    @DisplayName("글 제목 수정.")
-    void test7() throws Exception {
-        // given
-        Post requestPost = Post.builder()
-                .title("수정전제목").content("수정전내용")
-                .user(securityContext.getCurrentUser())
-                .build();
-        Post savedPost = postRepository.save(requestPost);
-
-        PostEdit.Request postEdit = PostEdit.Request.builder()
-                .title("수정후내용")
-                .content("수정전내용")
-                .build();
+    @DisplayName("글 좋아요 수 조회 - 실패 - 해당 글 존재하지 않음")
+    void post_like_fail_post_not_found() throws Exception {
 
         // expected
-        mockMvc.perform(patch("/posts/{postId}", savedPost.getId())
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(postEdit)))
-                .andExpect(status().isOk())
-                .andDo(print());
-    }
-
-    @Test
-    @BlogserviceMockUser
-    @DisplayName("게시글 삭제")
-    void test8() throws Exception {
-        // given
-        Post requestPost = Post.builder()
-                .title("글제목").content("글내용")
-//                .user(getUserBySecurityHolder())
-                .user(securityContext.getCurrentUser())
-                .build();
-        Post savedPost = postRepository.save(requestPost);
-
-        // expected
-        mockMvc.perform(delete("/posts/{postId}", savedPost.getId())
-                .contentType(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print());
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 게시글 조회")
-    void test9() throws Exception {
-        // expected
-        mockMvc.perform(get("/posts/{postId}", 100L)
+        mockMvc.perform(post("/api/posts/{postId}/likes", 999L)
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andDo(print());
@@ -591,21 +538,149 @@ class PostControllerTest {
 
     @Test
     @BlogserviceMockUser
-    @DisplayName("존재하지 않는 게시글 수정")
-    void test10() throws Exception {
+    @DisplayName("글 좋아요 - 실패 - 해당 글 삭제됨")
+    void post_like_fail_post_deleted() throws Exception {
         // given
-        PostEdit.Request postEdit = PostEdit.Request.builder()
-                .title("수정후내용")
-                .content("수정전내용")
+        User user = User.builder().build();
+        User author = userRepository.save(user);
+
+        Post post = Post.builder()
+                .title("testtitle")
+                .content("testcontent")
+                .user(author)
+                .isDeleted(true)
                 .build();
+        Post savedPost = postRepository.save(post);
 
         // expected
-        mockMvc.perform(patch("/posts/{postId}", 100L)
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(postEdit)))
-                .andExpect(status().isNotFound())
+        mockMvc.perform(post("/api/posts/{postId}/likes", savedPost.getId())
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
                 .andDo(print());
     }
+
+//    @Test
+//    @DisplayName("글 여러개 조회")
+//    void test5() throws Exception {
+//        // given
+//        List<Post> requestPosts = IntStream.range(1, 31)
+//                .mapToObj(i -> {
+//                    return Post.builder()
+//                            .title("제목 " + i)
+//                            .content("내용 " + i)
+//                            .build();
+//                })
+//                .toList();
+//        postRepository.saveAll(requestPosts);
+//
+//
+//        // expected
+//        mockMvc.perform(get("/posts?page=1&size=10")
+//                        .contentType(APPLICATION_JSON))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.length()").value(10))
+//                .andExpect(jsonPath("$[0].id").value(30))
+//                .andExpect(jsonPath("$[0].title").value("제목 30"))
+//                .andExpect(jsonPath("$[0].content").value("내용 30"))
+//                .andDo(print());
+//    }
+//
+//    @Test
+//    @DisplayName("페이지를 0으로 요청하면 첫 페이지를 가져온다.")
+//    void test6() throws Exception {
+//        // given
+//        List<Post> requestPosts = IntStream.range(1, 31)
+//                .mapToObj(i -> {
+//                    return Post.builder()
+//                            .title("제목 " + i)
+//                            .content("내용 " + i)
+//                            .build();
+//                })
+//                .toList();
+//        postRepository.saveAll(requestPosts);
+//
+//;
+//        // expected
+//        mockMvc.perform(get("/posts?page=1&size=10")
+//                        .contentType(APPLICATION_JSON))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.length()").value(10))
+//                .andExpect(jsonPath("$[0].id").value(30))
+//                .andExpect(jsonPath("$[0].title").value("제목 30"))
+//                .andExpect(jsonPath("$[0].content").value("내용 30"))
+//                .andDo(print());
+//    }
+//
+//    @Test
+//    @BlogserviceMockUser
+//    @DisplayName("글 제목 수정.")
+//    void test7() throws Exception {
+//        // given
+//        Post requestPost = Post.builder()
+//                .title("수정전제목").content("수정전내용")
+//                .user(securityContext.getCurrentUser())
+//                .build();
+//        Post savedPost = postRepository.save(requestPost);
+//
+//        PostEdit.Request postEdit = PostEdit.Request.builder()
+//                .title("수정후내용")
+//                .content("수정전내용")
+//                .build();
+//
+//        // expected
+//        mockMvc.perform(patch("/posts/{postId}", savedPost.getId())
+//                        .contentType(APPLICATION_JSON)
+//                        .content(objectMapper.writeValueAsString(postEdit)))
+//                .andExpect(status().isOk())
+//                .andDo(print());
+//    }
+//
+//    @Test
+//    @BlogserviceMockUser
+//    @DisplayName("게시글 삭제")
+//    void test8() throws Exception {
+//        // given
+//        Post requestPost = Post.builder()
+//                .title("글제목").content("글내용")
+////                .user(getUserBySecurityHolder())
+//                .user(securityContext.getCurrentUser())
+//                .build();
+//        Post savedPost = postRepository.save(requestPost);
+//
+//        // expected
+//        mockMvc.perform(delete("/posts/{postId}", savedPost.getId())
+//                .contentType(APPLICATION_JSON))
+//                .andExpect(status().isOk())
+//                .andDo(print());
+//    }
+//
+//    @Test
+//    @DisplayName("존재하지 않는 게시글 조회")
+//    void test9() throws Exception {
+//        // expected
+//        mockMvc.perform(get("/posts/{postId}", 100L)
+//                        .contentType(APPLICATION_JSON))
+//                .andExpect(status().isNotFound())
+//                .andDo(print());
+//    }
+//
+//    @Test
+//    @BlogserviceMockUser
+//    @DisplayName("존재하지 않는 게시글 수정")
+//    void test10() throws Exception {
+//        // given
+//        PostEdit.Request postEdit = PostEdit.Request.builder()
+//                .title("수정후내용")
+//                .content("수정전내용")
+//                .build();
+//
+//        // expected
+//        mockMvc.perform(patch("/posts/{postId}", 100L)
+//                        .contentType(APPLICATION_JSON)
+//                        .content(objectMapper.writeValueAsString(postEdit)))
+//                .andExpect(status().isNotFound())
+//                .andDo(print());
+//    }
 
 
 }

@@ -1,5 +1,6 @@
 package com.blogservice.api.service;
 
+import com.blogservice.api.domain.post.Likes;
 import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.PostCreate;
@@ -8,7 +9,9 @@ import com.blogservice.api.dto.request.post.PostSearch;
 import com.blogservice.api.dto.PostResponse;
 import com.blogservice.api.exception.PostNotFound;
 import com.blogservice.api.exception.ServiceException;
+import com.blogservice.api.repository.post.LikeRepository;
 import com.blogservice.api.repository.post.PostRepository;
+import com.blogservice.api.repository.post.ViewRepository;
 import com.blogservice.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.blogservice.api.exception.ErrorCode.*;
@@ -29,6 +33,8 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final LikeRepository likeRepository;
+    private final ViewRepository viewRepository;
 
     public PostCreate.Response write(Long userId, PostCreate.Request request) {
         User user = findUserById(userId);
@@ -87,9 +93,9 @@ public class PostService {
 
         verifyPostDeleted(findPost);
 
-        int viewCount = findPost.getViews().size();
+        Long viewCount = viewRepository.countByPost(findPost);
         return PostResponse.VIEWS.builder()
-                .views((long) viewCount)
+                .views(viewCount)
                 .build();
     }
 
@@ -99,9 +105,29 @@ public class PostService {
 
         verifyPostDeleted(findPost);
 
-        int likeCount = findPost.getLikes().size();
+        Long likeCount = likeRepository.countByPost(findPost);
         return PostResponse.LIKES.builder()
-                .likes((long) likeCount)
+                .likes(likeCount)
+                .build();
+    }
+
+    public PostResponse.LIKES likePost(Long userId, Long postId) {
+        User findUser = findUserById(userId);
+        Post findPost = findPostById(postId);
+
+        verifyPostDeleted(findPost);
+
+        Optional<Likes> likes = likeRepository.findByUserIdAndPostId(userId, postId);
+        if (likes.isPresent()) {
+            likeRepository.delete(likes.get());
+        } else {
+            Likes like = Likes.builder()
+                    .user(findUser).post(findPost)
+                    .build();
+            likeRepository.save(like);
+        }
+        return PostResponse.LIKES.builder()
+                .likes(likeRepository.countByPost(findPost))
                 .build();
     }
 

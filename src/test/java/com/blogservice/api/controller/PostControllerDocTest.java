@@ -214,6 +214,63 @@ public class PostControllerDocTest {
 
     @Test
     @BlogserviceMockUser
+    @DisplayName("글 좋아요")
+    void view_post_like() throws Exception {
+        // given
+        User user1 = User.builder()
+                .nickname("testuser1")
+                .email("testuser1@testuser.com")
+                .password("testpassword")
+                .build();
+        User user2 = User.builder()
+                .nickname("testuser2")
+                .email("testuser2@testuser.com")
+                .password("testpassword")
+                .build();
+        User user3 = User.builder()
+                .nickname("testuser3")
+                .email("testuser3@testuser.com")
+                .password("testpassword")
+                .build();
+        userRepository.saveAll(List.of(user1, user2, user3));
+
+        Post post = Post.builder()
+                .title("testtitle")
+                .content("testcontent")
+                .user(user1)
+                .isDeleted(false)
+                .build();
+        Post savedPost = postRepository.save(post);
+
+        Likes likes1 = Likes.builder()
+                .post(savedPost)
+                .user(user1)
+                .build();
+        Likes likes2 = Likes.builder()
+                .post(savedPost)
+                .user(user2)
+                .build();
+        Likes likes3 = Likes.builder()
+                .post(savedPost)
+                .user(user3)
+                .build();
+        likeRepository.saveAll(List.of(likes1, likes2, likes3));
+
+        // expected
+        this.mockMvc.perform(post("/api/posts/{postId}/likes", savedPost.getId()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("post-like", pathParameters(
+                                parameterWithName("postId").description("게시글 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("likes").description("게시글 좋아요 수")
+                        )
+                ));
+    }
+
+    @Test
+    @BlogserviceMockUser
     @DisplayName("글 등록")
     void test2() throws Exception {
         // given

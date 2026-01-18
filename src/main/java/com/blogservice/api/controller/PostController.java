@@ -65,6 +65,14 @@ public class PostController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/{postId}/likes")
+    public ResponseEntity<PostResponse.LIKES> likePost(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long postId) {
+        PostResponse.LIKES response = postService.likePost(userPrincipal.getUserId(), postId);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/posts")
     public List<PostResponse> getList(@ModelAttribute PostSearch postSearch) {
         return postService.getList(postSearch);
