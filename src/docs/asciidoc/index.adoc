@@ -133,3 +133,15 @@ include::{snippets}/post-view-count/path-parameters.adoc[]
 
 === 응답
 include::{snippets}/post-view-count/http-response.adoc[]
+
+
+= 댓글
+
+== 댓글 작성
+
+=== 요청
+include::{snippets}/comments-create/http-request.adoc[]
+include::{snippets}/comments-create/path-parameters.adoc[]
+
+=== 응답
+include::{snippets}/comments-create/http-response.adoc[]

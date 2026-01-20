@@ -97,6 +97,9 @@ public class CommentControllerDocTest {
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andDo(document("comments-create",
+                        pathParameters(
+                                parameterWithName("postId").description("게시글 id")
+                        ),
                         requestFields(
                                 fieldWithPath("content").description("내용")
                         )
