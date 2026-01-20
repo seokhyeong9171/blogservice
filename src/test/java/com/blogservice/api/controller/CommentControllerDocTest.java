@@ -2,6 +2,7 @@ package com.blogservice.api.controller;
 
 import com.blogservice.api.config.BlogserviceMockSecurityContext;
 import com.blogservice.api.config.BlogserviceMockUser;
+import com.blogservice.api.domain.comment.Comment;
 import com.blogservice.api.domain.post.Likes;
 import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.domain.post.Views;
@@ -72,7 +73,7 @@ public class CommentControllerDocTest {
     @Test
     @DisplayName("댓글 작성")
     @BlogserviceMockUser
-    void view_post_details() throws Exception {
+    void write_comment() throws Exception {
         // given
         User user = User.builder()
                 .nickname("nickname")
@@ -104,5 +105,54 @@ public class CommentControllerDocTest {
                                 fieldWithPath("content").description("내용")
                         )
                 ));
+    }
+
+    @Test
+    @DisplayName("댓글 수정")
+    @BlogserviceMockUser
+    void update_comment() throws Exception {
+        // given
+        User user = User.builder()
+                .nickname("nickname")
+                .build();
+        User savedUser = userRepository.save(user);
+
+        Post post = Post.builder()
+                .title("제목")
+                .content("내용")
+                .isDeleted(false)
+                .user(savedUser)
+                .build();
+        Post savedPost = postRepository.save(post);
+
+        Comment comment = Comment.builder()
+                .post(savedPost)
+                .user(getMockUser())
+                .content("수정 전 댓글 내용")
+                .build();
+        Comment savedComment = commentRepository.save(comment);
+
+        CommentRequest.Update request = CommentRequest.Update.builder()
+                .content("수정 후 댓글 내용")
+                .build();
+
+        // expected
+        this.mockMvc.perform(patch("/api/comments/{commentId}", savedComment.getId())
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("comments-update",
+                        pathParameters(
+                                parameterWithName("commentId").description("댓글 id")
+                        ),
+                        requestFields(
+                                fieldWithPath("content").description("수정 후 댓글 내용")
+                        )
+                ));
+    }
+
+    private User getMockUser() {
+        return securityContext.getCurrentUser();
     }
 }

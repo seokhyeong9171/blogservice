@@ -145,3 +145,12 @@ include::{snippets}/comments-create/path-parameters.adoc[]
 
 === 응답
 include::{snippets}/comments-create/http-response.adoc[]
+
+== 댓글 수정
+
+=== 요청
+include::{snippets}/comments-update/http-request.adoc[]
+include::{snippets}/comments-update/path-parameters.adoc[]
+
+=== 응답
+include::{snippets}/comments-update/http-response.adoc[]

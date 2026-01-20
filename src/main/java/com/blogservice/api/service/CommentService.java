@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
+
 import static com.blogservice.api.exception.ErrorCode.*;
 
 @Service
@@ -43,6 +45,18 @@ public class CommentService {
         //  comment snapshot
     }
 
+    public void update(Long userId, Long commentId, CommentRequest.Update request) {
+        Comment findComment = findCommentById(commentId);
+
+        verifyCommentAuthor(userId, findComment);
+        verifyPostDeleted(findComment.getPost() );
+        verifyCommentDeleted(findComment);
+
+        findComment.update(request.getContent());
+        // todo
+        //  comment snapshot
+    }
+
     public void delete(Long commentId, CommentDelete request) {
         Comment findedComment = commentRepository.findById(commentId)
                 .orElseThrow(CommentNotFound::new);
@@ -63,9 +77,25 @@ public class CommentService {
         return postRepository.findById(postId).orElseThrow(() -> new ServiceException(POST_NOT_FOUND));
     }
 
-    private static void verifyPostDeleted(Post post) {
+    private Comment findCommentById(Long commentId) {
+        return commentRepository.findById(commentId).orElseThrow(() -> new ServiceException(COMMENT_NOT_FOUND));
+    }
+
+    private void verifyPostDeleted(Post post) {
         if (post.isDeleted()) {
             throw new ServiceException(POST_DELETED);
+        }
+    }
+
+    private void verifyCommentDeleted(Comment comment) {
+        if (comment.isDeleted()) {
+            throw new ServiceException(COMMENT_DELETED);
+        }
+    }
+
+    private void verifyCommentAuthor(Long userId, Comment comment) {
+        if (!Objects.equals(comment.getUser().getId(), userId)) {
+            throw new ServiceException(COMMENT_AUTHOR_NOT_MATCHING);
         }
     }
 }

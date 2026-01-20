@@ -28,6 +28,18 @@ public class CommentController {
         commentService.write(userPrincipal.getUserId(), postId, request);
         return ResponseEntity.status(CREATED).build();
     }
+
+    @PatchMapping("/api/comments/{commentId}")
+    public ResponseEntity<Void> updateComment(
+            @AuthenticationPrincipal UserPrincipal userPrincipal, @PathVariable Long commentId,
+            @RequestBody @Validated CommentRequest.Update request
+    ) {
+
+        commentService.update(userPrincipal.getUserId(), commentId, request);
+        return ResponseEntity.ok().build();
+    }
+
+
     
     @PostMapping("/comments/{commentId}/delete")
     public void delete(@PathVariable Long commentId, @RequestBody @Validated CommentDelete request) {
