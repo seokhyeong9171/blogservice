@@ -70,8 +70,4 @@ public class Post extends BaseTimeEntity {
         return user.getId();
     }
 
-    public void addComment(Comment comment) {
-        comment.setPost(this);
-        comments.add(comment);
-    }
 }

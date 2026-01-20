@@ -1,12 +1,13 @@
 package com.blogservice.api.controller;
 
+import com.blogservice.api.config.BlogserviceMockUser;
 import com.blogservice.api.domain.comment.Comment;
 import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.repository.user.UserRepository;
 import com.blogservice.api.repository.comment.CommentRepository;
 import com.blogservice.api.repository.post.PostRepository;
-import com.blogservice.api.dto.request.comment.CommentCreate;
+import com.blogservice.api.dto.CommentRequest;
 import com.blogservice.api.dto.request.comment.CommentDelete;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
@@ -53,14 +54,12 @@ class CommentControllerTest {
         commentRepository.deleteAll();
         postRepository.deleteAll();
         userRepository.deleteAll();
-        jdbcTemplate.execute("ALTER TABLE comment ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("ALTER TABLE post ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("ALTER TABLE users ALTER COLUMN id RESTART WITH 1");
     }
 
     @Test
-    @DisplayName("댓글 작성")
-    void createComment() throws Exception {
+    @BlogserviceMockUser
+    @DisplayName("댓글 작성 - 성공")
+    void create_comment_success() throws Exception {
         // given
         User user = User.builder()
                 .name("testname")
@@ -70,21 +69,48 @@ class CommentControllerTest {
         User savedUser = userRepository.save(user);
 
         Post post = Post.builder()
-                .title("123456789012345")
-                .content("bar")
                 .user(savedUser)
                 .build();
-        postRepository.save(post);
+        Post savedPost = postRepository.save(post);
 
-        CommentCreate request = CommentCreate.builder()
-                .author("author").password("123456").content("testcomment").build();
+        CommentRequest.Create request = CommentRequest.Create.builder()
+                .content("testcomment").build();
 
         // expected
-        mockMvc.perform(post("/posts/{postId}/comments", post.getId())
+        mockMvc.perform(post("/api/posts/{postId}/comments", savedPost.getId())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @BlogserviceMockUser
+    @DisplayName("댓글 작성 - 실패 - 삭제된 글")
+    void create_comment_fail_post_delete() throws Exception {
+        // given
+        User user = User.builder()
+                .name("testname")
+                .email("testemail")
+                .password("testpassword")
+                .build();
+        User savedUser = userRepository.save(user);
+
+        Post post = Post.builder()
+                .user(savedUser)
+                .isDeleted(true)
+                .build();
+        Post savedPost = postRepository.save(post);
+
+        CommentRequest.Create request = CommentRequest.Create.builder()
+                .content("testcomment").build();
+
+        // expected
+        mockMvc.perform(post("/api/posts/{postId}/comments", savedPost.getId())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -110,7 +136,7 @@ class CommentControllerTest {
 //                .author("author")
 //                .password(passwordEncoder.encode(commentPassword)).content("testcomment")
                 .build();
-        comment.setPost(post);
+//        comment.setPost(post);
         commentRepository.save(comment);
 
         CommentDelete request = new CommentDelete(commentPassword);
@@ -146,7 +172,7 @@ class CommentControllerTest {
 //                .author("author")
 //                .password(passwordEncoder.encode(commentPassword))
                 .content("testcomment").build();
-        comment.setPost(post);
+//        comment.setPost(post);
         commentRepository.save(comment);
 
         CommentDelete request = new CommentDelete(commentPassword);
