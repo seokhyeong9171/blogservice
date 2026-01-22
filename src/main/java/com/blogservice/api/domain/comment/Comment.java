@@ -4,12 +4,9 @@ import com.blogservice.api.domain.BaseTimeEntity;
 import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.domain.user.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.validator.constraints.Length;
 
 import java.util.ArrayList;
 import java.util.List;

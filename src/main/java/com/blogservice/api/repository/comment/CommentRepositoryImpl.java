@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.blogservice.api.domain.comment.QComment.*;
+import static com.blogservice.api.domain.comment.QComment.comment;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 

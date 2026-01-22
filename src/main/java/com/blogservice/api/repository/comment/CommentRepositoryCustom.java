@@ -1,6 +1,5 @@
 package com.blogservice.api.repository.comment;
 
-import com.blogservice.api.domain.comment.Comment;
 import com.blogservice.api.dto.CommentDto;
 
 import java.util.List;

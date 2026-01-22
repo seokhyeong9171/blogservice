@@ -3,7 +3,7 @@ package com.blogservice.api.dto;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
-import static lombok.AccessLevel.*;
+import static lombok.AccessLevel.PROTECTED;
 
 @ToString
 @Setter

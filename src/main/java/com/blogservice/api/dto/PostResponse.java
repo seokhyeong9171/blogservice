@@ -2,11 +2,14 @@ package com.blogservice.api.dto;
 
 import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.domain.user.User;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import static lombok.AccessLevel.*;
+import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 public class PostResponse {
