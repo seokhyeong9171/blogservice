@@ -159,6 +159,17 @@ include::{snippets}/comments-list/query-parameters.adoc[]
 include::{snippets}/comments-list/http-response.adoc[]
 include::{snippets}/comments-list/response-fields.adoc[]
 
+== 대댓글 리스트 조회
+
+== 요청
+include::{snippets}/comments-child-list/http-request.adoc[]
+include::{snippets}/comments-child-list/path-parameters.adoc[]
+include::{snippets}/comments-child-list/query-parameters.adoc[]
+
+== 응답
+include::{snippets}/comments-child-list/http-response.adoc[]
+include::{snippets}/comments-child-list/response-fields.adoc[]
+
 
 == 댓글 작성
 

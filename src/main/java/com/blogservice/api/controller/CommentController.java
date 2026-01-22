@@ -30,6 +30,14 @@ public class CommentController {
         return ResponseEntity.status(CREATED).build();
     }
 
+    @PostMapping("/api/comments/{commentId}/child")
+    public ResponseEntity<Void> writeChildComment(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long commentId, @RequestBody @Validated CommentDto.Create request) {
+        commentService.writeChild(userPrincipal.getUserId(), commentId, request);
+        return ResponseEntity.status(CREATED).build();
+    }
+
     @PatchMapping("/api/comments/{commentId}")
     public ResponseEntity<Void> updateComment(
             @AuthenticationPrincipal UserPrincipal userPrincipal, @PathVariable Long commentId,

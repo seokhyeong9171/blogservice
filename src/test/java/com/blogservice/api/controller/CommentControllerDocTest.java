@@ -296,7 +296,7 @@ public class CommentControllerDocTest {
         mockMvc.perform(get("/api/comments/{commentId}/child?page=1&size=10", savedComment.getId())
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andDo(document("comments-list",
+                .andDo(document("comments-child-list",
                         pathParameters(
                                 parameterWithName("commentId").description("댓글 id")
                         ),

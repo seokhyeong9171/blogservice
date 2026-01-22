@@ -24,8 +24,8 @@ import static com.blogservice.api.exception.ErrorCode.*;
 @Transactional
 @RequiredArgsConstructor
 public class CommentService {
-
     private final PostRepository postRepository;
+
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
 
@@ -38,6 +38,24 @@ public class CommentService {
         Comment comment = com.blogservice.api.domain.comment.Comment.builder()
                 .user(findUser)
                 .post(findPost)
+                .content(request.getContent())
+                .isDeleted(false)
+                .build();
+        commentRepository.save(comment);
+
+        // todo
+        //  comment snapshot
+    }
+
+    public void writeChild(Long userId, Long commentId, CommentDto.Create request) {
+        Comment findComment = findCommentById(commentId);
+        User findUser = findUserById(userId);
+
+        verifyCommentDeleted(findComment);
+
+        Comment comment = com.blogservice.api.domain.comment.Comment.builder()
+                .user(findUser)
+                .parentComment(findComment)
                 .content(request.getContent())
                 .isDeleted(false)
                 .build();
