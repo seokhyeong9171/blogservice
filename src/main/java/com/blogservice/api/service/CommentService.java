@@ -3,9 +3,7 @@ package com.blogservice.api.service;
 import com.blogservice.api.domain.comment.Comment;
 import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.domain.user.User;
-import com.blogservice.api.dto.CommentRequest;
-import com.blogservice.api.dto.request.comment.CommentDelete;
-import com.blogservice.api.exception.CommentNotFound;
+import com.blogservice.api.dto.CommentDto;
 import com.blogservice.api.exception.ServiceException;
 import com.blogservice.api.repository.comment.CommentRepository;
 import com.blogservice.api.repository.post.PostRepository;
@@ -27,13 +25,13 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
 
-    public void write(Long userId, Long postId, CommentRequest.Create request) {
+    public void write(Long userId, Long postId, CommentDto.Create request) {
         Post findPost = findPostById(postId);
         User findUser = findUserById(userId);
 
         verifyPostDeleted(findPost);
 
-        Comment comment = Comment.builder()
+        Comment comment = com.blogservice.api.domain.comment.Comment.builder()
                 .user(findUser)
                 .post(findPost)
                 .content(request.getContent())
@@ -45,7 +43,7 @@ public class CommentService {
         //  comment snapshot
     }
 
-    public void update(Long userId, Long commentId, CommentRequest.Update request) {
+    public void update(Long userId, Long commentId, CommentDto.Update request) {
         Comment findComment = findCommentById(commentId);
 
         verifyCommentAuthor(userId, findComment);
@@ -57,16 +55,15 @@ public class CommentService {
         //  comment snapshot
     }
 
-    public void delete(Long commentId, CommentDelete request) {
-        Comment findedComment = commentRepository.findById(commentId)
-                .orElseThrow(CommentNotFound::new);
+    public void delete(Long userId, Long commentId) {
+        Comment findComment = findCommentById(commentId);
 
-//        boolean isMatch = passwordEncoder.matches(request.getPassword(), findedComment.getPassword());
-//        if(!isMatch) {
-//            throw new InvalidPassword();
-//        }
+        verifyCommentAuthor(userId, findComment);
+        verifyCommentDeleted(findComment);
 
-        commentRepository.delete(findedComment);
+        findComment.delete();
+        // todo
+        //  comment snapshot
     }
 
     private User findUserById(Long userId) {
@@ -75,6 +72,13 @@ public class CommentService {
 
     private Post findPostById(Long postId) {
         return postRepository.findById(postId).orElseThrow(() -> new ServiceException(POST_NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public CommentDto.Details getDetails(Long commentId) {
+        Comment findComment = findCommentById(commentId);
+        verifyCommentDeleted(findComment);
+        return CommentDto.Details.fromEntity(findComment);
     }
 
     private Comment findCommentById(Long commentId) {
@@ -93,7 +97,7 @@ public class CommentService {
         }
     }
 
-    private void verifyCommentAuthor(Long userId, Comment comment) {
+    private void verifyCommentAuthor(Long userId, com.blogservice.api.domain.comment.Comment comment) {
         if (!Objects.equals(comment.getUser().getId(), userId)) {
             throw new ServiceException(COMMENT_AUTHOR_NOT_MATCHING);
         }

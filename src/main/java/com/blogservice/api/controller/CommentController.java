@@ -1,12 +1,10 @@
 package com.blogservice.api.controller;
 
 import com.blogservice.api.config.UserPrincipal;
-import com.blogservice.api.dto.CommentRequest;
-import com.blogservice.api.dto.request.comment.CommentDelete;
+import com.blogservice.api.dto.CommentDto;
 import com.blogservice.api.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -24,7 +22,7 @@ public class CommentController {
     @PostMapping("/api/posts/{postId}/comments")
     public ResponseEntity<Void> writeComment(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable Long postId, @RequestBody @Validated CommentRequest.Create request) {
+            @PathVariable Long postId, @RequestBody @Validated CommentDto.Create request) {
         commentService.write(userPrincipal.getUserId(), postId, request);
         return ResponseEntity.status(CREATED).build();
     }
@@ -32,17 +30,22 @@ public class CommentController {
     @PatchMapping("/api/comments/{commentId}")
     public ResponseEntity<Void> updateComment(
             @AuthenticationPrincipal UserPrincipal userPrincipal, @PathVariable Long commentId,
-            @RequestBody @Validated CommentRequest.Update request
+            @RequestBody @Validated CommentDto.Update request
     ) {
 
         commentService.update(userPrincipal.getUserId(), commentId, request);
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/api/comments/{commentId}")
+    public ResponseEntity<Void> deleteComment(@AuthenticationPrincipal UserPrincipal userPrincipal, @PathVariable Long commentId) {
+        commentService.delete(userPrincipal.getUserId(), commentId);
+        return ResponseEntity.ok().build();
+    }
 
-    
-    @PostMapping("/comments/{commentId}/delete")
-    public void delete(@PathVariable Long commentId, @RequestBody @Validated CommentDelete request) {
-        commentService.delete(commentId, request);
+    @GetMapping("/api/comments/{commentId}")
+    public ResponseEntity<CommentDto.Details> getComment(@PathVariable Long commentId) {
+        CommentDto.Details response = commentService.getDetails(commentId);
+        return ResponseEntity.ok(response);
     }
 }

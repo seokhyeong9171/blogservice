@@ -67,5 +67,9 @@ public class Comment extends BaseTimeEntity {
     public void update(String requestContent) {
         this.content = requestContent;
     }
+
+    public void delete() {
+        this.isDeleted = true;
+    }
 }
 

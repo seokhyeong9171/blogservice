@@ -3,17 +3,11 @@ package com.blogservice.api.controller;
 import com.blogservice.api.config.BlogserviceMockSecurityContext;
 import com.blogservice.api.config.BlogserviceMockUser;
 import com.blogservice.api.domain.comment.Comment;
-import com.blogservice.api.domain.post.Likes;
 import com.blogservice.api.domain.post.Post;
-import com.blogservice.api.domain.post.Views;
 import com.blogservice.api.domain.user.User;
-import com.blogservice.api.dto.CommentRequest;
-import com.blogservice.api.dto.PostCreate;
-import com.blogservice.api.dto.PostEdit;
+import com.blogservice.api.dto.CommentDto;
 import com.blogservice.api.repository.comment.CommentRepository;
-import com.blogservice.api.repository.post.LikeRepository;
 import com.blogservice.api.repository.post.PostRepository;
-import com.blogservice.api.repository.post.ViewRepository;
 import com.blogservice.api.repository.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
@@ -26,9 +20,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.List;
-import java.util.stream.IntStream;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -87,7 +78,7 @@ public class CommentControllerDocTest {
                 .build();
         Post savedPost = postRepository.save(post);
 
-        CommentRequest.Create request = CommentRequest.Create.builder()
+        CommentDto.Create request = CommentDto.Create.builder()
                 .content("testcontent")
                 .build();
 
@@ -125,14 +116,14 @@ public class CommentControllerDocTest {
                 .build();
         Post savedPost = postRepository.save(post);
 
-        Comment comment = Comment.builder()
+        com.blogservice.api.domain.comment.Comment comment = com.blogservice.api.domain.comment.Comment.builder()
                 .post(savedPost)
                 .user(getMockUser())
                 .content("수정 전 댓글 내용")
                 .build();
-        Comment savedComment = commentRepository.save(comment);
+        com.blogservice.api.domain.comment.Comment savedComment = commentRepository.save(comment);
 
-        CommentRequest.Update request = CommentRequest.Update.builder()
+        CommentDto.Update request = CommentDto.Update.builder()
                 .content("수정 후 댓글 내용")
                 .build();
 
@@ -148,6 +139,85 @@ public class CommentControllerDocTest {
                         ),
                         requestFields(
                                 fieldWithPath("content").description("수정 후 댓글 내용")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("댓글 삭제")
+    @BlogserviceMockUser
+    void delete_comment() throws Exception {
+        // given
+        User user = User.builder()
+                .nickname("nickname")
+                .build();
+        User savedUser = userRepository.save(user);
+
+        Post post = Post.builder()
+                .title("제목")
+                .content("내용")
+                .isDeleted(false)
+                .user(savedUser)
+                .build();
+        Post savedPost = postRepository.save(post);
+
+        com.blogservice.api.domain.comment.Comment comment = com.blogservice.api.domain.comment.Comment.builder()
+                .post(savedPost)
+                .user(getMockUser())
+                .content("수정 전 댓글 내용")
+                .build();
+        com.blogservice.api.domain.comment.Comment savedComment = commentRepository.save(comment);
+
+        // expected
+        this.mockMvc.perform(delete("/api/comments/{commentId}", savedComment.getId())
+                        .contentType(APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("comments-delete",
+                        pathParameters(
+                                parameterWithName("commentId").description("댓글 id")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("댓글 상세 조회")
+    void get_comment_details() throws Exception {
+        // given
+        User user = User.builder()
+                .nickname("nickname")
+                .build();
+        User savedUser = userRepository.save(user);
+        Post post = Post.builder()
+                .title("제목")
+                .content("내용")
+                .isDeleted(false)
+                .user(savedUser)
+                .build();
+        Post savedPost = postRepository.save(post);
+
+        Comment comment = Comment.builder()
+                .post(savedPost)
+                .user(savedUser)
+                .content("testcontent")
+                .build();
+        Comment savedComment = commentRepository.save(comment);
+
+        // expected
+        this.mockMvc.perform(get("/api/comments/{commentId}", savedComment.getId())
+                        .contentType(APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("comments-details",
+                        pathParameters(
+                                parameterWithName("commentId").description("댓글 id")
+                        ),
+                        responseFields(
+                                fieldWithPath("content").description("내용"),
+                                fieldWithPath("writeDt").description("작성일"),
+                                fieldWithPath("author.id").description("작성자 아이디"),
+                                fieldWithPath("author.nickname").description("작성자 닉네임"),
+                                fieldWithPath("content").description("내용")
                         )
                 ));
     }
