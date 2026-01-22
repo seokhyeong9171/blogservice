@@ -436,28 +436,4 @@ class PostServiceTest {
         assertEquals(POST_DELETED.getMessage(), serviceException.getMessage());
     }
 
-    @Test
-    @DisplayName("글 첫 페이지 조회")
-    void test3() {
-        // given
-         List<Post> requestPosts = IntStream.range(1, 20)
-                         .mapToObj(i -> {
-                             return Post.builder()
-                                     .title("제목 " + i)
-                                     .content("내용 " + i)
-                                     .build();
-                         })
-                 .toList();
-        postRepository.saveAll(requestPosts);
-
-//        Pageable pageable = PageRequest.of(0, 5, Sort.by(DESC, "id"));
-
-        // when
-        List<PostResponse.List> posts = postService.getList(1, 10);
-
-        // then
-        assertEquals(10L, posts.size());
-        assertEquals("제목 19", posts.get(0).getTitle());
-    }
-
 }

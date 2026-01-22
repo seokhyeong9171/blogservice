@@ -4,10 +4,12 @@ import com.blogservice.api.domain.BaseTimeEntity;
 import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.domain.user.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,10 +45,8 @@ public class Comment extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(nullable = false)
     private String content;
 
-    @Setter
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
@@ -62,6 +62,14 @@ public class Comment extends BaseTimeEntity {
         this.content = content;
         this.post = post;
         this.isDeleted = isDeleted;
+    }
+
+    public void update(String requestContent) {
+        this.content = requestContent;
+    }
+
+    public void delete() {
+        this.isDeleted = true;
     }
 }
 

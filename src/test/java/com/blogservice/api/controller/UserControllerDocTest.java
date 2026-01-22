@@ -35,12 +35,6 @@ public class UserControllerDocTest {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private BlogserviceMockSecurityContext securityContext;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @AfterEach
     void clean() {
         userRepository.deleteAll();

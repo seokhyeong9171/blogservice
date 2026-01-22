@@ -133,3 +133,67 @@ include::{snippets}/post-view-count/path-parameters.adoc[]
 
 === 응답
 include::{snippets}/post-view-count/http-response.adoc[]
+include::{snippets}/post-view-count/response-fields.adoc[]
+
+
+= 댓글
+
+== 댓글 상세 조회
+
+== 요청
+include::{snippets}/comments-details/http-request.adoc[]
+include::{snippets}/comments-details/path-parameters.adoc[]
+
+== 응답
+include::{snippets}/comments-details/http-response.adoc[]
+include::{snippets}/comments-details/response-fields.adoc[]
+
+== 댓글 리스트 조회
+
+== 요청
+include::{snippets}/comments-list/http-request.adoc[]
+include::{snippets}/comments-list/path-parameters.adoc[]
+include::{snippets}/comments-list/query-parameters.adoc[]
+
+== 응답
+include::{snippets}/comments-list/http-response.adoc[]
+include::{snippets}/comments-list/response-fields.adoc[]
+
+== 대댓글 리스트 조회
+
+== 요청
+include::{snippets}/comments-child-list/http-request.adoc[]
+include::{snippets}/comments-child-list/path-parameters.adoc[]
+include::{snippets}/comments-child-list/query-parameters.adoc[]
+
+== 응답
+include::{snippets}/comments-child-list/http-response.adoc[]
+include::{snippets}/comments-child-list/response-fields.adoc[]
+
+
+== 댓글 작성
+
+=== 요청
+include::{snippets}/comments-create/http-request.adoc[]
+include::{snippets}/comments-create/path-parameters.adoc[]
+
+=== 응답
+include::{snippets}/comments-create/http-response.adoc[]
+
+== 댓글 수정
+
+=== 요청
+include::{snippets}/comments-update/http-request.adoc[]
+include::{snippets}/comments-update/path-parameters.adoc[]
+
+=== 응답
+include::{snippets}/comments-update/http-response.adoc[]
+
+== 댓글 삭제
+
+=== 요청
+include::{snippets}/comments-delete/http-request.adoc[]
+include::{snippets}/comments-delete/path-parameters.adoc[]
+
+=== 응답
+include::{snippets}/comments-delete/http-response.adoc[]
