@@ -20,6 +20,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -262,6 +263,50 @@ public class CommentControllerDocTest {
                                 fieldWithPath("[].commentId").description("댓글 아이디"),
                                 fieldWithPath("[].isDeleted").description("삭제 여부"),
                                 fieldWithPath("[].existChild").description("대댓글 존재 여부")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("대댓글 리스트 조회")
+//    @Transactional
+    void get_child_comment_list() throws Exception {
+
+        Post post = Post.builder().build();
+        Post savedPost = postRepository.save(post);
+
+        Comment comment = Comment.builder().content("댓글 내용").build();
+        Comment savedComment = commentRepository.save(comment);
+
+        List<Comment> requestComments = IntStream.range(1, 31)
+                .mapToObj(i -> {
+                    User user = User.builder().nickname("user " + i).build();
+                    User author = userRepository.save(user);
+                    return Comment.builder()
+                            .post(savedPost)
+                            .parentComment(savedComment)
+                            .user(author)
+                            .content("내용 " + i)
+                            .build();
+                })
+                .toList();
+        commentRepository.saveAll(requestComments);
+
+        // expected
+        mockMvc.perform(get("/api/comments/{commentId}/child?page=1&size=10", savedComment.getId())
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(document("comments-list",
+                        pathParameters(
+                                parameterWithName("commentId").description("댓글 id")
+                        ),
+                        queryParameters(
+                                parameterWithName("page").description("페이지 번호"),
+                                parameterWithName("size").description("사이즈")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].commentId").description("댓글 아이디"),
+                                fieldWithPath("[].isDeleted").description("삭제 여부")
                         )
                 ));
     }

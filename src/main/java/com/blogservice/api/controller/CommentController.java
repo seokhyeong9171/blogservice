@@ -52,6 +52,12 @@ public class CommentController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/api/comments/{commentId}/child")
+    public ResponseEntity<List<CommentDto.List>> getChildCommentsList(@PathVariable Long commentId, Pageable pageable) {
+        List<CommentDto.List> response = commentService.getChildCommentsList(commentId, pageable);
+        return ResponseEntity.ok(response);
+    }
+
 
     @GetMapping("/api/posts/{postId}/comments")
     public ResponseEntity<List<CommentDto.List>> getCommentsList(@PathVariable Long postId, Pageable pageable) {

@@ -76,18 +76,14 @@ public class CommentService {
         Post findPost = findPostById(postId);
         verifyPostDeleted(findPost);
 
-        List<CommentDto.List> comments = commentRepository.findAllParentComments(postId, pageable.getPageSize(), pageable.getPageNumber());
-//        List<CommentDto.List> response = comments.stream().map(comment -> {
-//            Comment p = comment.getParentComment();
-//            boolean existChild;
-//            existChild = p == null;
-//            return CommentDto.List.builder()
-//                    .commentId(comment.getId())
-//                    .existChild(existChild)
-//                    .isDeleted(comment.isDeleted())
-//                    .build();
-//        }).toList();
-        return comments;
+        return commentRepository.findAllParentComments(postId, pageable.getPageSize(), pageable.getPageNumber());
+    }
+
+    @Transactional(readOnly = true)
+    public List<CommentDto.List> getChildCommentsList(Long commentId, Pageable pageable) {
+        verifyCommentDeleted(findCommentById(commentId));
+
+        return commentRepository.findAllChildComments(commentId, pageable.getPageSize(), pageable.getPageNumber());
     }
 
     @Transactional(readOnly = true)

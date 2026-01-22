@@ -33,7 +33,6 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom{
 
         for (Tuple tuple : tuples) {
             Long commentId = tuple.get(comment.id);
-//            Boolean existChild = commentRepository.existsByParentCommentId(commentId);
 
             Integer i = queryFactory.selectOne().from(comment).where(comment.parentComment.id.eq(commentId)).fetchFirst();
             Boolean existChild = i != null;
@@ -45,6 +44,31 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom{
                     .isDeleted(isDeleted)
                     .existChild(existChild)
                     .build());
+        }
+
+        return response;
+    }
+
+    @Override
+    public List<CommentDto.List> findAllChildComments(Long commentId, int size, int page) {
+        List<CommentDto.List> response = new ArrayList<>();
+
+        List<Tuple> tuples = queryFactory.select(comment.id, comment.isDeleted)
+                .from(comment)
+                .where(comment.parentComment.id.eq(commentId))
+                .limit(size)
+                .offset(getOffset(page, size))
+                .orderBy(comment.createdAt.asc())
+                .fetch();
+
+        for (Tuple tuple : tuples) {
+            Long id = tuple.get(comment.id);
+            Boolean isDeleted = tuple.get(comment.isDeleted);
+            CommentDto.List c = CommentDto.List.builder()
+                    .commentId(id)
+                    .isDeleted(isDeleted)
+                    .build();
+            response.add(c);
         }
 
         return response;

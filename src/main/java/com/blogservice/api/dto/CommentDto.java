@@ -2,6 +2,7 @@ package com.blogservice.api.dto;
 
 import com.blogservice.api.domain.comment.Comment;
 import com.blogservice.api.domain.user.User;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
@@ -38,6 +39,7 @@ public class CommentDto {
     @AllArgsConstructor
     @NoArgsConstructor(access = PROTECTED)
     @Builder
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public static class List {
         private Long commentId;
         private Boolean isDeleted;
