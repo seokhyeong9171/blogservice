@@ -5,10 +5,13 @@ import com.blogservice.api.dto.CommentDto;
 import com.blogservice.api.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -48,4 +51,12 @@ public class CommentController {
         CommentDto.Details response = commentService.getDetails(commentId);
         return ResponseEntity.ok(response);
     }
+
+
+    @GetMapping("/api/posts/{postId}/comments")
+    public ResponseEntity<List<CommentDto.List>> getCommentsList(@PathVariable Long postId, Pageable pageable) {
+        List<CommentDto.List> response = commentService.getCommentsList(postId, pageable);
+        return ResponseEntity.ok(response);
+    }
+
 }

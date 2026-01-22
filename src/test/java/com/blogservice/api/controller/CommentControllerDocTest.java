@@ -21,6 +21,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
+import java.util.stream.IntStream;
+
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
@@ -28,6 +31,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -218,6 +222,46 @@ public class CommentControllerDocTest {
                                 fieldWithPath("author.id").description("작성자 아이디"),
                                 fieldWithPath("author.nickname").description("작성자 닉네임"),
                                 fieldWithPath("content").description("내용")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("댓글 리스트 조회")
+    void get_comment_list() throws Exception {
+
+        Post post = Post.builder().build();
+        Post savedPost = postRepository.save(post);
+
+        List<Comment> requestComments = IntStream.range(1, 31)
+                .mapToObj(i -> {
+                    User user = User.builder().nickname("user " + i).build();
+                    User author = userRepository.save(user);
+                    return Comment.builder()
+                            .post(savedPost)
+                            .user(author)
+                            .content("내용 " + i)
+                            .build();
+                })
+                .toList();
+        commentRepository.saveAll(requestComments);
+
+        // expected
+        mockMvc.perform(get("/api/posts/{postId}/comments?page=1&size=10", savedPost.getId())
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(document("comments-list",
+                        pathParameters(
+                                parameterWithName("postId").description("게시글 id")
+                        ),
+                        queryParameters(
+                                parameterWithName("page").description("페이지 번호"),
+                                parameterWithName("size").description("사이즈")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].commentId").description("댓글 아이디"),
+                                fieldWithPath("[].isDeleted").description("삭제 여부"),
+                                fieldWithPath("[].existChild").description("대댓글 존재 여부")
                         )
                 ));
     }

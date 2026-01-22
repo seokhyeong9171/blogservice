@@ -20,8 +20,12 @@ import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
+import java.util.stream.IntStream;
+
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -426,6 +430,34 @@ class CommentControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("댓글 리스트 조회 - 성공")
+    void get_comment_list_success() throws Exception {
+
+        Post post = Post.builder().build();
+        Post savedPost = postRepository.save(post);
+
+        List<Comment> requestComments = IntStream.range(1, 31)
+                .mapToObj(i -> {
+                    User user = User.builder().nickname("user " + i).build();
+                    User author = userRepository.save(user);
+                    return Comment.builder()
+                            .post(savedPost)
+                            .user(author)
+                            .content("내용 " + i)
+                            .build();
+                })
+                .toList();
+        commentRepository.saveAll(requestComments);
+
+        // expected
+        mockMvc.perform(get("/api/posts/{postId}/comments?page=1&size=10", savedPost.getId())
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(10))
+                .andDo(print());
     }
 
 

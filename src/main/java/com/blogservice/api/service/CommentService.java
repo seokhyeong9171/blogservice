@@ -9,10 +9,14 @@ import com.blogservice.api.repository.comment.CommentRepository;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.blogservice.api.exception.ErrorCode.*;
 
@@ -66,12 +70,24 @@ public class CommentService {
         //  comment snapshot
     }
 
-    private User findUserById(Long userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
-    }
+    @Transactional(readOnly = true)
+    public List<CommentDto.List> getCommentsList(Long postId, Pageable pageable) {
 
-    private Post findPostById(Long postId) {
-        return postRepository.findById(postId).orElseThrow(() -> new ServiceException(POST_NOT_FOUND));
+        Post findPost = findPostById(postId);
+        verifyPostDeleted(findPost);
+
+        List<CommentDto.List> comments = commentRepository.findAllParentComments(postId, pageable.getPageSize(), pageable.getPageNumber());
+//        List<CommentDto.List> response = comments.stream().map(comment -> {
+//            Comment p = comment.getParentComment();
+//            boolean existChild;
+//            existChild = p == null;
+//            return CommentDto.List.builder()
+//                    .commentId(comment.getId())
+//                    .existChild(existChild)
+//                    .isDeleted(comment.isDeleted())
+//                    .build();
+//        }).toList();
+        return comments;
     }
 
     @Transactional(readOnly = true)
@@ -79,6 +95,14 @@ public class CommentService {
         Comment findComment = findCommentById(commentId);
         verifyCommentDeleted(findComment);
         return CommentDto.Details.fromEntity(findComment);
+    }
+
+    private User findUserById(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+    }
+
+    private Post findPostById(Long postId) {
+        return postRepository.findById(postId).orElseThrow(() -> new ServiceException(POST_NOT_FOUND));
     }
 
     private Comment findCommentById(Long commentId) {

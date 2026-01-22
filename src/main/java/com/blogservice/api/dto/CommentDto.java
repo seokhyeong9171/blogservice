@@ -38,6 +38,16 @@ public class CommentDto {
     @AllArgsConstructor
     @NoArgsConstructor(access = PROTECTED)
     @Builder
+    public static class List {
+        private Long commentId;
+        private Boolean isDeleted;
+        private Boolean existChild;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor(access = PROTECTED)
+    @Builder
     public static class Details {
 
         private String content;
