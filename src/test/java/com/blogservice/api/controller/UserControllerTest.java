@@ -1,7 +1,9 @@
 package com.blogservice.api.controller;
 
+import com.blogservice.api.config.BlogserviceMockUser;
 import com.blogservice.api.repository.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,6 +14,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -31,7 +35,7 @@ class UserControllerTest {
     @Autowired
     private UserRepository userRepository;
 
-    @BeforeEach
+    @AfterEach
     void clean() {
 //        userRepository.deleteAll();
 //        jdbcTemplate.execute("ALTER TABLE USERS ALTER COLUMN id RESTART WITH 1");
@@ -56,4 +60,20 @@ class UserControllerTest {
                 .andDo(print());
     }
 
+
+    @Test
+    @DisplayName("유저 정보 조회")
+    @BlogserviceMockUser
+    void get_user_info() throws Exception {
+        mockMvc.perform(get("/api/user"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("testname"))
+                .andExpect(jsonPath("$.nickname").value("testnickname"))
+                .andExpect(jsonPath("$.email").value("testemail@test.com"))
+                .andExpect(jsonPath("$.birth").value(LocalDate.now().toString()))
+                .andExpect(jsonPath("$.phone").value("01012345678"))
+                .andExpect(jsonPath("$.address.postal").value(12345))
+                .andExpect(jsonPath("$.address.address").value("test address"))
+                .andDo(print());
+    }
 }

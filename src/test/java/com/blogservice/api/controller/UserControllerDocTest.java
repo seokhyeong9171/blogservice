@@ -1,6 +1,7 @@
 package com.blogservice.api.controller;
 
 import com.blogservice.api.config.BlogserviceMockSecurityContext;
+import com.blogservice.api.config.BlogserviceMockUser;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.repository.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -86,6 +87,27 @@ public class UserControllerDocTest {
                         ),
                         responseFields(
                                 fieldWithPath("duplicate").description("중복여부")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("유저 정보 조회")
+    @BlogserviceMockUser
+    void get_user_info() throws Exception {
+        // expected
+        this.mockMvc.perform(get("/api/user"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("user-info",
+                        responseFields(
+                                fieldWithPath("name").description("이름"),
+                                fieldWithPath("nickname").description("닉네임"),
+                                fieldWithPath("email").description("이메일"),
+                                fieldWithPath("birth").description("생년월일"),
+                                fieldWithPath("phone").description("전화번호"),
+                                fieldWithPath("address.postal").description("우편번호"),
+                                fieldWithPath("address.address").description("상세주소")
                         )
                 ));
     }
