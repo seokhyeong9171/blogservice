@@ -41,5 +41,14 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @PatchMapping("/password")
+    public ResponseEntity<Void> changePassword(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @RequestBody @Validated UserInfo.ChangePassword request
+    ) {
+        userService.changePassword(userPrincipal.getUserId(), request);
+        return ResponseEntity.ok().build();
+    }
+
 
 }

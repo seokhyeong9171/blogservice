@@ -109,4 +109,52 @@ class UserControllerTest {
         assertEquals("changed address", user.getAddress().getAddress());
         assertEquals(54321, user.getAddress().getPostal());
     }
+
+    @Test
+    @DisplayName("비밀번호 변경 - 성공")
+    @BlogserviceMockUser
+    void change_password_success() throws Exception {
+        UserInfo.ChangePassword request = UserInfo.ChangePassword.builder()
+                .currentPassword("testpassword")
+                .newPassword("newpassword")
+                .build();
+
+        mockMvc.perform(patch("/api/user/password")
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("비밀번호 변경 - 실패 - 현재 비밀번호 다름")
+    @BlogserviceMockUser
+    void change_password_fail_wrong_cur() throws Exception {
+        UserInfo.ChangePassword request = UserInfo.ChangePassword.builder()
+                .currentPassword("testpassword" + "aaa")
+                .newPassword("newpassword")
+                .build();
+
+        mockMvc.perform(patch("/api/user/password")
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("비밀번호 변경 - 실패 - 변경 비밀번호 이전과 동일")
+    @BlogserviceMockUser
+    void change_password_fail_same_request() throws Exception {
+        UserInfo.ChangePassword request = UserInfo.ChangePassword.builder()
+                .currentPassword("testpassword")
+                .newPassword("testpassword")
+                .build();
+
+        mockMvc.perform(patch("/api/user/password")
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
 }

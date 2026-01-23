@@ -6,6 +6,7 @@ import com.blogservice.api.exception.ErrorCode;
 import com.blogservice.api.exception.ServiceException;
 import com.blogservice.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import static com.blogservice.api.exception.ErrorCode.*;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
     public boolean checkEmail(String email) {
@@ -39,6 +41,20 @@ public class UserService {
         User findUser = findUserById(userId);
         findUser.update(request);
 
+    }
+
+    public void changePassword(Long userId, UserInfo.ChangePassword request) {
+        User findUser = findUserById(userId);
+
+        if (!passwordEncoder.matches(request.getCurrentPassword(), findUser.getPassword())) {
+            throw new ServiceException(PASSWORD_NOT_MATCHING);
+        }
+
+        if (passwordEncoder.matches(request.getNewPassword(), findUser.getPassword())) {
+            throw new ServiceException(SAME_PASSWORD);
+        }
+
+        findUser.changePassword(passwordEncoder.encode(request.getNewPassword()));
     }
 
     private User findUserById(Long userId) {

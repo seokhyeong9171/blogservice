@@ -63,6 +63,16 @@ public class UserInfo {
     @AllArgsConstructor
     @NoArgsConstructor(access = PROTECTED)
     @Builder
+    public static class ChangePassword {
+        private String currentPassword;
+        @Size(min = 8, max = 20, message = "비밀번호는 8자 이상, 20자 이하여야 합니다.")
+        private String newPassword;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor(access = PROTECTED)
+    @Builder
     public static class Address {
         @Pattern(regexp = "^\\d{5}$\n", message = "올바른 우편번호 형식으로 입력해 주세요.")
         private Integer postal;

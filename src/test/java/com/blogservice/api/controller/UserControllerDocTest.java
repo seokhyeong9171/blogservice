@@ -153,4 +153,28 @@ public class UserControllerDocTest {
                 ));
     }
 
+    @Test
+    @DisplayName("유저 정보 조회")
+    @BlogserviceMockUser
+    void change_password() throws Exception {
+        // given
+        UserInfo.ChangePassword request = UserInfo.ChangePassword.builder()
+                .currentPassword("testpassword")
+                .newPassword("newpassword")
+                .build();
+
+        // expected
+        this.mockMvc.perform(patch("/api/user/password")
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("change-password",
+                        requestFields(
+                                fieldWithPath("currentPassword").description("이전 비밀번호"),
+                                fieldWithPath("newPassword").description("새로운 비밀번호")
+                        )
+                ));
+    }
+
 }

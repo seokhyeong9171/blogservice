@@ -80,4 +80,8 @@ public class User extends BaseTimeEntity {
         this.phone = request.getPhone();
         this.address = request.getAddress().toEntity();
     }
+
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
+    }
 }
