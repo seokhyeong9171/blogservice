@@ -1,5 +1,6 @@
 package com.blogservice.api.domain.comment;
 
+import com.blogservice.api.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +16,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @Entity
 @NoArgsConstructor(access = PROTECTED)
-public class CommentSnapshot {
+public class CommentSnapshot extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
