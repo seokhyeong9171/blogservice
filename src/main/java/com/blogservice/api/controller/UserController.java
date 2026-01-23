@@ -7,10 +7,8 @@ import com.blogservice.api.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/user")
@@ -33,6 +31,14 @@ public class UserController {
     public ResponseEntity<UserInfo.Response> userInfo(@AuthenticationPrincipal UserPrincipal userPrincipal) {
         UserInfo.Response response = userService.getUserInfo(userPrincipal.getUserId());
         return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping
+    public ResponseEntity<Void> updateUserInfo(
+            @AuthenticationPrincipal UserPrincipal userPrincipal, @RequestBody @Validated UserInfo.Update request
+    ) {
+        userService.updateUserInfo(userPrincipal.getUserId(), request);
+        return ResponseEntity.ok().build();
     }
 
 

@@ -1,6 +1,8 @@
 package com.blogservice.api.controller;
 
 import com.blogservice.api.config.BlogserviceMockUser;
+import com.blogservice.api.domain.user.User;
+import com.blogservice.api.dto.UserInfo;
 import com.blogservice.api.repository.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
@@ -10,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -18,6 +21,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.http.MediaType.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -75,5 +79,34 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.address.postal").value(12345))
                 .andExpect(jsonPath("$.address.address").value("test address"))
                 .andDo(print());
+    }
+
+    @Test
+    @DisplayName("유저 정보 업데이트")
+    @BlogserviceMockUser
+    void update_user_info() throws Exception {
+
+        UserInfo.Update request = UserInfo.Update.builder()
+                .nickname("changed")
+                .birth(LocalDate.now().minusYears(1))
+                .phone("01000001111")
+                .address(UserInfo.Address.builder()
+                        .postal(54321)
+                        .address("changed address")
+                        .build())
+                .build();
+
+        mockMvc.perform(patch("/api/user")
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+        User user = userRepository.findAll().getFirst();
+        assertEquals("changed", user.getNickname());
+        assertEquals(LocalDate.now().minusYears(1), user.getBirthDt());
+        assertEquals("01000001111", user.getPhone());
+        assertEquals("changed address", user.getAddress().getAddress());
+        assertEquals(54321, user.getAddress().getPostal());
     }
 }

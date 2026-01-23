@@ -28,10 +28,17 @@ public class UserService {
         return userRepository.existsByNickname(nickname);
     }
 
+    @Transactional(readOnly = true)
     public UserInfo.Response getUserInfo(Long userId) {
         User findUser = findUserById(userId);
 
         return UserInfo.Response.fromEntity(findUser);
+    }
+
+    public void updateUserInfo(Long userId, UserInfo.Update request) {
+        User findUser = findUserById(userId);
+        findUser.update(request);
+
     }
 
     private User findUserById(Long userId) {
