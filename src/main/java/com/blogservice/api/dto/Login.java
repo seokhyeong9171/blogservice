@@ -1,5 +1,6 @@
 package com.blogservice.api.dto;
 
+import com.blogservice.api.domain.user.User;
 import jakarta.servlet.http.Cookie;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -38,5 +39,6 @@ public class Login {
     public static class ResponseDto {
         private String jwt;
         private Cookie cookie;
+        private User user;
     }
 }

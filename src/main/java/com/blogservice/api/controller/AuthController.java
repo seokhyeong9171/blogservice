@@ -6,6 +6,7 @@ import com.blogservice.api.dto.Login;
 import com.blogservice.api.dto.ReIssue;
 import com.blogservice.api.dto.Signup;
 import com.blogservice.api.service.AuthService;
+import com.blogservice.api.service.SnapshotService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,6 +31,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 public class AuthController {
 
     private final AuthService authService;
+    private final SnapshotService snapshotService;
     private final RefreshTokenProvider refreshTokenProvider;
 
     /**
@@ -46,11 +48,17 @@ public class AuthController {
      * 로그인
      */
     @PostMapping("/login")
-    public ResponseEntity<Login.Response> login(HttpServletResponse servletResponse, @RequestBody @Validated Login.Request request) {
+    public ResponseEntity<Login.Response> login(
+            HttpServletRequest servletRequest, HttpServletResponse servletResponse,
+            @RequestBody @Validated Login.Request request) {
+
         Login.ResponseDto responseDto = authService.login(request);
+
         String jwt = responseDto.getJwt();
         servletResponse.setHeader(AUTHORIZATION, "Bearer " + jwt);
         servletResponse.addCookie(responseDto.getCookie());
+
+        snapshotService.logLogin(servletRequest, responseDto.getUser());
 
         return ResponseEntity.ok(Login.Response.builder().jwt(jwt).build());
     }

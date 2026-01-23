@@ -63,12 +63,10 @@ public class AuthService {
         refreshTokenRepository.save(refreshToken);
         Cookie refreshTokenCookie = refreshTokenProvider.getRefreshTokenCookie(refreshToken);
 
-        // todo
-        //  로그인 로그 생성
-
         return Login.ResponseDto.builder()
                 .jwt(jwt)
                 .cookie(refreshTokenCookie)
+                .user(findUser)
                 .build();
     }
 
