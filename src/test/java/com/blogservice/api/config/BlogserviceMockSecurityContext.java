@@ -1,5 +1,6 @@
 package com.blogservice.api.config;
 
+import com.blogservice.api.domain.user.Address;
 import com.blogservice.api.domain.user.Role;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.repository.user.UserRepository;
@@ -12,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithSecurityContextFactory;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Component
@@ -26,7 +28,14 @@ public class BlogserviceMockSecurityContext implements WithSecurityContextFactor
         User user = User.builder()
                 .email(annotation.email())
                 .name(annotation.name())
+                .nickname(annotation.nickname())
                 .password(passwordEncoder.encode(annotation.password()))
+                .phone(annotation.phone())
+                .birthDt(LocalDate.now())
+                .address(Address.builder()
+                        .postal(12345)
+                        .address("test address")
+                        .build())
                 .role(annotation.role())
                 .build();
         userRepository.save(user);

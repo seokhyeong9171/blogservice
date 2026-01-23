@@ -47,7 +47,14 @@ include::{snippets}/user-email-check/http-request.adoc[]
 include::{snippets}/user-email-check/http-response.adoc[]
 include::{snippets}/user-email-check/response-fields.adoc[]
 
+== 비밀번호 변경
+
+=== 요청
+include::{snippets}/change-password/http-request.adoc[]
+include::{snippets}/change-password/request-body.adoc[]
+
 == 닉네임 중복체크
+include::{snippets}/change-password/http-response.adoc[]
 
 === 요청
 include::{snippets}/user-nickname-check/http-request.adoc[]
@@ -55,6 +62,22 @@ include::{snippets}/user-nickname-check/http-request.adoc[]
 === 응답
 include::{snippets}/user-nickname-check/http-response.adoc[]
 include::{snippets}/user-nickname-check/response-fields.adoc[]
+
+== 유저 정보 조회
+=== 요청
+include::{snippets}/user-info/http-request.adoc[]
+
+=== 응답
+include::{snippets}/user-info/http-response.adoc[]
+include::{snippets}/user-info/response-fields.adoc[]
+
+== 유저 정보 업데이트
+=== 요청
+include::{snippets}/user-info-update/http-request.adoc[]
+include::{snippets}/user-info-update/request-fields.adoc[]
+
+=== 응답
+include::{snippets}/user-info-update/http-response.adoc[]
 
 = 게시글
 

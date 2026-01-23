@@ -6,6 +6,7 @@ import com.blogservice.api.domain.auth.RefreshToken;
 import com.blogservice.api.domain.comment.Comment;
 import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.domain.post.Views;
+import com.blogservice.api.dto.UserInfo;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -71,5 +72,16 @@ public class User extends BaseTimeEntity {
         this.address = address;
         this.isWithdrawal = isWithdrawal;
         this.role = role;
+    }
+
+    public void update(UserInfo.Update request) {
+        this.nickname = request.getNickname();
+        this.birthDt = request.getBirth();
+        this.phone = request.getPhone();
+        this.address = request.getAddress().toEntity();
+    }
+
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
     }
 }
