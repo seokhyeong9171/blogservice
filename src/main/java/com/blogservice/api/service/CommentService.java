@@ -27,6 +27,8 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
 
+    private final SnapshotService snapshotService;
+
     public void write(Long userId, Long postId, CommentDto.Create request) {
         Post findPost = findPostById(postId);
         User findUser = findUserById(userId);
@@ -39,10 +41,10 @@ public class CommentService {
                 .content(request.getContent())
                 .isDeleted(false)
                 .build();
-        commentRepository.save(comment);
 
-        // todo
-        //  comment snapshot
+        Comment savedComment = commentRepository.save(comment);
+
+        snapshotService.commentSnapshot(savedComment);
     }
 
     public void writeChild(Long userId, Long commentId, CommentDto.Create request) {
@@ -57,10 +59,9 @@ public class CommentService {
                 .content(request.getContent())
                 .isDeleted(false)
                 .build();
-        commentRepository.save(comment);
+        Comment savedComment = commentRepository.save(comment);
 
-        // todo
-        //  comment snapshot
+        snapshotService.commentSnapshot(savedComment);
     }
 
     public void update(Long userId, Long commentId, CommentDto.Update request) {
@@ -71,8 +72,8 @@ public class CommentService {
         verifyCommentDeleted(findComment);
 
         findComment.update(request.getContent());
-        // todo
-        //  comment snapshot
+
+        snapshotService.commentSnapshot(findComment);
     }
 
     public void delete(Long userId, Long commentId) {
@@ -82,8 +83,8 @@ public class CommentService {
         verifyCommentDeleted(findComment);
 
         findComment.delete();
-        // todo
-        //  comment snapshot
+
+        snapshotService.commentSnapshot(findComment);
     }
 
     @Transactional(readOnly = true)

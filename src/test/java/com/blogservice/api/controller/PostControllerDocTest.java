@@ -9,6 +9,7 @@ import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.PostEdit;
 import com.blogservice.api.repository.post.LikeRepository;
 import com.blogservice.api.repository.post.PostRepository;
+import com.blogservice.api.repository.post.PostSnapshotRepository;
 import com.blogservice.api.repository.post.ViewRepository;
 import com.blogservice.api.repository.user.UserRepository;
 import com.blogservice.api.dto.PostCreate;
@@ -60,9 +61,12 @@ public class PostControllerDocTest {
     private ViewRepository viewRepository;
     @Autowired
     private LikeRepository likeRepository;
+    @Autowired
+    private PostSnapshotRepository postSnapshotRepository;
 
     @AfterEach
     void clean() {
+        postSnapshotRepository.deleteAll();
         postRepository.deleteAll();
         userRepository.deleteAll();
     }

@@ -1,6 +1,7 @@
 package com.blogservice.api.domain.comment;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,10 +31,18 @@ public class CommentSnapshot {
 
     private boolean isDeleted;
 
-    private LocalDateTime wroteAt;
+    @Builder
     public CommentSnapshot(Comment comment, String content, boolean isDeleted) {
         this.comment = comment;
         this.content = content;
         this.isDeleted = isDeleted;
+    }
+
+    public static CommentSnapshot fromEntity(Comment comment) {
+        return CommentSnapshot.builder()
+                .comment(comment)
+                .content(comment.getContent())
+                .isDeleted(comment.isDeleted())
+                .build();
     }
 }

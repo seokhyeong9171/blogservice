@@ -7,7 +7,9 @@ import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.CommentDto;
 import com.blogservice.api.exception.ServiceException;
 import com.blogservice.api.repository.comment.CommentRepository;
+import com.blogservice.api.repository.comment.CommentSnapshotRepository;
 import com.blogservice.api.repository.post.PostRepository;
+import com.blogservice.api.repository.post.PostSnapshotRepository;
 import com.blogservice.api.repository.user.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,7 +21,7 @@ import static com.blogservice.api.exception.ErrorCode.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class CommentDtoServiceTest {
+class CommentServiceTest {
 
     @Autowired
     private CommentService commentService;
@@ -35,9 +37,15 @@ class CommentDtoServiceTest {
 
     @Autowired
     private BlogserviceMockSecurityContext securityContext;
+    @Autowired
+    private CommentSnapshotRepository commentSnapshotRepository;
+    @Autowired
+    private PostSnapshotRepository postSnapshotRepository;
 
     @AfterEach
     void clean() {
+        commentSnapshotRepository.deleteAll();
+        postSnapshotRepository.deleteAll();
         commentRepository.deleteAll();
         postRepository.deleteAll();
         userRepository.deleteAll();

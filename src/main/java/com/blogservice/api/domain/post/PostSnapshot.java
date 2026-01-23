@@ -3,6 +3,7 @@ package com.blogservice.api.domain.post;
 import com.blogservice.api.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,11 +29,22 @@ public class PostSnapshot extends BaseTimeEntity {
     @Lob
     private String content;
 
-    private LocalDateTime wroteAt;
+    private Boolean isDeleted;
 
-    public PostSnapshot(Post post, String title, String content) {
+    @Builder
+    public PostSnapshot(Post post, String title, String content, Boolean isDeleted) {
         this.post = post;
         this.title = title;
         this.content = content;
+        this.isDeleted = isDeleted;
+    }
+
+    public static PostSnapshot fromEntity(Post post) {
+        return PostSnapshot.builder()
+                .post(post)
+                .title(post.getTitle())
+                .content(post.getContent())
+                .isDeleted(post.isDeleted())
+                .build();
     }
 }

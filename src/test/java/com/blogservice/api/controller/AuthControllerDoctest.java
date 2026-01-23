@@ -8,6 +8,7 @@ import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.dto.Login;
 import com.blogservice.api.dto.ReIssue;
 import com.blogservice.api.dto.Signup;
+import com.blogservice.api.repository.auth.LoginLogRepository;
 import com.blogservice.api.repository.auth.RefreshTokenRepository;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.user.UserRepository;
@@ -62,9 +63,12 @@ public class AuthControllerDoctest {
     private RefreshTokenProvider refreshTokenProvider;
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
+    @Autowired
+    private LoginLogRepository loginLogRepository;
 
     @AfterEach
     void clean() {
+        loginLogRepository.deleteAll();
         userRepository.deleteAll();
     }
 

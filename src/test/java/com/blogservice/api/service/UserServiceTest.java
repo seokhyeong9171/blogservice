@@ -38,13 +38,7 @@ class UserServiceTest {
     private UserRepository userRepository;
 
     @Autowired
-    private AuthService authService;
-    @Autowired
-    private JwtProvider jwtProvider;
-    @Autowired
     private BlogserviceMockSecurityContext securityContext;
-    @Autowired
-    private RefreshTokenRepository refreshTokenRepository;
     @Autowired
     private UserService userService;
 

@@ -7,7 +7,9 @@ import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.CommentDto;
 import com.blogservice.api.repository.comment.CommentRepository;
+import com.blogservice.api.repository.comment.CommentSnapshotRepository;
 import com.blogservice.api.repository.post.PostRepository;
+import com.blogservice.api.repository.post.PostSnapshotRepository;
 import com.blogservice.api.repository.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
@@ -58,9 +60,15 @@ public class CommentControllerDocTest {
 
     @Autowired
     private CommentRepository commentRepository;
+    @Autowired
+    private CommentSnapshotRepository commentSnapshotRepository;
+    @Autowired
+    private PostSnapshotRepository postSnapshotRepository;
 
     @AfterEach
     void clean() {
+        commentSnapshotRepository.deleteAll();
+        postSnapshotRepository.deleteAll();
         commentRepository.deleteAll();
         postRepository.deleteAll();
         userRepository.deleteAll();

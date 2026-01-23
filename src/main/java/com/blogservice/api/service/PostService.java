@@ -34,6 +34,8 @@ public class PostService {
     private final LikeRepository likeRepository;
     private final ViewRepository viewRepository;
 
+    private final SnapshotService snapshotService;
+
     public PostCreate.Response write(Long userId, PostCreate.Request request) {
         User user = findUserById(userId);
 
@@ -46,9 +48,7 @@ public class PostService {
 
         Post savedPost = postRepository.save(post);
 
-        // todo
-        //  snapshot
-
+        snapshotService.postSnapshot(savedPost);
 
         return PostCreate.Response.builder()
                 .postId(savedPost.getId())
@@ -62,8 +62,7 @@ public class PostService {
 
         findPost.edit(request);
 
-        // todo
-        //  snapshot
+        snapshotService.postSnapshot(findPost);
 
         return PostEdit.Response.builder()
                 .postId(postId)
@@ -153,10 +152,9 @@ public class PostService {
 
         verifyAuthor(userId, findPost);
 
-        // todo
-        //  snapshot
-
         findPost.delete();
+
+        snapshotService.postSnapshot(findPost);
     }
 
     private User findUserById(Long userId) {

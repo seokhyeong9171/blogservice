@@ -8,6 +8,7 @@ import com.blogservice.api.domain.user.Role;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.Login;
 import com.blogservice.api.exception.ServiceException;
+import com.blogservice.api.repository.auth.LoginLogRepository;
 import com.blogservice.api.repository.auth.RefreshTokenRepository;
 import com.blogservice.api.repository.user.UserRepository;
 import com.blogservice.api.dto.Signup;
@@ -42,9 +43,12 @@ class AuthServiceTest {
     private BlogserviceMockSecurityContext securityContext;
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
+    @Autowired
+    private LoginLogRepository loginLogRepository;
 
     @AfterEach
     void clean() {
+        loginLogRepository.deleteAll();
         userRepository.deleteAll();
     }
 

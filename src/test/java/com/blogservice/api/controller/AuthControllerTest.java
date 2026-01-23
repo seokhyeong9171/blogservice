@@ -8,6 +8,7 @@ import com.blogservice.api.domain.user.Role;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.Login;
 import com.blogservice.api.exception.ErrorCode;
+import com.blogservice.api.repository.auth.LoginLogRepository;
 import com.blogservice.api.repository.auth.RefreshTokenRepository;
 import com.blogservice.api.repository.user.UserRepository;
 import com.blogservice.api.dto.Signup;
@@ -59,11 +60,12 @@ class AuthControllerTest {
 
     @Autowired
     private BlogserviceMockSecurityContext securityContext;
+    @Autowired
+    private LoginLogRepository loginLogRepository;
 
     @AfterEach
     void clean() {
-//        userRepository.deleteAll();
-//        jdbcTemplate.execute("ALTER TABLE USERS ALTER COLUMN id RESTART WITH 1");
+        loginLogRepository.deleteAll();
         userRepository.deleteAll();
     }
 

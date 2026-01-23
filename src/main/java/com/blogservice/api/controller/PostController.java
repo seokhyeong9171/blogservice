@@ -5,6 +5,7 @@ import com.blogservice.api.dto.PostCreate;
 import com.blogservice.api.dto.PostEdit;
 import com.blogservice.api.dto.PostResponse;
 import com.blogservice.api.service.PostService;
+import com.blogservice.api.service.SnapshotService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +29,7 @@ public class PostController {
     public ResponseEntity<PostCreate.Response> writePost
             (@AuthenticationPrincipal UserPrincipal userPrincipal, @RequestBody @Validated PostCreate.Request request) {
         PostCreate.Response response = postService.write(userPrincipal.getUserId(), request);
-        // todo
-        //  snapshot 생성
+
         return ResponseEntity.status(CREATED).body(response);
     }
 

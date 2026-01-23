@@ -6,6 +6,8 @@ import com.blogservice.api.domain.comment.Comment;
 import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.CommentDto;
+import com.blogservice.api.repository.comment.CommentSnapshotRepository;
+import com.blogservice.api.repository.post.PostSnapshotRepository;
 import com.blogservice.api.repository.user.UserRepository;
 import com.blogservice.api.repository.comment.CommentRepository;
 import com.blogservice.api.repository.post.PostRepository;
@@ -54,9 +56,15 @@ class CommentControllerTest {
 
     @Autowired
     private BlogserviceMockSecurityContext securityContext;
+    @Autowired
+    private CommentSnapshotRepository commentSnapshotRepository;
+    @Autowired
+    private PostSnapshotRepository postSnapshotRepository;
 
     @AfterEach
     void clean() {
+        commentSnapshotRepository.deleteAll();
+        postSnapshotRepository.deleteAll();
         commentRepository.deleteAll();
         postRepository.deleteAll();
         userRepository.deleteAll();
