@@ -85,4 +85,15 @@ public class CommentDto {
         }
     }
 
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor(access = PROTECTED)
+    public static class Count {
+        private Long commentCount;
+
+        public static Count from(Long commentCount) {
+            return new Count(commentCount);
+        }
+    }
+
 }

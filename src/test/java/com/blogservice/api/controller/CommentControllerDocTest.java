@@ -311,6 +311,43 @@ public class CommentControllerDocTest {
                 ));
     }
 
+    @Test
+    @DisplayName("댓글 수 조회")
+    void get_comment_count() throws Exception {
+
+        Post savedPost1 = postRepository.save(Post.builder().build());
+        Post savedPost2 = postRepository.save(Post.builder().build());
+        User author = userRepository.save(User.builder().nickname("user").build());
+
+        List<Comment> requestComments = IntStream.range(1, 16)
+                .mapToObj(i -> Comment.builder()
+                        .post(savedPost1)
+                        .user(author)
+                        .content("내용 " + i)
+                        .build())
+                .toList();
+        commentRepository.saveAll(requestComments);
+
+        commentRepository.save(
+                Comment.builder()
+                        .user(author).post(savedPost2).content("content")
+                        .build()
+        );
+
+        // expected
+        mockMvc.perform(get("/api/posts/{postId}/comments/count", savedPost1.getId())
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(document("comments-count",
+                        pathParameters(
+                                parameterWithName("postId").description("게시글 id")
+                        ),
+                        responseFields(
+                                fieldWithPath("commentCount").description("댓글 수")
+                        )
+                ));
+    }
+
     private User getMockUser() {
         return securityContext.getCurrentUser();
     }
