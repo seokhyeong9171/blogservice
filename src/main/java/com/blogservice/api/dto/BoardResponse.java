@@ -12,17 +12,28 @@ public class BoardResponse {
     @AllArgsConstructor
     @NoArgsConstructor(access = PROTECTED)
     @Builder
-    public static class ListResponse {
+    public static class List {
 
         private Long boardId;
         private BoardName name;
 
-        public static ListResponse from(Board board) {
-            return ListResponse.builder()
+        public static List from(Board board) {
+            return List.builder()
                     .boardId(board.getId())
                     .name(board.getName())
                     .build();
         }
     }
 
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor(access = PROTECTED)
+    @Builder
+    public static class Count {
+        private Long postCount;
+
+        public static Count from(Long postCount) {
+            return new Count(postCount);
+        }
+    }
 }
