@@ -52,10 +52,11 @@ public class Post extends BaseTimeEntity {
     private List<Likes> likes = new ArrayList<>();
 
     @Builder
-    public Post(String title, String content, User user, boolean isDeleted) {
+    public Post(String title, String content, User user, Board board, boolean isDeleted) {
         this.title = title;
         this.content = content;
         this.user = user;
+        this.board = board;
         this.isDeleted = isDeleted;
     }
 

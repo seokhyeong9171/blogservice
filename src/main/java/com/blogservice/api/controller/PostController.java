@@ -18,22 +18,24 @@ import static org.springframework.http.HttpStatus.CREATED;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/posts")
 @RequiredArgsConstructor
 public class PostController {
 
     private final PostService postService;
 
-    @PostMapping
-    public ResponseEntity<PostCreate.Response> writePost
-            (@AuthenticationPrincipal UserPrincipal userPrincipal, @RequestBody @Validated PostCreate.Request request) {
-        PostCreate.Response response = postService.write(userPrincipal.getUserId(), request);
+    @PostMapping("/api/boards/{boardId}/posts")
+    public ResponseEntity<PostCreate.Response> writePost(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long boardId,
+            @RequestBody @Validated PostCreate.Request request
+            ) {
+        PostCreate.Response response = postService.write(userPrincipal.getUserId(), boardId, request);
         // todo
         //  snapshot 생성
         return ResponseEntity.status(CREATED).body(response);
     }
 
-    @PatchMapping("/{postId}")
+    @PatchMapping("/api/posts/{postId}")
     public ResponseEntity<PostEdit.Response> editPost(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long postId, @RequestBody @Validated PostEdit.Request request
@@ -44,13 +46,13 @@ public class PostController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{postId}")
+    @DeleteMapping("/api/posts/{postId}")
     public ResponseEntity<Void> deletePost(@AuthenticationPrincipal UserPrincipal userPrincipal, @PathVariable Long postId) {
         postService.delete(userPrincipal.getUserId(), postId);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{postId}")
+    @GetMapping("/api/posts/{postId}")
     public ResponseEntity<PostResponse.Details> getDetails(@PathVariable Long postId) {
         PostResponse.Details details = postService.getDetails(postId);
         // todo
@@ -58,25 +60,27 @@ public class PostController {
         return ResponseEntity.ok(details);
     }
 
-    @GetMapping
-    public ResponseEntity<List<PostResponse.List>> getList(@RequestParam int page, @RequestParam int size) {
-        List<PostResponse.List> response = postService.getList(page, size);
+    @GetMapping("/api/boards/{boardId}/posts")
+    public ResponseEntity<List<PostResponse.List>> getList(
+            @PathVariable Long boardId, @RequestParam int page, @RequestParam int size
+    ) {
+        List<PostResponse.List> response = postService.getList(boardId, page, size);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{postId}/views")
+    @GetMapping("/api/posts/{postId}/views")
     public ResponseEntity<PostResponse.Views> getViewCounts(@PathVariable Long postId) {
         PostResponse.Views response = postService.getViewCounts(postId);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{postId}/likes")
+    @GetMapping("/api/posts/{postId}/likes")
     public ResponseEntity<PostResponse.Likes> getLikeCounts(@PathVariable Long postId) {
         PostResponse.Likes response = postService.getLikeCounts(postId);
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/{postId}/likes")
+    @PostMapping("/api/posts/{postId}/likes")
     public ResponseEntity<PostResponse.Likes> likePost(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long postId) {

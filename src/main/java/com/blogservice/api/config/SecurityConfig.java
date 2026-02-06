@@ -54,7 +54,7 @@ public class SecurityConfig {
 //                        .requestMatchers("/api/test/auth", "/api/auth/reissue").hasRole("USER")
                         .requestMatchers("/api/auth/login", "api/auth/signup").permitAll()
                         .requestMatchers("/api/user/email/exists/**", "api/user/nickname/exists/**").permitAll()
-                        .requestMatchers(GET, "/api/posts/**","/api/comments/**").permitAll()
+                        .requestMatchers(GET, "/api/posts/**","/api/comments/**", "/api/boards/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)

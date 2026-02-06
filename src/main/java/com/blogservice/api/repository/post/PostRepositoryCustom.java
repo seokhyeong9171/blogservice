@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface PostRepositoryCustom {
 
-    List<Post> getList(int page, int size);
+    List<Post> getList(Long boardId, int page, int size);
 }

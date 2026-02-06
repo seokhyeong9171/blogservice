@@ -2,11 +2,13 @@ package com.blogservice.api.controller;
 
 import com.blogservice.api.config.BlogserviceMockSecurityContext;
 import com.blogservice.api.config.BlogserviceMockUser;
+import com.blogservice.api.domain.board.Board;
 import com.blogservice.api.domain.post.Likes;
 import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.domain.post.Views;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.PostEdit;
+import com.blogservice.api.repository.board.BoardRepository;
 import com.blogservice.api.repository.post.LikeRepository;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.post.ViewRepository;
@@ -60,6 +62,8 @@ public class PostControllerDocTest {
     private ViewRepository viewRepository;
     @Autowired
     private LikeRepository likeRepository;
+    @Autowired
+    private BoardRepository boardRepository;
 
     @AfterEach
     void clean() {
@@ -280,7 +284,7 @@ public class PostControllerDocTest {
                 .build();
 
         // expected
-        this.mockMvc.perform(post("/api/posts")
+        this.mockMvc.perform(post("/api/boards/{boardId}/posts", 1L)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
@@ -306,6 +310,7 @@ public class PostControllerDocTest {
                     User author = userRepository.save(user);
                     return Post.builder()
                             .user(author)
+                            .board(boardRepository.findById(1L).get())
                             .title("제목 " + i)
                             .content("내용 " + i)
                             .build();
@@ -315,7 +320,7 @@ public class PostControllerDocTest {
 
 
         // expected
-        this.mockMvc.perform(get("/api/posts?page=1&size=10")
+        this.mockMvc.perform(get("/api/boards/{boardId}/posts?page=1&size=10", 1L)
                         .accept(APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())

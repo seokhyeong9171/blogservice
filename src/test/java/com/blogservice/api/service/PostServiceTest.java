@@ -2,12 +2,14 @@ package com.blogservice.api.service;
 
 import com.blogservice.api.config.BlogserviceMockSecurityContext;
 import com.blogservice.api.config.BlogserviceMockUser;
+import com.blogservice.api.domain.board.Board;
 import com.blogservice.api.domain.post.Likes;
 import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.domain.post.Views;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.PostEdit;
 import com.blogservice.api.exception.ServiceException;
+import com.blogservice.api.repository.board.BoardRepository;
 import com.blogservice.api.repository.post.LikeRepository;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.post.ViewRepository;
@@ -21,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
-import java.util.stream.IntStream;
 
 import static com.blogservice.api.exception.ErrorCode.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -44,6 +45,8 @@ class PostServiceTest {
     private ViewRepository viewRepository;
     @Autowired
     private LikeRepository likeRepository;
+    @Autowired
+    private BoardRepository boardRepository;
 
     @AfterEach
     void clean() {
@@ -62,7 +65,7 @@ class PostServiceTest {
                 .build();
 
         // when
-        postService.write(securityContext.getCurrentUser().getId(), request);
+        postService.write(securityContext.getCurrentUser().getId(), 1L, request);
 
         // then
         assertEquals(1L, postRepository.count());
@@ -85,7 +88,8 @@ class PostServiceTest {
 
         // expected
         ServiceException serviceException = assertThrowsExactly(
-                ServiceException.class, () -> postService.write(securityContext.getCurrentUser().getId() + 1, request)
+                ServiceException.class, () ->
+                        postService.write(securityContext.getCurrentUser().getId() + 1, 1L, request)
         );
         assertEquals(USER_NOT_FOUND.getMessage(), serviceException.getMessage());
         assertEquals(0, postRepository.count());

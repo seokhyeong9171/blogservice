@@ -12,6 +12,7 @@ import java.util.List;
 
 import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.EnumType.*;
+import static jakarta.persistence.FetchType.*;
 import static jakarta.persistence.GenerationType.*;
 
 @Entity
@@ -29,8 +30,13 @@ public class Board extends BaseTimeEntity {
     @OneToMany(mappedBy = "board", cascade = ALL)
     private List<Post> posts = new ArrayList<>();
 
-    @Builder
-    public Board(List<Post> posts) {
-        this.posts = posts;
-    }
+//    @Builder
+//    public Board(BoardName name, List<Post> posts) {
+//        this.name = name;
+//        this.posts = posts;
+//    }
+@Builder
+public Board(BoardName name) {
+    this.name = name;
+}
 }
