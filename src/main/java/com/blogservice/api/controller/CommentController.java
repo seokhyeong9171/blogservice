@@ -60,6 +60,12 @@ public class CommentController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/api/posts/{postId}/comments/count")
+    public ResponseEntity<CommentDto.Count> getCommentCount(@PathVariable Long postId) {
+        CommentDto.Count response = commentService.getCommentCount(postId);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/api/comments/{commentId}/child")
     public ResponseEntity<List<CommentDto.List>> getChildCommentsList(@PathVariable Long commentId, Pageable pageable) {
         List<CommentDto.List> response = commentService.getChildCommentsList(commentId, pageable);

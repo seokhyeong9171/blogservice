@@ -90,6 +90,12 @@ include::{snippets}/board-list/http-request.adoc[]
 include::{snippets}/board-list/http-response.adoc[]
 include::{snippets}/board-list/response-fields.adoc[]
 
+== 게시판 별 게시글 수 조회
+=== 요청
+include::{snippets}/post-count/http-request.adoc[]
+=== 응답
+include::{snippets}/post-count/http-response.adoc[]
+include::{snippets}/post-count/response-fields.adoc[]
 
 = 게시글
 
@@ -173,35 +179,44 @@ include::{snippets}/post-view-count/response-fields.adoc[]
 
 = 댓글
 
+== 댓글 수 조회
+=== 요청
+include::{snippets}/comments-count/http-request.adoc[]
+include::{snippets}/comments-count/path-parameters.adoc[]
+
+=== 응답
+include::{snippets}/comments-count/http-response.adoc[]
+include::{snippets}/comments-count/response-fields.adoc[]
+
 == 댓글 상세 조회
 
-== 요청
+=== 요청
 include::{snippets}/comments-details/http-request.adoc[]
 include::{snippets}/comments-details/path-parameters.adoc[]
 
-== 응답
+=== 응답
 include::{snippets}/comments-details/http-response.adoc[]
 include::{snippets}/comments-details/response-fields.adoc[]
 
 == 댓글 리스트 조회
 
-== 요청
+=== 요청
 include::{snippets}/comments-list/http-request.adoc[]
 include::{snippets}/comments-list/path-parameters.adoc[]
 include::{snippets}/comments-list/query-parameters.adoc[]
 
-== 응답
+=== 응답
 include::{snippets}/comments-list/http-response.adoc[]
 include::{snippets}/comments-list/response-fields.adoc[]
 
 == 대댓글 리스트 조회
 
-== 요청
+=== 요청
 include::{snippets}/comments-child-list/http-request.adoc[]
 include::{snippets}/comments-child-list/path-parameters.adoc[]
 include::{snippets}/comments-child-list/query-parameters.adoc[]
 
-== 응답
+=== 응답
 include::{snippets}/comments-child-list/http-response.adoc[]
 include::{snippets}/comments-child-list/response-fields.adoc[]
 

@@ -109,6 +109,15 @@ public class CommentService {
         return CommentDto.Details.fromEntity(findComment);
     }
 
+    @Transactional(readOnly = true)
+    public CommentDto.Count getCommentCount(Long postId) {
+        Post findPost = findPostById(postId);
+        verifyPostDeleted(findPost);
+
+        Long count = commentRepository.countByPost(findPost);
+        return CommentDto.Count.from(count);
+    }
+
     private User findUserById(Long userId) {
         return userRepository.findById(userId).orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
     }
