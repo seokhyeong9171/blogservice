@@ -1,5 +1,6 @@
 package com.blogservice.api.service;
 
+import com.blogservice.api.domain.board.Board;
 import com.blogservice.api.domain.post.Likes;
 import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.domain.user.User;
@@ -7,6 +8,7 @@ import com.blogservice.api.dto.PostCreate;
 import com.blogservice.api.dto.PostEdit;
 import com.blogservice.api.dto.PostResponse;
 import com.blogservice.api.exception.ServiceException;
+import com.blogservice.api.repository.board.BoardRepository;
 import com.blogservice.api.repository.post.LikeRepository;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.post.ViewRepository;
@@ -33,14 +35,17 @@ public class PostService {
     private final UserRepository userRepository;
     private final LikeRepository likeRepository;
     private final ViewRepository viewRepository;
+    private final BoardRepository boardRepository;
 
-    public PostCreate.Response write(Long userId, PostCreate.Request request) {
+    public PostCreate.Response write(Long userId, Long boardId, PostCreate.Request request) {
         User user = findUserById(userId);
+        Board board = findBoardById(boardId);
 
         Post post = Post.builder()
                 .title(request.getTitle())
                 .content(request.getContent())
                 .user(user)
+                .board(board)
                 .isDeleted(false)
                 .build();
 
@@ -85,8 +90,8 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponse.List> getList(int page, int size) {
-        List<Post> postList = postRepository.getList(page, size);
+    public List<PostResponse.List> getList(Long boardId, int page, int size) {
+        List<Post> postList = postRepository.getList(boardId, page, size);
 
         return postList.stream().map(post -> {
             long views = viewRepository.countByPost(post);
@@ -161,6 +166,10 @@ public class PostService {
 
     private User findUserById(Long userId) {
         return userRepository.findById(userId).orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+    }
+
+    private Board findBoardById(Long boardId) {
+        return boardRepository.findById(boardId).orElseThrow(() -> new ServiceException(BOARD_NOT_FOUND));
     }
 
     private Post findPostById(Long postId) {

@@ -21,13 +21,16 @@ public enum ErrorCode {
     REFRESH_TOKEN_INVALID(BAD_REQUEST, "refresh token invalid"),
     TOKEN_LIST_EMPTY(NOT_FOUND, "token list is empty"),
 
+    BOARD_NOT_FOUND(NOT_FOUND, "board not found"),
+
     POST_NOT_FOUND(NOT_FOUND, "post not found"),
     POST_AUTHOR_NOT_MATCHING(BAD_REQUEST, "post author not matching"),
     POST_DELETED(BAD_REQUEST, "post deleted"),
 
     COMMENT_NOT_FOUND(BAD_REQUEST, "comment not found"),
     COMMENT_DELETED(BAD_REQUEST, "comment deleted"),
-    COMMENT_AUTHOR_NOT_MATCHING(BAD_REQUEST, "comment author not matching");
+    COMMENT_AUTHOR_NOT_MATCHING(BAD_REQUEST, "comment author not matching")
+    ;
 
     private final HttpStatus status;
     private final String message;

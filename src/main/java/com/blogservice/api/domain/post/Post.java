@@ -1,6 +1,7 @@
 package com.blogservice.api.domain.post;
 
 import com.blogservice.api.domain.BaseTimeEntity;
+import com.blogservice.api.domain.board.Board;
 import com.blogservice.api.domain.comment.Comment;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.PostEdit;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.FetchType.*;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PUBLIC;
 
@@ -30,9 +32,13 @@ public class Post extends BaseTimeEntity {
     @Lob
     private String content;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "board_id")
+    private Board board;
 
     private boolean isDeleted;
 
@@ -46,10 +52,11 @@ public class Post extends BaseTimeEntity {
     private List<Likes> likes = new ArrayList<>();
 
     @Builder
-    public Post(String title, String content, User user, boolean isDeleted) {
+    public Post(String title, String content, User user, Board board, boolean isDeleted) {
         this.title = title;
         this.content = content;
         this.user = user;
+        this.board = board;
         this.isDeleted = isDeleted;
     }
 

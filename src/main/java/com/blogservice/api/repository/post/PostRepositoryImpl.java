@@ -18,9 +18,9 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
     private static final int MAX_SIZE = 2000;
 
     @Override
-    public List<Post> getList(int page, int size) {
+    public List<Post> getList(Long boardId, int page, int size) {
         return jpaQueryFactory.selectFrom(post)
-                .where(post.isDeleted.eq(false))
+                .where(post.isDeleted.eq(false).and(post.board.id.eq(boardId)))
                 .limit(size)
                 .offset(getOffset(page, size))
                 .orderBy(post.createdAt.desc())
