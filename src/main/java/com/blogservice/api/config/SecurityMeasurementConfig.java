@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableWebSecurity(debug = true)
 @RequiredArgsConstructor
 @Profile("measurement")
 public class SecurityMeasurementConfig {

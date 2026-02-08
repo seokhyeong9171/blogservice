@@ -21,6 +21,9 @@ import static lombok.AccessLevel.PUBLIC;
 @Entity
 @Getter
 @NoArgsConstructor(access = PUBLIC)
+@Table(indexes = {
+        @Index(name = "idx_board_created_at", columnList = "board_id, created_at DESC")
+})
 public class Post extends BaseTimeEntity {
 
     @Id

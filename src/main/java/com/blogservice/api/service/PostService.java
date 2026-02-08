@@ -13,6 +13,7 @@ import com.blogservice.api.repository.post.LikeRepository;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.post.ViewRepository;
 import com.blogservice.api.repository.user.UserRepository;
+import com.blogservice.api.util.PageQueryUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.blogservice.api.exception.ErrorCode.*;
+import static com.blogservice.api.util.PageQueryUtil.*;
 
 @Slf4j
 @Transactional
@@ -91,7 +93,9 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public List<PostResponse.List> getList(Long boardId, int page, int size) {
-        List<Post> postList = postRepository.getList(boardId, page, size);
+        page = getOffset(page, size);
+        size = getSize(size);
+        List<Post> postList = postRepository.findPostList(boardId, page, size);
 
         return postList.stream().map(post -> {
             long views = viewRepository.countByPost(post);
