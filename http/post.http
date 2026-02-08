@@ -14,3 +14,9 @@ Authorization: 555
 
 DELETE http://localhost:8080/posts/3
 Content-Type: application/json
+
+
+### 게시글 리스트 조회
+
+GET http://localhost:8080/api/boards/1/posts?page=10&size=30
+Content-Type: application/json

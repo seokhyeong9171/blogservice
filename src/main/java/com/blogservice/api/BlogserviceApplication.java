@@ -10,6 +10,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 public class BlogserviceApplication {
 
     public static void main(String[] args) {
+
+        System.setProperty("spring.profiles.active", "measurement");
+
         SpringApplication.run(BlogserviceApplication.class, args);
     }
 
