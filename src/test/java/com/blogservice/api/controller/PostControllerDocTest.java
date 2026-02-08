@@ -2,11 +2,18 @@ package com.blogservice.api.controller;
 
 import com.blogservice.api.config.BlogserviceMockSecurityContext;
 import com.blogservice.api.config.BlogserviceMockUser;
-import com.blogservice.api.domain.Post;
+import com.blogservice.api.domain.board.Board;
+import com.blogservice.api.domain.post.Likes;
+import com.blogservice.api.domain.post.Post;
+import com.blogservice.api.domain.post.Views;
+import com.blogservice.api.domain.user.User;
+import com.blogservice.api.dto.PostEdit;
+import com.blogservice.api.repository.board.BoardRepository;
+import com.blogservice.api.repository.post.LikeRepository;
 import com.blogservice.api.repository.post.PostRepository;
-import com.blogservice.api.repository.UserRepository;
-import com.blogservice.api.request.post.PostCreate;
-import com.blogservice.api.request.post.PostEdit;
+import com.blogservice.api.repository.post.ViewRepository;
+import com.blogservice.api.repository.user.UserRepository;
+import com.blogservice.api.dto.PostCreate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -52,81 +58,259 @@ public class PostControllerDocTest {
 
     @Autowired
     private ObjectMapper objectMapper;
-
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-//    @BeforeEach
-//    void setUp(WebApplicationContext webApplicationContext, RestDocumentationContextProvider restDocumentation) {
-//        this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-//                .apply(documentationConfiguration(restDocumentation))
-//                .build();
-//    }
+    private ViewRepository viewRepository;
+    @Autowired
+    private LikeRepository likeRepository;
+    @Autowired
+    private BoardRepository boardRepository;
 
     @AfterEach
     void clean() {
         postRepository.deleteAll();
         userRepository.deleteAll();
-        jdbcTemplate.execute("ALTER TABLE post ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("ALTER TABLE users ALTER COLUMN id RESTART WITH 1");
     }
 
     @Test
     @DisplayName("글 단건 조회")
-    void test1() throws Exception {
+    void view_post_details() throws Exception {
         // given
+        User user = User.builder()
+                .nickname("nickname")
+                .build();
+        User savedUser = userRepository.save(user);
         Post post = Post.builder()
                 .title("제목")
                 .content("내용")
+                .isDeleted(false)
+                .user(savedUser)
                 .build();
-        postRepository.save(post);
+        Post savedPost = postRepository.save(post);
 
         // expected
-        this.mockMvc.perform(get("/posts/{postId}", 1L).accept(APPLICATION_JSON))
+        this.mockMvc.perform(get("/api/posts/{postId}", savedPost.getId()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("post-inquiry", pathParameters(
                         parameterWithName("postId").description("게시글 ID")
                         ),
                         responseFields(
-                                fieldWithPath("id").description("게시글 ID"),
                                 fieldWithPath("title").description("제목"),
-                                fieldWithPath("content").description("내용")
+                                fieldWithPath("content").description("내용"),
+                                fieldWithPath("writeDt").description("작성일"),
+                                fieldWithPath("author.id").description("작성자 아이디"),
+                                fieldWithPath("author.nickname").description("작성자 닉네임")
                         )
                         ));
     }
 
     @Test
+    @DisplayName("글 조회수 조회")
+    void view_post_view_count() throws Exception {
+        // given
+        User user1 = User.builder()
+                .nickname("testuser1")
+                .email("testuser1@testuser.com")
+                .password("testpassword")
+                .build();
+        User user2 = User.builder()
+                .nickname("testuser2")
+                .email("testuser2@testuser.com")
+                .password("testpassword")
+                .build();
+        User user3 = User.builder()
+                .nickname("testuser3")
+                .email("testuser3@testuser.com")
+                .password("testpassword")
+                .build();
+        userRepository.saveAll(List.of(user1, user2, user3));
+
+        Post post = Post.builder()
+                .title("testtitle")
+                .content("testcontent")
+                .user(user1)
+                .isDeleted(false)
+                .build();
+        Post savedPost = postRepository.save(post);
+
+        Views views1 = Views.builder()
+                .post(savedPost)
+                .user(user1)
+                .build();
+        Views views2 = Views.builder()
+                .post(savedPost)
+                .user(user2)
+                .build();
+        Views views3 = Views.builder()
+                .post(savedPost)
+                .user(user3)
+                .build();
+        viewRepository.saveAll(List.of(views1, views2, views3));
+
+        // expected
+        this.mockMvc.perform(get("/api/posts/{postId}/views", savedPost.getId()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("post-view-count", pathParameters(
+                                parameterWithName("postId").description("게시글 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("views").description("게시글 조회수")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("글 좋아요수 조회")
+    void view_post_like_count() throws Exception {
+        // given
+        User user1 = User.builder()
+                .nickname("testuser1")
+                .email("testuser1@testuser.com")
+                .password("testpassword")
+                .build();
+        User user2 = User.builder()
+                .nickname("testuser2")
+                .email("testuser2@testuser.com")
+                .password("testpassword")
+                .build();
+        User user3 = User.builder()
+                .nickname("testuser3")
+                .email("testuser3@testuser.com")
+                .password("testpassword")
+                .build();
+        userRepository.saveAll(List.of(user1, user2, user3));
+
+        Post post = Post.builder()
+                .title("testtitle")
+                .content("testcontent")
+                .user(user1)
+                .isDeleted(false)
+                .build();
+        Post savedPost = postRepository.save(post);
+
+        Likes likes1 = Likes.builder()
+                .post(savedPost)
+                .user(user1)
+                .build();
+        Likes likes2 = Likes.builder()
+                .post(savedPost)
+                .user(user2)
+                .build();
+        Likes likes3 = Likes.builder()
+                .post(savedPost)
+                .user(user3)
+                .build();
+        likeRepository.saveAll(List.of(likes1, likes2, likes3));
+
+        // expected
+        this.mockMvc.perform(get("/api/posts/{postId}/likes", savedPost.getId()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("post-like-count", pathParameters(
+                                parameterWithName("postId").description("게시글 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("likes").description("게시글 좋아요 수")
+                        )
+                ));
+    }
+
+    @Test
+    @BlogserviceMockUser
+    @DisplayName("글 좋아요")
+    void view_post_like() throws Exception {
+        // given
+        User user1 = User.builder()
+                .nickname("testuser1")
+                .email("testuser1@testuser.com")
+                .password("testpassword")
+                .build();
+        User user2 = User.builder()
+                .nickname("testuser2")
+                .email("testuser2@testuser.com")
+                .password("testpassword")
+                .build();
+        User user3 = User.builder()
+                .nickname("testuser3")
+                .email("testuser3@testuser.com")
+                .password("testpassword")
+                .build();
+        userRepository.saveAll(List.of(user1, user2, user3));
+
+        Post post = Post.builder()
+                .title("testtitle")
+                .content("testcontent")
+                .user(user1)
+                .isDeleted(false)
+                .build();
+        Post savedPost = postRepository.save(post);
+
+        Likes likes1 = Likes.builder()
+                .post(savedPost)
+                .user(user1)
+                .build();
+        Likes likes2 = Likes.builder()
+                .post(savedPost)
+                .user(user2)
+                .build();
+        Likes likes3 = Likes.builder()
+                .post(savedPost)
+                .user(user3)
+                .build();
+        likeRepository.saveAll(List.of(likes1, likes2, likes3));
+
+        // expected
+        this.mockMvc.perform(post("/api/posts/{postId}/likes", savedPost.getId()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("post-like", pathParameters(
+                                parameterWithName("postId").description("게시글 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("likes").description("게시글 좋아요 수")
+                        )
+                ));
+    }
+
+    @Test
     @BlogserviceMockUser
     @DisplayName("글 등록")
-    void test2() throws Exception {
+    void create_post() throws Exception {
         // given
-        PostCreate request = PostCreate.builder()
+        PostCreate.Request request = PostCreate.Request.builder()
                 .title("제목입니다.")
                 .content("내용입니다.")
                 .build();
 
         // expected
-        this.mockMvc.perform(post("/posts")
+        this.mockMvc.perform(post("/api/boards/{boardId}/posts", 1L)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andDo(document("post-create",
                         requestFields(
                                 fieldWithPath("title").description("제목"),
-                                fieldWithPath("content").description("내용").optional()
+                                fieldWithPath("content").description("내용")
+                        ),
+                        responseFields(
+                                fieldWithPath("postId").description("게시글 아이디")
                         )
                 ));
     }
 
     @Test
     @DisplayName("글 여러개 조회")
-    void test3() throws Exception {
+    void post_list() throws Exception {
         // given
         List<Post> requestPosts = IntStream.range(1, 31)
                 .mapToObj(i -> {
+                    User user = User.builder().nickname("user " + i).build();
+                    User author = userRepository.save(user);
                     return Post.builder()
+                            .user(author)
+                            .board(boardRepository.findById(1L).get())
                             .title("제목 " + i)
                             .content("내용 " + i)
                             .build();
@@ -136,7 +320,7 @@ public class PostControllerDocTest {
 
 
         // expected
-        this.mockMvc.perform(get("/posts?page=1&size=10")
+        this.mockMvc.perform(get("/api/boards/{boardId}/posts?page=1&size=10", 1L)
                         .accept(APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -145,9 +329,12 @@ public class PostControllerDocTest {
                                 parameterWithName("size").description("사이즈")
                         ),
                         responseFields(
-                                fieldWithPath("[].id").description("게시글 ID"),
+                                fieldWithPath("[].postId").description("게시글 ID"),
                                 fieldWithPath("[].title").description("제목"),
-                                fieldWithPath("[].content").description("내용")
+                                fieldWithPath("[].views").description("조회수"),
+                                fieldWithPath("[].likes").description("좋아요 수"),
+                                fieldWithPath("[].author.id").description("작성자 아이디"),
+                                fieldWithPath("[].author.nickname").description("작성자 닉네임")
                         )
                 ));
     }
@@ -155,7 +342,7 @@ public class PostControllerDocTest {
     @Test
     @BlogserviceMockUser
     @DisplayName("글 삭제")
-    void test5() throws Exception {
+    void post_delete() throws Exception {
         // given
         Post post = Post.builder()
                 .title("제목")
@@ -165,7 +352,7 @@ public class PostControllerDocTest {
         Post savedPost = postRepository.save(post);
 
         // expected
-        this.mockMvc.perform(delete("/posts/{postId}", savedPost.getId()).accept(APPLICATION_JSON))
+        this.mockMvc.perform(delete("/api/posts/{postId}", savedPost.getId()).accept(APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("post-delete", pathParameters(
@@ -177,7 +364,7 @@ public class PostControllerDocTest {
     @Test
     @BlogserviceMockUser
     @DisplayName("글 수정")
-    void test4() throws Exception {
+    void post_edit() throws Exception {
         // given
         Post requestPost = Post.builder()
                 .title("수정전제목").content("수정전내용")
@@ -185,13 +372,13 @@ public class PostControllerDocTest {
                 .build();
         Post savedPost = postRepository.save(requestPost);
 
-        PostEdit postEdit = PostEdit.builder()
+        PostEdit.Request postEdit = PostEdit.Request.builder()
                 .title("수정후내용")
                 .content("수정전내용")
                 .build();
 
         // expected
-        this.mockMvc.perform(patch("/posts/{postId}", savedPost.getId())
+        this.mockMvc.perform(patch("/api/posts/{postId}", savedPost.getId())
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postEdit)))
                 .andDo(print())
@@ -203,6 +390,9 @@ public class PostControllerDocTest {
                         requestFields(
                                 fieldWithPath("title").description("제목"),
                                 fieldWithPath("content").description("내용")
+                        ),
+                        responseFields(
+                                fieldWithPath("postId").description("게시글 아이디")
                         )
                 ));
     }

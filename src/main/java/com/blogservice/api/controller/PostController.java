@@ -1,20 +1,20 @@
 package com.blogservice.api.controller;
 
 import com.blogservice.api.config.UserPrincipal;
-import com.blogservice.api.request.post.PostCreate;
-import com.blogservice.api.request.post.PostEdit;
-import com.blogservice.api.request.post.PostSearch;
-import com.blogservice.api.response.PostResponse;
+import com.blogservice.api.dto.PostCreate;
+import com.blogservice.api.dto.PostEdit;
+import com.blogservice.api.dto.PostResponse;
 import com.blogservice.api.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
+
+import static org.springframework.http.HttpStatus.CREATED;
 
 @Slf4j
 @RestController
@@ -23,40 +23,71 @@ public class PostController {
 
     private final PostService postService;
 
-    @GetMapping("/test2")
-    public String test2() {
-        return "인증이 필요 없는 페이지";
+    @PostMapping("/api/boards/{boardId}/posts")
+    public ResponseEntity<PostCreate.Response> writePost(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long boardId,
+            @RequestBody @Validated PostCreate.Request request
+            ) {
+        PostCreate.Response response = postService.write(userPrincipal.getUserId(), boardId, request);
+        // todo
+        //  snapshot 생성
+        return ResponseEntity.status(CREATED).body(response);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PostMapping("/posts")
-    public Map<String, String> post(@AuthenticationPrincipal UserPrincipal userPrincipal, @RequestBody @Validated PostCreate request) {
-        postService.write(userPrincipal.getUserId(), request);
-        return Map.of();
+    @PatchMapping("/api/posts/{postId}")
+    public ResponseEntity<PostEdit.Response> editPost(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long postId, @RequestBody @Validated PostEdit.Request request
+    ) {
+        PostEdit.Response response = postService.edit(userPrincipal.getUserId(), postId, request);
+        // todo
+        //  snapshot 생성
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/posts/{postId}")
-    public PostResponse get(@PathVariable Long postId) {
-        return postService.get(postId);
+    @DeleteMapping("/api/posts/{postId}")
+    public ResponseEntity<Void> deletePost(@AuthenticationPrincipal UserPrincipal userPrincipal, @PathVariable Long postId) {
+        postService.delete(userPrincipal.getUserId(), postId);
+        return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/posts")
-    public List<PostResponse> getList(@ModelAttribute PostSearch postSearch) {
-        return postService.getList(postSearch);
+    @GetMapping("/api/posts/{postId}")
+    public ResponseEntity<PostResponse.Details> getDetails(@PathVariable Long postId) {
+        PostResponse.Details details = postService.getDetails(postId);
+        // todo
+        //  view 객체 생성 로직
+        return ResponseEntity.ok(details);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') && hasPermission(#postId, 'POST', 'PATCH')")
-    @PatchMapping("/posts/{postId}")
-    public void edit(@PathVariable Long postId, @RequestBody @Validated PostEdit request) {
-        postService.edit(postId, request);
+    @GetMapping("/api/boards/{boardId}/posts")
+    public ResponseEntity<List<PostResponse.List>> getList(
+            @PathVariable Long boardId, @RequestParam int page, @RequestParam int size
+    ) {
+        List<PostResponse.List> response = postService.getList(boardId, page, size);
+        return ResponseEntity.ok(response);
     }
 
-//    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PreAuthorize("hasRole('ROLE_ADMIN') && hasPermission(#postId, 'POST', 'DELETE')")
-    @DeleteMapping("/posts/{postId}")
-    public void delete(@PathVariable Long postId) {
-        postService.delete(postId);
+    @GetMapping("/api/posts/{postId}/views")
+    public ResponseEntity<PostResponse.Views> getViewCounts(@PathVariable Long postId) {
+        PostResponse.Views response = postService.getViewCounts(postId);
+        return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/api/posts/{postId}/likes")
+    public ResponseEntity<PostResponse.Likes> getLikeCounts(@PathVariable Long postId) {
+        PostResponse.Likes response = postService.getLikeCounts(postId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/api/posts/{postId}/likes")
+    public ResponseEntity<PostResponse.Likes> likePost(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long postId) {
+        PostResponse.Likes response = postService.likePost(userPrincipal.getUserId(), postId);
+        return ResponseEntity.ok(response);
+    }
+
 
 
 }
