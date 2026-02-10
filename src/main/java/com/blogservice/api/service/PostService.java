@@ -96,6 +96,7 @@ public class PostService {
         page = getOffset(page, size);
         size = getSize(size);
         List<Post> postList = postRepository.findPostList(boardId, page, size);
+//        List<Post> postList = postRepository.getList(boardId, page, size);
 
         return postList.stream().map(post -> {
             long views = viewRepository.countByPost(post);

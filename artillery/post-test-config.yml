@@ -16,8 +16,8 @@ config:
     fields:
       - "page"
 
-  scenarios:
-    - name: "게시판 조회 성능 테스트"
-      flow:
-        - get:
-            url: "/api/boards/1/posts?page={{ page }}&size=30"
+scenarios:
+  - name: "게시판 조회 성능 테스트"
+    flow:
+      - get:
+          url: "/api/boards/1/posts?page={{ page }}&size=30"
