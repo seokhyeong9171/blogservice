@@ -76,6 +76,7 @@ public class PostController {
 
     @GetMapping("/api/posts/{postId}/likes")
     public ResponseEntity<PostResponse.Likes> getLikeCounts(@PathVariable Long postId) {
+//        log.info("postId: {}", postId);
         PostResponse.Likes response = postService.getLikeCounts(postId);
         return ResponseEntity.ok(response);
     }

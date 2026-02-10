@@ -20,3 +20,8 @@ Content-Type: application/json
 
 GET http://localhost:8080/api/boards/1/posts?page=90&size=30
 Content-Type: application/json
+
+### 게시글 좋아요 수 조회
+
+GET http://localhost:8080/api/posts/2000/likes
+Content-Type: application/json

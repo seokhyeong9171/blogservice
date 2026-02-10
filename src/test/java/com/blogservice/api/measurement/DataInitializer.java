@@ -1,4 +1,4 @@
-package com.blogservice.api.datainit;
+package com.blogservice.api.measurement;
 
 import com.blogservice.api.domain.board.Board;
 import com.blogservice.api.domain.comment.Comment;
@@ -149,7 +149,7 @@ public class DataInitializer {
         executorService.shutdown();
     }
 
-//    @Test
+    @Test
     void initializeLike() throws InterruptedException {
         List<Long> userIds = userRepository.findAll().stream().map(User::getId).toList();
 //        List<Long> boardIds = boardRepository.findAll().stream().map(Board::getId).toList();
@@ -166,7 +166,7 @@ public class DataInitializer {
                         for (int j = 0; j < BULK_INSERT_SIZE; j++) {
                             User user = em.getReference(User.class, userIds.get(random.nextInt(userIds.size())));
 //                            Board board = em.getReference(Board.class, boardIds.get(random.nextInt(boardIds.size())));
-                            Post post = em.getReference(Post.class, random.nextInt(100) + 1);
+                            Post post = em.getReference(Post.class, random.nextInt(12000000) + 1);
 
                             Likes likes = Likes.builder()
                                     .post(post)
