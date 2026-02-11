@@ -25,3 +25,8 @@ Content-Type: application/json
 
 GET http://localhost:8080/api/posts/2000/likes
 Content-Type: application/json
+
+
+###
+
+GET http://localhost:8080/post-like-count-init

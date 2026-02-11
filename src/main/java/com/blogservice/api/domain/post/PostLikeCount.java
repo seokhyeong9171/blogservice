@@ -7,6 +7,7 @@ import static jakarta.persistence.FetchType.*;
 
 @Getter
 @Entity
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PostLikeCount {
 
@@ -31,18 +32,6 @@ public class PostLikeCount {
                 .post(post)
                 .count(0L)
                 .build();
-    }
-
-    public void update(Long count) {
-        this.count = count;
-    }
-
-    public void increment() {
-        this.count++;
-    }
-
-    public void decrement() {
-        this.count--;
     }
 
 }

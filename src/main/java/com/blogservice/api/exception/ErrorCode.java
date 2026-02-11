@@ -27,10 +27,11 @@ public enum ErrorCode {
     POST_AUTHOR_NOT_MATCHING(BAD_REQUEST, "post author not matching"),
     POST_DELETED(BAD_REQUEST, "post deleted"),
 
+    POST_LIKE_COUNT_NOT_FOUND(NOT_FOUND, "post like count not found" ),
+
     COMMENT_NOT_FOUND(BAD_REQUEST, "comment not found"),
     COMMENT_DELETED(BAD_REQUEST, "comment deleted"),
-    COMMENT_AUTHOR_NOT_MATCHING(BAD_REQUEST, "comment author not matching")
-    ;
+    COMMENT_AUTHOR_NOT_MATCHING(BAD_REQUEST, "comment author not matching");
 
     private final HttpStatus status;
     private final String message;
