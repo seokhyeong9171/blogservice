@@ -1,11 +1,13 @@
 package com.blogservice.api.service;
 
 import com.blogservice.api.domain.comment.Comment;
+import com.blogservice.api.domain.comment.PostCommentCount;
 import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.CommentDto;
 import com.blogservice.api.exception.ServiceException;
 import com.blogservice.api.repository.comment.CommentRepository;
+import com.blogservice.api.repository.comment.PostCommentCountRepository;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+    private final PostCommentCountRepository postCommentCountRepository;
 
     public void write(Long userId, Long postId, CommentDto.Create request) {
         Post findPost = findPostById(postId);
@@ -40,6 +43,8 @@ public class CommentService {
                 .isDeleted(false)
                 .build();
         commentRepository.save(comment);
+
+        postCommentCountRepository.incrementCount(postId);
 
         // todo
         //  comment snapshot
@@ -58,6 +63,8 @@ public class CommentService {
                 .isDeleted(false)
                 .build();
         commentRepository.save(comment);
+
+        postCommentCountRepository.incrementCount(commentId);
 
         // todo
         //  comment snapshot
@@ -82,6 +89,8 @@ public class CommentService {
         verifyCommentDeleted(findComment);
 
         findComment.delete();
+
+        postCommentCountRepository.decrementCount(commentId);
         // todo
         //  comment snapshot
     }
@@ -114,8 +123,10 @@ public class CommentService {
         Post findPost = findPostById(postId);
         verifyPostDeleted(findPost);
 
-        Long count = commentRepository.countByPost(findPost);
-        return CommentDto.Count.from(count);
+        PostCommentCount postCommentCount = postCommentCountRepository.findByPost(findPost)
+                .orElseGet(() -> postCommentCountRepository.save(PostCommentCount.create(findPost)));
+
+        return CommentDto.Count.from(postCommentCount.getCount());
     }
 
     private User findUserById(Long userId) {
