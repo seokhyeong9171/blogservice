@@ -3,14 +3,18 @@ package com.blogservice.api.service;
 import com.blogservice.api.config.BlogserviceMockSecurityContext;
 import com.blogservice.api.config.BlogserviceMockUser;
 import com.blogservice.api.domain.board.Board;
+import com.blogservice.api.domain.comment.PostCommentCount;
 import com.blogservice.api.domain.post.Likes;
 import com.blogservice.api.domain.post.Post;
+import com.blogservice.api.domain.post.PostLikeCount;
 import com.blogservice.api.domain.post.Views;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.PostEdit;
 import com.blogservice.api.exception.ServiceException;
 import com.blogservice.api.repository.board.BoardRepository;
+import com.blogservice.api.repository.comment.PostCommentCountRepository;
 import com.blogservice.api.repository.post.LikeRepository;
+import com.blogservice.api.repository.post.PostLikeCountRepository;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.post.ViewRepository;
 import com.blogservice.api.repository.user.UserRepository;
@@ -21,6 +25,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -47,6 +52,10 @@ class PostServiceTest {
     private LikeRepository likeRepository;
     @Autowired
     private BoardRepository boardRepository;
+    @Autowired
+    private PostCommentCountRepository postCommentCountRepository;
+    @Autowired
+    private PostLikeCountRepository postLikeCountRepository;
 
     @AfterEach
     void clean() {
@@ -364,6 +373,7 @@ class PostServiceTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("글 좋아요 수 조회 - 성공")
     void view_post_likes_counts_success() {
         // given
@@ -372,17 +382,7 @@ class PostServiceTest {
                 .email("testuser1@testuser.com")
                 .password("testpassword")
                 .build();
-        User user2 = User.builder()
-                .nickname("testuser2")
-                .email("testuser2@testuser.com")
-                .password("testpassword")
-                .build();
-        User user3 = User.builder()
-                .nickname("testuser3")
-                .email("testuser3@testuser.com")
-                .password("testpassword")
-                .build();
-        userRepository.saveAll(List.of(user1, user2, user3));
+        userRepository.save(user1);
 
         Post post = Post.builder()
                 .title("testtitle")
@@ -392,19 +392,8 @@ class PostServiceTest {
                 .build();
         Post savedPost = postRepository.save(post);
 
-        Likes likes1 = com.blogservice.api.domain.post.Likes.builder()
-                .post(savedPost)
-                .user(user1)
-                .build();
-        Likes likes2 = com.blogservice.api.domain.post.Likes.builder()
-                .post(savedPost)
-                .user(user2)
-                .build();
-        Likes likes3 = com.blogservice.api.domain.post.Likes.builder()
-                .post(savedPost)
-                .user(user3)
-                .build();
-        likeRepository.saveAll(List.of(likes1, likes2, likes3));
+        PostLikeCount postLikeCount = PostLikeCount.builder().post(savedPost).count(3L).build();
+        postLikeCountRepository.save(postLikeCount);
 
         // when
         PostResponse.Likes likes = postService.getLikeCounts(savedPost.getId());

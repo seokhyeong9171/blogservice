@@ -18,11 +18,11 @@ public interface PostLikeCountRepository extends JpaRepository<PostLikeCount, Lo
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<PostLikeCount> findByPost(Post post);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("update PostLikeCount p set p.count = p.count + 1 where p.postId = :postId")
     long incrementCount(@Param("postId") Long postId);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("update PostLikeCount p set p.count = p.count - 1 where p.postId = :postId")
     long decrementCount(@Param("postId") Long postId);
 }
