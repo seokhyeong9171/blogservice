@@ -16,6 +16,7 @@ import net.datafaker.Faker;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -42,6 +43,9 @@ public class DataInitializer {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
 
     CountDownLatch latch = new CountDownLatch(EXECUTE_COUNT);
 
@@ -149,7 +153,7 @@ public class DataInitializer {
         executorService.shutdown();
     }
 
-    @Test
+//    @Test
     void initializeLike() throws InterruptedException {
         List<Long> userIds = userRepository.findAll().stream().map(User::getId).toList();
 //        List<Long> boardIds = boardRepository.findAll().stream().map(Board::getId).toList();
@@ -188,7 +192,7 @@ public class DataInitializer {
         executorService.shutdown();
     }
 
-    @Test
+//    @Test
     void initializeView() throws InterruptedException {
         List<Long> userIds = userRepository.findAll().stream().map(User::getId).toList();
 //        List<Long> boardIds = boardRepository.findAll().stream().map(Board::getId).toList();
@@ -225,5 +229,16 @@ public class DataInitializer {
         }
         latch.await();
         executorService.shutdown();
+    }
+
+    @Test
+    void initialRedisViewData() throws Exception {
+        Random random = new Random();
+        String key = "post-view-count:post:%s";
+
+        for (int i = 1; i <= 100; i++) {
+
+            redisTemplate.opsForValue().set(String.format(key, i), String.valueOf(random.nextInt(1000) % 1000));
+        }
     }
 }

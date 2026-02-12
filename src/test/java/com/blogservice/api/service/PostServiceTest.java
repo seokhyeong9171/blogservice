@@ -56,6 +56,8 @@ class PostServiceTest {
     private PostCommentCountRepository postCommentCountRepository;
     @Autowired
     private PostLikeCountRepository postLikeCountRepository;
+    @Autowired
+    private ViewService viewService;
 
     @AfterEach
     void clean() {
@@ -339,7 +341,7 @@ class PostServiceTest {
         viewRepository.saveAll(List.of(views1, views2, views3));
 
         // when
-        PostResponse.Views views = postService.getViewCounts(savedPost.getId());
+        PostResponse.Views views = viewService.getViewCounts(savedPost.getId());
         assertEquals(3L, views.getViews());
     }
 
@@ -348,7 +350,7 @@ class PostServiceTest {
     void view_post_view_counts_fail_post_not_found() {
         // expected
         ServiceException serviceException =
-                assertThrowsExactly(ServiceException.class, () -> postService.getViewCounts(999L));
+                assertThrowsExactly(ServiceException.class, () -> viewService.getViewCounts(999L));
         assertEquals(POST_NOT_FOUND.getMessage(), serviceException.getMessage());
     }
 
@@ -368,7 +370,7 @@ class PostServiceTest {
 
         // expected
         ServiceException serviceException =
-                assertThrowsExactly(ServiceException.class, () -> postService.getViewCounts(savedPost.getId()));
+                assertThrowsExactly(ServiceException.class, () -> viewService.getViewCounts(savedPost.getId()));
         assertEquals(POST_DELETED.getMessage(), serviceException.getMessage());
     }
 

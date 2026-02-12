@@ -4,8 +4,9 @@ POST  http://localhost:8080/api/auth/signup
 Content-Type: application/json
 
 {
-  "name": "testname",
-  "email": "test@test.com",
+  "name": "testname1",
+  "nickname": "testnick1",
+  "email": "test1@test.com",
   "password": "12345678",
   "phone": "01012345678",
   "birthDt": "1998-09-19",
@@ -22,7 +23,7 @@ Content-Type: application/json
 
 //username=admin@admin.com&password=1234
 {
-  "email": "test@test.com",
+  "email": "test1@test.com",
   "password": "12345678"
 }
 

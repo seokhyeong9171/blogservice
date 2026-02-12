@@ -115,19 +115,6 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public PostResponse.Views getViewCounts(Long postId) {
-        Post findPost = findPostById(postId);
-
-        verifyPostDeleted(findPost);
-
-        Long viewCount = viewRepository.countByPost(findPost);
-
-        return PostResponse.Views.builder()
-                .views(viewCount)
-                .build();
-    }
-
-    @Transactional(readOnly = true)
     public PostResponse.Likes getLikeCounts(Long postId) {
         Post findPost = findPostById(postId);
 
