@@ -1,0 +1,13 @@
+config:
+  target: 'http://localhost:8080'
+
+  phases:
+    - name: "Saturation Test"
+      duration: 60
+      arrivalRate: 500  # 초당 100명 유입 (커넥션 풀 30개의 3배 이상)
+
+scenarios:
+  - name: "좋아요 조회 및 클릭 시나리오"
+    flow:
+      - get:
+          url: "/api/posts/{{ $randomNumber(1, 100) }}/views" # 게시글 조회 수 조회

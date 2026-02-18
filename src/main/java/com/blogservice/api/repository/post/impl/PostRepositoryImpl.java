@@ -1,6 +1,7 @@
-package com.blogservice.api.repository.post;
+package com.blogservice.api.repository.post.impl;
 
 import com.blogservice.api.domain.post.Post;
+import com.blogservice.api.repository.post.PostRepositoryCustom;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
@@ -11,7 +12,7 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 @RequiredArgsConstructor
-public class PostRepositoryImpl implements PostRepositoryCustom{
+public class PostRepositoryImpl implements PostRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
 

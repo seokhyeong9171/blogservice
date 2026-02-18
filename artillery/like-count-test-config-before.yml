@@ -1,0 +1,28 @@
+config:
+  target: 'http://localhost:8080'
+#  phases:
+#    - name: "1. Warm up (준비 운동)"
+#      duration: 30
+#      arrivalRate: 5      # 초당 5명씩 유입 (DB 버퍼 풀 예열)
+#
+#    - name: "2. Sustained load (평시 부하)"
+#      duration: 60
+#      arrivalRate: 15     # 초당 15명. 커넥션 풀(30개) 절반 정도를 안정적으로 사용하는 단계
+#
+#    - name: "3. Stress test (한계 측정)"
+#      duration: 60
+#      arrivalRate: 40     # 초당 40명. 쿼리가 300ms 이상 지연되면 커넥션 풀이 고갈되기 시작하는 지점
+#
+#    - name: "4. Peak load (임계점 돌파)"
+#      duration: 30
+#      arrivalRate: 70     # 초당 70명. 수정 전 방식(COUNT*)이 확실히 무너지는지 확인하는 단계
+  phases:
+    - name: "Saturation Test"
+      duration: 60
+      arrivalRate: 500  # 초당 100명 유입 (커넥션 풀 30개의 3배 이상)
+
+scenarios:
+  - name: "좋아요 조회 및 클릭 시나리오"
+    flow:
+      - get:
+          url: "/api/posts/{{ $randomNumber(1, 100) }}/likes" # 게시글 좋아요 수 조회

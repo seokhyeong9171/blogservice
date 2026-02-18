@@ -1,4 +1,4 @@
-package com.blogservice.api.datainit;
+package com.blogservice.api.measurement;
 
 import com.blogservice.api.domain.board.Board;
 import com.blogservice.api.domain.comment.Comment;
@@ -16,6 +16,7 @@ import net.datafaker.Faker;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -42,6 +43,9 @@ public class DataInitializer {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
 
     CountDownLatch latch = new CountDownLatch(EXECUTE_COUNT);
 
@@ -166,7 +170,7 @@ public class DataInitializer {
                         for (int j = 0; j < BULK_INSERT_SIZE; j++) {
                             User user = em.getReference(User.class, userIds.get(random.nextInt(userIds.size())));
 //                            Board board = em.getReference(Board.class, boardIds.get(random.nextInt(boardIds.size())));
-                            Post post = em.getReference(Post.class, random.nextInt(100) + 1);
+                            Post post = em.getReference(Post.class, random.nextInt(12000000) + 1);
 
                             Likes likes = Likes.builder()
                                     .post(post)
@@ -188,7 +192,7 @@ public class DataInitializer {
         executorService.shutdown();
     }
 
-    @Test
+//    @Test
     void initializeView() throws InterruptedException {
         List<Long> userIds = userRepository.findAll().stream().map(User::getId).toList();
 //        List<Long> boardIds = boardRepository.findAll().stream().map(Board::getId).toList();
@@ -225,5 +229,16 @@ public class DataInitializer {
         }
         latch.await();
         executorService.shutdown();
+    }
+
+    @Test
+    void initialRedisViewData() throws Exception {
+        Random random = new Random();
+        String key = "post-view-count:post:%s";
+
+        for (int i = 1; i <= 100; i++) {
+
+            redisTemplate.opsForValue().set(String.format(key, i), String.valueOf(random.nextInt(1000) % 1000));
+        }
     }
 }

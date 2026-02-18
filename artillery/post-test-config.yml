@@ -1,0 +1,23 @@
+config:
+  target: 'http://localhost:8080'
+  phases:
+    - name: "Warm up"
+      duration: 30
+      arrivalRate: 5    # 더 낮게 시작해서 안정성 확보
+    - name: "Sustained load"
+      duration: 60
+      arrivalRate: 20   # 커넥션 풀(30개) 이내에서 안정적으로 처리되는지 확인
+    - name: "Stress test"
+      duration: 60      # 임계치를 보기 위해 시간을 조금 더 늘림
+      arrivalRate: 60   # 커넥션 풀의 2배 수준까지만 시도 (성능 한계점 측정)
+
+  payload:
+    path: "pages.csv"
+    fields:
+      - "page"
+
+scenarios:
+  - name: "게시판 조회 성능 테스트"
+    flow:
+      - get:
+          url: "/api/boards/1/posts?page={{ page }}&size=30"

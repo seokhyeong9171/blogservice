@@ -5,11 +5,13 @@ import com.blogservice.api.config.BlogserviceMockUser;
 import com.blogservice.api.domain.board.Board;
 import com.blogservice.api.domain.post.Likes;
 import com.blogservice.api.domain.post.Post;
+import com.blogservice.api.domain.post.PostLikeCount;
 import com.blogservice.api.domain.post.Views;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.PostEdit;
 import com.blogservice.api.repository.board.BoardRepository;
 import com.blogservice.api.repository.post.LikeRepository;
+import com.blogservice.api.repository.post.PostLikeCountRepository;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.post.ViewRepository;
 import com.blogservice.api.repository.user.UserRepository;
@@ -25,6 +27,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -64,6 +67,8 @@ public class PostControllerDocTest {
     private LikeRepository likeRepository;
     @Autowired
     private BoardRepository boardRepository;
+    @Autowired
+    private PostLikeCountRepository postLikeCountRepository;
 
     @AfterEach
     void clean() {
@@ -218,6 +223,7 @@ public class PostControllerDocTest {
 
     @Test
     @BlogserviceMockUser
+    @Transactional
     @DisplayName("글 좋아요")
     void view_post_like() throws Exception {
         // given
@@ -226,17 +232,7 @@ public class PostControllerDocTest {
                 .email("testuser1@testuser.com")
                 .password("testpassword")
                 .build();
-        User user2 = User.builder()
-                .nickname("testuser2")
-                .email("testuser2@testuser.com")
-                .password("testpassword")
-                .build();
-        User user3 = User.builder()
-                .nickname("testuser3")
-                .email("testuser3@testuser.com")
-                .password("testpassword")
-                .build();
-        userRepository.saveAll(List.of(user1, user2, user3));
+        userRepository.save(user1);
 
         Post post = Post.builder()
                 .title("testtitle")
@@ -246,19 +242,11 @@ public class PostControllerDocTest {
                 .build();
         Post savedPost = postRepository.save(post);
 
-        Likes likes1 = Likes.builder()
+        PostLikeCount postLikeCount = PostLikeCount.builder()
                 .post(savedPost)
-                .user(user1)
+                .count(3L)
                 .build();
-        Likes likes2 = Likes.builder()
-                .post(savedPost)
-                .user(user2)
-                .build();
-        Likes likes3 = Likes.builder()
-                .post(savedPost)
-                .user(user3)
-                .build();
-        likeRepository.saveAll(List.of(likes1, likes2, likes3));
+        postLikeCountRepository.save(postLikeCount);
 
         // expected
         this.mockMvc.perform(post("/api/posts/{postId}/likes", savedPost.getId()))

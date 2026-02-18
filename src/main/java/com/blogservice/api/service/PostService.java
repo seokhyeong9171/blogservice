@@ -3,6 +3,7 @@ package com.blogservice.api.service;
 import com.blogservice.api.domain.board.Board;
 import com.blogservice.api.domain.post.Likes;
 import com.blogservice.api.domain.post.Post;
+import com.blogservice.api.domain.post.PostLikeCount;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.PostCreate;
 import com.blogservice.api.dto.PostEdit;
@@ -10,9 +11,11 @@ import com.blogservice.api.dto.PostResponse;
 import com.blogservice.api.exception.ServiceException;
 import com.blogservice.api.repository.board.BoardRepository;
 import com.blogservice.api.repository.post.LikeRepository;
+import com.blogservice.api.repository.post.PostLikeCountRepository;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.post.ViewRepository;
 import com.blogservice.api.repository.user.UserRepository;
+import com.blogservice.api.util.PageQueryUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,6 +27,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.blogservice.api.exception.ErrorCode.*;
+import static com.blogservice.api.util.PageQueryUtil.*;
 
 @Slf4j
 @Transactional
@@ -36,6 +40,7 @@ public class PostService {
     private final LikeRepository likeRepository;
     private final ViewRepository viewRepository;
     private final BoardRepository boardRepository;
+    private final PostLikeCountRepository postLikeCountRepository;
 
     public PostCreate.Response write(Long userId, Long boardId, PostCreate.Request request) {
         User user = findUserById(userId);
@@ -91,7 +96,10 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public List<PostResponse.List> getList(Long boardId, int page, int size) {
-        List<Post> postList = postRepository.getList(boardId, page, size);
+        page = getOffset(page, size);
+        size = getSize(size);
+        List<Post> postList = postRepository.findPostList(boardId, page, size);
+//        List<Post> postList = postRepository.getList(boardId, page, size);
 
         return postList.stream().map(post -> {
             long views = viewRepository.countByPost(post);
@@ -107,26 +115,17 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public PostResponse.Views getViewCounts(Long postId) {
-        Post findPost = findPostById(postId);
-
-        verifyPostDeleted(findPost);
-
-        Long viewCount = viewRepository.countByPost(findPost);
-        return PostResponse.Views.builder()
-                .views(viewCount)
-                .build();
-    }
-
-    @Transactional(readOnly = true)
     public PostResponse.Likes getLikeCounts(Long postId) {
         Post findPost = findPostById(postId);
 
         verifyPostDeleted(findPost);
 
-        Long likeCount = likeRepository.countByPost(findPost);
+//        Long likeCount = likeRepository.countByPost(findPost);
+        PostLikeCount postLikeCount = postLikeCountRepository.findByPost(findPost)
+                .orElseGet(() -> postLikeCountRepository.save(PostLikeCount.create(findPost)));
+
         return PostResponse.Likes.builder()
-                .likes(likeCount)
+                .likes(postLikeCount.getCount())
                 .build();
     }
 
@@ -139,15 +138,22 @@ public class PostService {
         Optional<Likes> likes = likeRepository.findByUserIdAndPostId(userId, postId);
         if (likes.isPresent()) {
             likeRepository.delete(likes.get());
+            postLikeCountRepository.decrementCount(postId);
         } else {
             Likes like = com.blogservice.api.domain.post.Likes.builder()
                     .user(findUser).post(findPost)
                     .build();
             likeRepository.save(like);
+            postLikeCountRepository.incrementCount(postId);
         }
 
+
         return PostResponse.Likes.builder()
-                .likes(likeRepository.countByPost(findPost))
+                .likes(
+                        postLikeCountRepository.findByPost(findPost)
+                                .orElseThrow(() -> new ServiceException(POST_LIKE_COUNT_NOT_FOUND))
+                                .getCount()
+                )
                 .build();
     }
 

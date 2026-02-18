@@ -3,9 +3,11 @@ package com.blogservice.api.controller;
 import com.blogservice.api.config.BlogserviceMockSecurityContext;
 import com.blogservice.api.config.BlogserviceMockUser;
 import com.blogservice.api.domain.comment.Comment;
+import com.blogservice.api.domain.comment.PostCommentCount;
 import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.CommentDto;
+import com.blogservice.api.repository.comment.PostCommentCountRepository;
 import com.blogservice.api.repository.user.UserRepository;
 import com.blogservice.api.repository.comment.CommentRepository;
 import com.blogservice.api.repository.post.PostRepository;
@@ -19,6 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -54,6 +57,8 @@ class CommentControllerTest {
 
     @Autowired
     private BlogserviceMockSecurityContext securityContext;
+    @Autowired
+    private PostCommentCountRepository postCommentCountRepository;
 
     @AfterEach
     void clean() {
@@ -461,6 +466,7 @@ class CommentControllerTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("댓글 수 조회 - 성공")
     void get_comment_count_success() throws Exception {
 
@@ -468,20 +474,21 @@ class CommentControllerTest {
         Post savedPost2 = postRepository.save(Post.builder().build());
         User author = userRepository.save(User.builder().nickname("user").build());
 
-        List<Comment> requestComments = IntStream.range(1, 16)
-                .mapToObj(i -> Comment.builder()
-                        .post(savedPost1)
-                        .user(author)
-                        .content("내용 " + i)
-                        .build())
-                .toList();
-        commentRepository.saveAll(requestComments);
-
         commentRepository.save(
                 Comment.builder()
                         .user(author).post(savedPost2).content("content")
                         .build()
         );
+
+        PostCommentCount postCommentCount1 = PostCommentCount.builder()
+                .post(savedPost1)
+                .count(15L)
+                .build();
+        PostCommentCount postCommentCount2 = PostCommentCount.builder()
+                .post(savedPost2)
+                .count(10L)
+                .build();
+        postCommentCountRepository.saveAll(List.of(postCommentCount1, postCommentCount2));
 
         // expected
         mockMvc.perform(get("/api/posts/{postId}/comments/count", savedPost1.getId())
