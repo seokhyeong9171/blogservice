@@ -5,6 +5,7 @@ import com.blogservice.api.dto.PostCreate;
 import com.blogservice.api.dto.PostEdit;
 import com.blogservice.api.dto.PostResponse;
 import com.blogservice.api.service.PostService;
+import com.blogservice.api.service.ViewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 public class PostController {
 
     private final PostService postService;
+    private final ViewService viewService;
 
     @PostMapping("/api/boards/{boardId}/posts")
     public ResponseEntity<PostCreate.Response> writePost(
@@ -53,8 +55,9 @@ public class PostController {
     }
 
     @GetMapping("/api/posts/{postId}")
-    public ResponseEntity<PostResponse.Details> getDetails(@PathVariable Long postId) {
+    public ResponseEntity<PostResponse.Details> getDetails(@AuthenticationPrincipal UserPrincipal userPrincipal, @PathVariable Long postId) {
         PostResponse.Details details = postService.getDetails(postId);
+        viewService.checkViewCountIncrease(userPrincipal.getUserId(), postId);
         // todo
         //  view 객체 생성 로직
         return ResponseEntity.ok(details);
@@ -70,12 +73,13 @@ public class PostController {
 
     @GetMapping("/api/posts/{postId}/views")
     public ResponseEntity<PostResponse.Views> getViewCounts(@PathVariable Long postId) {
-        PostResponse.Views response = postService.getViewCounts(postId);
+        PostResponse.Views response = viewService.getViewCounts(postId);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/api/posts/{postId}/likes")
     public ResponseEntity<PostResponse.Likes> getLikeCounts(@PathVariable Long postId) {
+//        log.info("postId: {}", postId);
         PostResponse.Likes response = postService.getLikeCounts(postId);
         return ResponseEntity.ok(response);
     }

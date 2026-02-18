@@ -5,11 +5,13 @@ import com.blogservice.api.config.BlogserviceMockUser;
 import com.blogservice.api.domain.board.Board;
 import com.blogservice.api.domain.post.Likes;
 import com.blogservice.api.domain.post.Post;
+import com.blogservice.api.domain.post.PostLikeCount;
 import com.blogservice.api.domain.post.Views;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.PostEdit;
 import com.blogservice.api.repository.board.BoardRepository;
 import com.blogservice.api.repository.post.LikeRepository;
+import com.blogservice.api.repository.post.PostLikeCountRepository;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.post.ViewRepository;
 import com.blogservice.api.repository.user.UserRepository;
@@ -61,9 +63,12 @@ class PostControllerTest {
     private LikeRepository likeRepository;
     @Autowired
     private BoardRepository boardRepository;
+    @Autowired
+    private PostLikeCountRepository postLikeCountRepository;
 
     @AfterEach
     void clean() {
+        postLikeCountRepository.deleteAll();
         postRepository.deleteAll();
         userRepository.deleteAll();
         viewRepository.deleteAll();
@@ -487,6 +492,7 @@ class PostControllerTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("글 좋아요 수 조회 - 성공")
     void view_post_like_count() throws Exception {
         // given
@@ -495,17 +501,7 @@ class PostControllerTest {
                 .email("testuser1@testuser.com")
                 .password("testpassword")
                 .build();
-        User user2 = User.builder()
-                .nickname("testuser2")
-                .email("testuser2@testuser.com")
-                .password("testpassword")
-                .build();
-        User user3 = User.builder()
-                .nickname("testuser3")
-                .email("testuser3@testuser.com")
-                .password("testpassword")
-                .build();
-        userRepository.saveAll(List.of(user1, user2, user3));
+        userRepository.save(user1);
 
         Post post = Post.builder()
                 .title("testtitle")
@@ -515,19 +511,11 @@ class PostControllerTest {
                 .build();
         Post savedPost = postRepository.save(post);
 
-        Likes likes1 = Likes.builder()
+        PostLikeCount postLikeCount = PostLikeCount.builder()
                 .post(savedPost)
-                .user(user1)
+                .count(3L)
                 .build();
-        Likes likes2 = Likes.builder()
-                .post(savedPost)
-                .user(user2)
-                .build();
-        Likes likes3 = Likes.builder()
-                .post(savedPost)
-                .user(user3)
-                .build();
-        likeRepository.saveAll(List.of(likes1, likes2, likes3));
+        postLikeCountRepository.save(postLikeCount);
 
         // expected
         mockMvc.perform(get("/api/posts/{postId}/likes", savedPost.getId())
@@ -572,6 +560,7 @@ class PostControllerTest {
 
     @Test
     @DisplayName("게시글 좋아요 - 좋아요 - 성공")
+    @Transactional
     @BlogserviceMockUser
     void post_like_success() throws Exception {
         User user = User.builder().build();
@@ -579,6 +568,9 @@ class PostControllerTest {
 
         Post post = Post.builder().user(author).build();
         Post savedPost = postRepository.save(post);
+
+        PostLikeCount postLikeCount = PostLikeCount.create(savedPost);
+        postLikeCountRepository.save(postLikeCount);
 
         mockMvc.perform(post("/api/posts/{postId}/likes", savedPost.getId())
                         .contentType(APPLICATION_JSON))
@@ -589,6 +581,7 @@ class PostControllerTest {
 
     @Test
     @DisplayName("게시글 좋아요 - 좋아요 취소 - 성공")
+    @Transactional
     @BlogserviceMockUser
     void post_unlike_success() throws Exception {
         User user = User.builder().build();
@@ -599,6 +592,12 @@ class PostControllerTest {
 
         Likes likes = Likes.builder().post(savedPost).user(securityContext.getCurrentUser()).build();
         likeRepository.save(likes);
+
+        PostLikeCount postLikeCount = PostLikeCount.builder()
+                .post(savedPost)
+                .count(1L)
+                .build();
+        postLikeCountRepository.save(postLikeCount);
 
         mockMvc.perform(post("/api/posts/{postId}/likes", savedPost.getId())
                         .contentType(APPLICATION_JSON))
@@ -621,6 +620,7 @@ class PostControllerTest {
 
     @Test
     @BlogserviceMockUser
+    @Transactional
     @DisplayName("글 좋아요 - 실패 - 해당 글 삭제됨")
     void post_like_fail_post_deleted() throws Exception {
         // given

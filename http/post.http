@@ -20,3 +20,24 @@ Content-Type: application/json
 
 GET http://localhost:8080/api/boards/1/posts?page=90&size=30
 Content-Type: application/json
+
+### 게시글 조회
+
+GET http://localhost:8080/api/posts/5263
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiI4M2UwNmU2ZS1lMjg5LTQ1MzgtYTk4Yy0yODg4ZTUwZDM2MDciLCJ1c2VybmFtZSI6InRlc3QxQHRlc3QuY29tIiwiaWF0IjoxNzcwODc0Mzc2LCJleHAiOjE3NzA4NzYxNzZ9.sCcV7IwJrUmgNhchMLmQZot7l-8SfyQPdFeb3RyqFJcNlPyJP1fR47bXVCA6IkJO
+
+### 게시글 좋아요 수 조회
+
+GET http://localhost:8080/api/posts/2000/likes
+Content-Type: application/json
+
+
+###
+
+GET http://localhost:8080/post-like-count-init
+
+
+###
+
+GET http://localhost:8080/api/posts/5/views
