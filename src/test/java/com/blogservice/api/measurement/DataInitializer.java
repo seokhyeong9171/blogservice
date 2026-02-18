@@ -27,7 +27,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
 
-import static com.blogservice.api.domain.user.Role.*;
+import static com.blogservice.api.domain.user.Role.ROLE_USER;
 
 @ActiveProfiles("measurement")
 @SpringBootTest

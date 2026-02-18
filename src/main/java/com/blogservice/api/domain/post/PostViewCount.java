@@ -1,10 +1,13 @@
 package com.blogservice.api.domain.post;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import static jakarta.persistence.FetchType.LAZY;
-import static lombok.AccessLevel.*;
+import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Entity

@@ -1,7 +1,5 @@
 package com.blogservice.api.service;
 
-import com.blogservice.api.domain.post.Post;
-import com.blogservice.api.domain.post.PostLikeCount;
 import com.blogservice.api.repository.post.LikeRepository;
 import com.blogservice.api.repository.post.PostLikeCountRepository;
 import com.blogservice.api.repository.post.PostRepository;

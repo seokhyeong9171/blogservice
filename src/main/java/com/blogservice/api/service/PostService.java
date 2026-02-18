@@ -15,7 +15,6 @@ import com.blogservice.api.repository.post.PostLikeCountRepository;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.post.ViewRepository;
 import com.blogservice.api.repository.user.UserRepository;
-import com.blogservice.api.util.PageQueryUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.blogservice.api.exception.ErrorCode.*;
-import static com.blogservice.api.util.PageQueryUtil.*;
+import static com.blogservice.api.util.PageQueryUtil.getOffset;
+import static com.blogservice.api.util.PageQueryUtil.getSize;
 
 @Slf4j
 @Transactional

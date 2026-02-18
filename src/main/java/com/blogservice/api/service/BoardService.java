@@ -2,7 +2,6 @@ package com.blogservice.api.service;
 
 import com.blogservice.api.domain.board.Board;
 import com.blogservice.api.dto.BoardResponse;
-import com.blogservice.api.exception.ErrorCode;
 import com.blogservice.api.exception.ServiceException;
 import com.blogservice.api.repository.board.BoardRepository;
 import com.blogservice.api.repository.post.PostRepository;
@@ -12,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.blogservice.api.exception.ErrorCode.*;
+import static com.blogservice.api.exception.ErrorCode.BOARD_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor

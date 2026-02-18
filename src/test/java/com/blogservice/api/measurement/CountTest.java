@@ -1,32 +1,23 @@
 package com.blogservice.api.measurement;
 
 import com.blogservice.api.domain.post.Post;
-import com.blogservice.api.domain.post.PostLikeCount;
-import com.blogservice.api.domain.user.User;
 import com.blogservice.api.repository.post.LikeRepository;
 import com.blogservice.api.repository.post.PostLikeCountRepository;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.service.PostService;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Profile;
-import org.springframework.http.client.ReactorClientHttpRequestFactory;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestClient;
 
-import java.net.http.HttpClient;
-import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static com.mysema.commons.lang.Assert.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
 @SpringBootTest

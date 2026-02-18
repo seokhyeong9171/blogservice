@@ -1,7 +1,6 @@
 package com.blogservice.api.config;
 
 import com.blogservice.api.domain.user.Address;
-import com.blogservice.api.domain.user.Role;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;

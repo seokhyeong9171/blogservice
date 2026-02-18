@@ -1,13 +1,11 @@
 package com.blogservice.api.service;
 
 import com.blogservice.api.domain.post.Post;
-import com.blogservice.api.domain.post.PostViewCount;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.PostResponse;
 import com.blogservice.api.exception.ServiceException;
 import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.post.PostViewCountCacheRepository;
-import com.blogservice.api.repository.post.PostViewCountRepository;
 import com.blogservice.api.repository.post.ViewLockRepository;
 import com.blogservice.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,5 @@
 package com.blogservice.api.repository.post.impl;
 
-import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.repository.post.PostViewCountCacheRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;

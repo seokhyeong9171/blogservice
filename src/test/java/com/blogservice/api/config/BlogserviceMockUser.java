@@ -1,6 +1,5 @@
 package com.blogservice.api.config;
 
-import com.blogservice.api.domain.user.Address;
 import com.blogservice.api.domain.user.Role;
 import org.springframework.security.test.context.support.WithSecurityContext;
 

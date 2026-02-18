@@ -1,16 +1,10 @@
 package com.blogservice.api.util;
 
-import com.blogservice.api.domain.post.Post;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
-import static com.blogservice.api.domain.post.QPost.post;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static lombok.AccessLevel.*;
+import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
 public final class PageQueryUtil {

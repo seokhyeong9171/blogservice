@@ -7,10 +7,10 @@ import com.blogservice.api.domain.comment.PostCommentCount;
 import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.domain.user.User;
 import com.blogservice.api.dto.CommentDto;
-import com.blogservice.api.repository.comment.PostCommentCountRepository;
-import com.blogservice.api.repository.user.UserRepository;
 import com.blogservice.api.repository.comment.CommentRepository;
+import com.blogservice.api.repository.comment.PostCommentCountRepository;
 import com.blogservice.api.repository.post.PostRepository;
+import com.blogservice.api.repository.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,8 +30,9 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc

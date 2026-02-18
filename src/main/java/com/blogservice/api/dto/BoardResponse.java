@@ -2,9 +2,12 @@ package com.blogservice.api.dto;
 
 import com.blogservice.api.domain.board.Board;
 import com.blogservice.api.domain.board.BoardName;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import static lombok.AccessLevel.*;
+import static lombok.AccessLevel.PROTECTED;
 
 public class BoardResponse {
 

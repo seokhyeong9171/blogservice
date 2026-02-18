@@ -2,7 +2,6 @@ package com.blogservice.api.repository.comment;
 
 import com.blogservice.api.domain.comment.PostCommentCount;
 import com.blogservice.api.domain.post.Post;
-import com.blogservice.api.domain.post.PostLikeCount;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;

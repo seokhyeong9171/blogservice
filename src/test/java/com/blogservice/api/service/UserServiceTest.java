@@ -3,14 +3,8 @@ package com.blogservice.api.service;
 import com.blogservice.api.auth.JwtProvider;
 import com.blogservice.api.config.BlogserviceMockSecurityContext;
 import com.blogservice.api.config.BlogserviceMockUser;
-import com.blogservice.api.config.UserPrincipal;
-import com.blogservice.api.domain.auth.RefreshToken;
-import com.blogservice.api.domain.user.Role;
 import com.blogservice.api.domain.user.User;
-import com.blogservice.api.dto.Login;
-import com.blogservice.api.dto.Signup;
 import com.blogservice.api.dto.UserInfo;
-import com.blogservice.api.exception.ErrorCode;
 import com.blogservice.api.exception.ServiceException;
 import com.blogservice.api.repository.auth.RefreshTokenRepository;
 import com.blogservice.api.repository.user.UserRepository;
@@ -21,11 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-import static com.blogservice.api.exception.ErrorCode.*;
+import static com.blogservice.api.exception.ErrorCode.PASSWORD_NOT_MATCHING;
+import static com.blogservice.api.exception.ErrorCode.SAME_PASSWORD;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest

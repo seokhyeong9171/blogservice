@@ -2,7 +2,6 @@ package com.blogservice.api.repository.post;
 
 import com.blogservice.api.domain.board.Board;
 import com.blogservice.api.domain.post.Post;
-import com.blogservice.api.dto.CommentDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

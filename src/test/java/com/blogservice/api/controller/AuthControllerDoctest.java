@@ -4,12 +4,9 @@ import com.blogservice.api.auth.RefreshTokenProvider;
 import com.blogservice.api.config.BlogserviceMockSecurityContext;
 import com.blogservice.api.config.BlogserviceMockUser;
 import com.blogservice.api.domain.auth.RefreshToken;
-import com.blogservice.api.domain.post.Post;
 import com.blogservice.api.dto.Login;
-import com.blogservice.api.dto.ReIssue;
 import com.blogservice.api.dto.Signup;
 import com.blogservice.api.repository.auth.RefreshTokenRepository;
-import com.blogservice.api.repository.post.PostRepository;
 import com.blogservice.api.repository.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
@@ -30,11 +27,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest

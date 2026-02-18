@@ -3,7 +3,7 @@ package com.blogservice.api.domain.post;
 import jakarta.persistence.*;
 import lombok.*;
 
-import static jakarta.persistence.FetchType.*;
+import static jakarta.persistence.FetchType.LAZY;
 
 @Getter
 @Entity

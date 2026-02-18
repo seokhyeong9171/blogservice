@@ -1,19 +1,10 @@
 package com.blogservice.api.controller;
 
 import com.blogservice.api.config.BlogserviceMockSecurityContext;
-import com.blogservice.api.config.BlogserviceMockUser;
-import com.blogservice.api.domain.board.Board;
-import com.blogservice.api.domain.board.BoardName;
-import com.blogservice.api.domain.post.Likes;
 import com.blogservice.api.domain.post.Post;
-import com.blogservice.api.domain.post.Views;
 import com.blogservice.api.domain.user.User;
-import com.blogservice.api.dto.PostCreate;
-import com.blogservice.api.dto.PostEdit;
 import com.blogservice.api.repository.board.BoardRepository;
-import com.blogservice.api.repository.post.LikeRepository;
 import com.blogservice.api.repository.post.PostRepository;
-import com.blogservice.api.repository.post.ViewRepository;
 import com.blogservice.api.repository.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
@@ -30,15 +21,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static com.blogservice.api.domain.board.BoardName.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
