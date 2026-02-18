@@ -77,6 +77,7 @@ public class PostControllerDocTest {
 
     @Test
     @DisplayName("글 단건 조회")
+    @BlogserviceMockUser
     void view_post_details() throws Exception {
         // given
         User user = User.builder()

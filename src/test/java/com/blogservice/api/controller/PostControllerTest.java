@@ -312,6 +312,7 @@ class PostControllerTest {
     }
 
     @Test
+    @BlogserviceMockUser
     @DisplayName("글 상세 조회 - 성공")
     void view_post_details_success() throws Exception {
         // given
